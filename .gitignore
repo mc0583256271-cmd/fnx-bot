@@ -1,0 +1,15 @@
+# סביבה וירטואלית - אפשר תמיד לבנות מחדש
+venv/
+# מפתחות סודיים - לעולם לא ל-GitHub!
+.env
+# HTML גולמי - כבד מדי (כ-500MB), ואפשר תמיד להוריד מחדש
+data/raw_html/
+# קבצי בדיקה וקבצי ריצה זמניים
+data/pages_test.jsonl
+data/test.json
+data/failed.txt
+data/updated.txt
+data/changes.json
+# קבצים זמניים של פייתון
+__pycache__/
+*.pyc

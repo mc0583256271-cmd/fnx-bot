@@ -131,7 +131,8 @@ def call_api(session, key, texts):
             r = session.post(API_URL, json=body, headers={"x-goog-api-key": key}, timeout=120)
         except requests.RequestException as e:
             if attempt == 3:
-                raise Stop(f"בעיית רשת מול Gemini: {type(e).__name__}")
+                hint = " (אישור SSL: ודאי ש-truststore מותקן)" if isinstance(e, requests.exceptions.SSLError) else ""
+                raise Stop(f"בעיית רשת מול Gemini: {type(e).__name__}{hint}")
             time.sleep(5 * (attempt + 1))
             continue
         if r.status_code == 200:

@@ -1,26 +1,26 @@
 """
-שלב 1: סריקת אתר הפניקס
-=========================
+שלב 1: סריקת אתר הפניקס, ורענון המידע
+======================================
 מה הקובץ הזה עושה, בקצרה:
-  1. קורא את ה-sitemap (רשימת כל העמודים באתר)
-  2. מסנן רק את העמודים שרלוונטיים ללקוח
-  3. מוריד כל עמוד בקצב מנומס (בקשה אחת בשנייה)
-  4. שומר את ה-HTML הגולמי לדיסק (כדי לא לסרוק שוב אם נשפר את הניקוי)
-  5. שולף רק את התוכן המרכזי (בלי תפריטים ופוטר) וממיר ל-Markdown
-  6. שומר הכל לקובץ data/pages.jsonl
+  1. קורא את ה-sitemap (רשימת כל העמודים באתר) ומסנן רק עמודים רלוונטיים
+  2. לכל עמוד: אם כבר יש לנו אותו - שואל את האתר "השתנית?" (ETag).
+     האתר עונה "לא השתנה" בלי לשלוח כלום, או שולח את הגרסה החדשה.
+  3. עמוד חדש או שהשתנה - מנקה אותו (רק התוכן המרכזי, בלי תפריטים) וממיר ל-Markdown
+  4. בודק איכות: טקסט פגום (xxx), עמודים כמעט ריקים, כפילויות,
+     וירידה חדה במספר העמודים (= תקלה, ואז לא שומרים כלום)
+  5. שומר ל-data/pages.jsonl, ואת השינויים מהריצה הקודמת ל-data/changes.json
 
 איך מריצים:
-  בדיקה על 10 עמודים בלבד (מומלץ להתחיל ככה!):
-      python ingest/crawl.py --test 10
-
-  סריקה מלאה:
-      python ingest/crawl.py
+  בדיקה על 10 עמודים בלבד:   python ingest/crawl.py --test 10
+  סריקה / רענון:             python ingest/crawl.py
+  להוריד הכול מחדש:          python ingest/crawl.py --refresh-all
 """
 
 import argparse
 import hashlib
 import json
 import re
+import sys
 import time
 from datetime import date
 from pathlib import Path
@@ -173,83 +173,84 @@ BACKOFF_SECONDS = [5, 15, 30, 60]
 NOT_FOUND = "NOT_FOUND"
 
 
-def download(session, url):
-    """מוריד עמוד. אם נכשל - מנסה שוב, ומחכה יותר בכל פעם: 5, 15, 30, 60 שניות."""
+def download(session, url, etag=None):
+    """
+    מוריד עמוד. מחזיר (סטטוס, html, etag).
+    אם שולחים etag - זו שאלה "השתנית מאז?". אם לא, האתר עונה 304 ולא שולח כלום.
+    אם נכשל - מנסה שוב, ומחכה יותר בכל פעם: 5, 15, 30, 60 שניות.
+    """
+    headers = {"If-None-Match": etag} if etag else {}
     for attempt, wait in enumerate(BACKOFF_SECONDS, start=1):
         try:
-            response = session.get(url, timeout=30)
+            response = session.get(url, timeout=30, headers=headers)
             if response.status_code == 200:
-                return response.text
+                return "ok", response.text, response.headers.get("ETag")
+            if response.status_code == 304:  # "לא השתנה" - 0 בתים
+                return "unchanged", None, etag
             if response.status_code == 404:  # העמוד לא קיים - אין טעם לנסות שוב
-                return NOT_FOUND
+                return "not_found", None, None
             print(f"   ⚠️  קוד {response.status_code} (ניסיון {attempt}) - מחכה {wait} שניות")
         except requests.RequestException as error:
             print(f"   ⚠️  {type(error).__name__} (ניסיון {attempt}) - מחכה {wait} שניות")
         time.sleep(wait)
-    return None
+    return "failed", None, None
 
 
-# "יומן הסריקה": לכל כתובת - מה היה תאריך העדכון שלה (lastmod) כשהורדנו אותה
+# "יומן הסריקה": לכל כתובת - טביעת האצבע (ETag) שלה בהורדה האחרונה, ומה יצא ממנה.
+# הקובץ נשמר ב-GitHub, ולכן הרענון עובד גם בענן, בלי ה-HTML הגולמי שנשאר רק במחשב.
 STATE_FILE = DATA_DIR / "crawl_state.json"
 
 
 def load_state():
-    if STATE_FILE.exists():
-        return json.loads(STATE_FILE.read_text(encoding="utf-8"))
-    return {}
+    if not STATE_FILE.exists():
+        return {}
+    state = json.loads(STATE_FILE.read_text(encoding="utf-8"))
+    # גרסה ישנה של היומן שמרה רק תאריך (מחרוזת). בלי ETag - ההורדה הבאה תהיה מלאה.
+    return {url: value for url, value in state.items() if isinstance(value, dict)}
 
 
 def save_state(state):
     STATE_FILE.write_text(json.dumps(state, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
-# בדקנו מול האתר: בעמוד מסלול פנסיה כתוב "הנתונים מעודכנים לתאריך 31.08.2026",
-# אבל ה-lastmod שלו ב-sitemap הוא 16.08.2026. כלומר הנתונים (תשואות, דמי ניהול)
-# מתעדכנים בלי ש-lastmod משתנה! לכן lastmod לבדו לא מספיק,
-# ועמוד ישן מ-MAX_CACHE_AGE_DAYS יורד מחדש בכל מקרה.
-MAX_CACHE_AGE_DAYS = 7
-
-
-def cache_age_days(path):
-    return (time.time() - path.stat().st_mtime) / 86400
-
-
-def get_html(session, url, lastmod, state, refresh_all=False):
+# למה ETag ולא תאריך העדכון ב-sitemap? בדקנו מול האתר:
+#   - עמוד מסלול פנסיה: הנתונים עודכנו ל-31.08, ובאתר התאריך נשאר 16.08
+#   - עמוד "טופס 161": נכתב מחדש, והתאריך נשאר 14.11.2024
+# ה-ETag של האתר מחושב מתוכן העמוד עצמו (גודל + SHA-1, אימתנו בחישוב),
+# כך שכל שינוי בעמוד משנה אותו - וזה בדיוק מה שצריך.
+def get_page(session, url, state, previous_records, refresh_all=False):
     """
-    מחזירה את ה-HTML של עמוד, ואומרת מאיפה הוא הגיע.
-
-    קוראים מהמטמון (בלי לפנות לאתר) רק אם שלושה תנאים מתקיימים:
-      1. העמוד כבר ירד בעבר
-      2. ה-lastmod שלו ב-sitemap לא השתנה מאז
-      3. ההורדה האחרונה שלו לא ישנה מ-MAX_CACHE_AGE_DAYS ימים
-    אחרת - מורידים מחדש.
+    מחזירה (סוג, תוכן):
+      ("downloaded", html)   - עמוד חדש או שהשתנה, ירד עכשיו
+      ("unchanged", record)  - האתר אמר "לא השתנה" - לוקחים את הגרסה הקודמת
+      ("unchanged_thin", None) - "לא השתנה", והוא היה עמוד דל - ממשיכים לדלג
+      ("kept", record)       - ההורדה נכשלה, שומרים את הגרסה הקודמת עד הריצה הבאה
+      ("not_found", None)    - העמוד נמחק מהאתר (404)
+      ("failed", None)       - ההורדה נכשלה ואין גרסה קודמת
     """
-    cached = RAW_DIR / raw_filename(url)
-    known = state.get(url)  # ה-lastmod שהיה כשהורדנו. None = לא רשום (הורד לפני שהיה יומן)
+    known = state.get(url, {})
+    previous = previous_records.get(url)
+    etag = None if refresh_all else known.get("etag")
 
-    fresh = (
-        cached.exists()
-        and (known is None or known == lastmod)
-        and cache_age_days(cached) < MAX_CACHE_AGE_DAYS
-        and not refresh_all
-    )
-    if fresh:
-        state[url] = lastmod
-        return cached.read_text(encoding="utf-8"), "cache"
+    # שואלים "השתנית?" רק אם יש לנו לאן לחזור כשהתשובה היא "לא"
+    if etag and not (previous or known.get("status") == "thin"):
+        etag = None
 
-    had_old_copy = cached.exists()
-    html = download(session, url)
-    if html == NOT_FOUND:
-        return None, "not_found"
-    if html:
-        cached.write_text(html, encoding="utf-8")
-        state[url] = lastmod
-        return html, ("refreshed" if had_old_copy else "web")
-    if had_old_copy:
-        # ההורדה של הגרסה החדשה נכשלה - עדיף גרסה ישנה מכלום. ננסה שוב בהרצה הבאה.
-        print("   ⚠️  לא הצלחנו להוריד את הגרסה החדשה - משתמשים בגרסה הישנה")
-        return cached.read_text(encoding="utf-8"), "cache"
-    return None, "web"
+    status, html, new_etag = download(session, url, etag)
+    if status == "unchanged":
+        return ("unchanged", previous) if previous else ("unchanged_thin", None)
+    if status == "ok":
+        state[url] = {"etag": new_etag}
+        RAW_DIR.mkdir(parents=True, exist_ok=True)
+        (RAW_DIR / raw_filename(url)).write_text(html, encoding="utf-8")  # עותק מקומי לבדיקות
+        return "downloaded", html
+    if status == "not_found":
+        state.pop(url, None)
+        return "not_found", None
+    if previous:
+        print("   ⚠️  ההורדה נכשלה - משאירים את הגרסה הקודמת, וננסה שוב בריצה הבאה")
+        return "kept", previous
+    return "failed", None
 
 
 def content_hash(record):
@@ -257,14 +258,14 @@ def content_hash(record):
 
 
 def load_previous_pages():
-    """הגרסה הקודמת של pages.jsonl: כתובת -> טביעת אצבע של התוכן. ככה יודעים מה השתנה."""
+    """הגרסה הקודמת של pages.jsonl: כתובת -> העמוד. משמשת כשהאתר עונה "לא השתנה"."""
     if not OUTPUT_FILE.exists():
         return {}
     previous = {}
     for line in OUTPUT_FILE.read_text(encoding="utf-8").splitlines():
         if line:
             record = json.loads(line)
-            previous[record["url"]] = content_hash(record)
+            previous[record["url"]] = record
     return previous
 
 
@@ -277,6 +278,7 @@ def compare_with_previous(previous, records):
     שלב האינדקס ישתמש ברשימות האלה כדי לעדכן רק את מה שצריך.
     """
     current = {r["url"]: content_hash(r) for r in records}
+    previous = {url: content_hash(r) for url, r in previous.items()}
     return {
         "new": sorted(u for u in current if u not in previous),
         "updated": sorted(u for u in current if u in previous and previous[u] != current[u]),
@@ -412,6 +414,14 @@ def remove_duplicates(records):
 # חלק 4: בדיקת איכות
 # ------------------------------------------------------------
 
+# מילים שהוחלפו ב-"xxx". כך נראה טקסט שעבר דרך רשת מסוננת (מצאנו 3 עמודים כאלה).
+# עמוד כזה לא נכנס למידע - הבוט לא צריך לצטט טקסט פגום.
+MASKED = re.compile(r"\bx{3,}\b")
+
+# אם פתאום יש הרבה פחות עמודים מבריצה הקודמת - כנראה תקלה (חסימה, שינוי עיצוב),
+# לא שינוי אמיתי באתר. במקרה כזה לא שומרים, והמידע הקודם נשאר.
+MIN_PAGES_RATIO = 0.9
+
 # מילים שמופיעות רק בתפריט/בפוטר. אם הן בתוכן - הניקוי לא עבד
 NAV_MARKERS = ["פורטל סוכנים", "פורטל מעסיקים", "כל הזכויות שמורות", "close mobile menu"]
 
@@ -456,12 +466,10 @@ def quality_report(records, failed):
 def main():
     parser = argparse.ArgumentParser(description="סורק אתר הפניקס")
     parser.add_argument("--refresh-all", action="store_true",
-                        help="להוריד מחדש את כל העמודים, בלי מטמון")
+                        help="להוריד מחדש את כל העמודים, בלי לשאול 'השתנית?'")
     parser.add_argument("--test", type=int, default=0,
                         help="מספר עמודים לבדיקה (למשל 10). בלי זה - סריקה מלאה")
     args = parser.parse_args()
-
-    RAW_DIR.mkdir(parents=True, exist_ok=True)
 
     # Session = שומר עוגיות בין בקשות (פותר את בעיית ההפניות החוזרות)
     session = requests.Session()
@@ -478,85 +486,100 @@ def main():
         pages = pick_test_sample(pages, args.test)
         print(f"\n🧪 מצב בדיקה: {len(pages)} עמודים ממדורים שונים")
 
-    estimated_minutes = len(pages) * (DELAY_SECONDS + 1) / 60
+    estimated_minutes = len(pages) * (DELAY_SECONDS + 0.5) / 60
     print(f"⏱️  זמן משוער: כ-{estimated_minutes:.0f} דקות\n")
 
-    records, failed, thin, not_found = [], [], [], []
-    state = load_state()
+    records, failed, thin, not_found, masked = [], [], [], [], []
+    counts = {"downloaded": 0, "unchanged": 0, "kept": 0}
+    state = {} if args.test else load_state()
     previous = {} if args.test else load_previous_pages()
 
     for i, (url, lastmod) in enumerate(pages, start=1):
         print(f"[{i}/{len(pages)}] {url}")
+        kind, content = get_page(session, url, state, previous, args.refresh_all)
+        time.sleep(DELAY_SECONDS)  # קצב מנומס
 
-        record = None
-        html, origin = get_html(session, url, lastmod, state, args.refresh_all)
-        if origin != "cache":
-            time.sleep(DELAY_SECONDS)  # קצב מנומס - רק כשבאמת פנינו לאתר (לא כשקראנו מהמטמון)
-
-        if html:
-            # רשת ביטחון: אם עמוד אחד מוזר מפיל את הניקוי, רושמים אותו וממשיכים.
-            # עמוד אחד שבור לא יעצור סריקה של 1,000 עמודים.
-            try:
-                record = extract(html, url, lastmod)
-            except Exception as error:
-                print(f"   ⚠️  שגיאה בניקוי: {type(error).__name__}: {error}")
-
-        # עמוד שירד תקין אבל עם מעט טקסט = עמוד שבאמת כמעט ריק (למשל רק קישורים ל-PDF).
-        # לא שולחים אותו ל-Jina, כי Jina יחזיר את כל התפריטים ויכניס רעש. רק מדלגים.
-        if record and record["word_count"] < MIN_WORDS:
-            print(f"   ⏭️  עמוד דל ({record['word_count']} מילים) - מדלגים")
-            thin.append(url)
-            continue
-
-        # שימו לב: פעם היה כאן גיבוי דרך Jina Reader. בבדיקה ראינו שהוא מחזיר את העמוד
-        # יחד עם כל התפריטים (אלפי מילים של רעש), אז הסרנו אותו.
-        # עמוד שנכשל נרשם ב-failed.txt, ובהרצה הבאה ננסה רק אותו (השאר יגיעו מהמטמון).
-
-        if origin == "not_found":
+        if kind == "not_found":
             not_found.append(url)
             print("   🗑️  העמוד נמחק מהאתר (404) - מדלגים")
             continue
-
-        if record:
-            records.append(record)
-            tag = {"cache": "📂", "refreshed": "🔄", "web": "✓"}[origin]
-            print(f"   {tag} {record['title'][:50]} | {record['word_count']} מילים | {record['breadcrumb']}")
-        else:
+        if kind == "unchanged_thin":
+            thin.append(url)
+            print("   ⏭️  עמוד דל, לא השתנה - מדלגים")
+            continue
+        if kind == "failed":
             failed.append(url)
             print("   ✗ נכשל")
+            continue
+        if kind in ("unchanged", "kept"):
+            counts[kind] += 1
+            records.append(content)
+            print(f"   {'💤' if kind == 'unchanged' else '📂'} לא השתנה | {content['title'][:50]}")
+            continue
+
+        # kind == "downloaded": עמוד חדש או שהשתנה - מנקים אותו
+        counts["downloaded"] += 1
+        try:
+            # רשת ביטחון: עמוד אחד מוזר לא יעצור סריקה של 1,000 עמודים
+            record = extract(content, url, lastmod)
+        except Exception as error:
+            print(f"   ⚠️  שגיאה בניקוי: {type(error).__name__}: {error}")
+            failed.append(url)
+            continue
+
+        if MASKED.search(record["content_md"]):
+            print("   🚫 בטקסט יש מילים שהוחלפו ב-xxx (רשת מסוננת?) - לא נכנס למידע")
+            masked.append(url)
+            state.pop(url, None)  # בפעם הבאה יורד מחדש במלואו
+            if url in previous:
+                records.append(previous[url])
+            continue
+
+        if record["word_count"] < MIN_WORDS:
+            # עמוד דל באמת (למשל רק קישורים ל-PDF) - מדלגים
+            print(f"   ⏭️  עמוד דל ({record['word_count']} מילים) - מדלגים")
+            thin.append(url)
+            state[url]["status"] = "thin"
+            continue
+
+        state[url]["status"] = "ok"
+        records.append(record)
+        print(f"   ✓ {record['title'][:50]} | {record['word_count']} מילים | {record['breadcrumb']}")
 
     # הסרת כפילויות: מאמרים שנמחקו מהאתר מחזירים את עמוד המדור במקומם,
-    # ואז אותו תוכן נשמר כמה פעמים תחת כתובות שונות. בבוט זה היה גורם
-    # לאותה פסקה להופיע 5 פעמים בתוצאות החיפוש. משאירים עותק אחד -
+    # ואז אותו תוכן נשמר כמה פעמים תחת כתובות שונות. משאירים עותק אחד -
     # זה עם הכתובת הקצרה ביותר (בדרך כלל העמוד "האמיתי").
     records, duplicates = remove_duplicates(records)
-    (DATA_DIR / "duplicates.txt").write_text("\n".join(duplicates), encoding="utf-8")
-    print(f"\n🧹 עותקים כפולים שהוסרו: {len(duplicates)} (רשימה ב-data/duplicates.txt)")
 
-    # שמירה: כל עמוד בשורה נפרדת
+    # שומר איכות: ירידה חדה במספר העמודים = כנראה תקלה. לא שומרים כלום.
+    if previous and len(records) < MIN_PAGES_RATIO * len(previous):
+        print(f"\n🛑 נשמרו רק {len(records)} עמודים, לעומת {len(previous)} בריצה הקודמת.")
+        print("   זה נראה כמו תקלה (חסימה / שינוי עיצוב באתר), לא כמו שינוי אמיתי.")
+        print("   לא נשמר כלום - המידע הקודם נשאר כמו שהוא.")
+        sys.exit(1)
+
     output = DATA_DIR / ("pages_test.jsonl" if args.test else OUTPUT_FILE.name)
     with open(output, "w", encoding="utf-8") as f:
         for record in records:
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
     FAILED_FILE.write_text("\n".join(failed), encoding="utf-8")
-    (DATA_DIR / "thin.txt").write_text("\n".join(thin), encoding="utf-8")
+    for name, items in [("thin", thin), ("not_found", not_found), ("duplicates", duplicates), ("masked", masked)]:
+        (DATA_DIR / f"{name}.txt").write_text("\n".join(items), encoding="utf-8")
     changes = compare_with_previous(previous, records) if previous else None
     if changes:
         (DATA_DIR / "changes.json").write_text(json.dumps(changes, ensure_ascii=False, indent=1), encoding="utf-8")
-    (DATA_DIR / "not_found.txt").write_text("\n".join(not_found), encoding="utf-8")
-    save_state(state)
+    if not args.test:
+        save_state(state)
 
     quality_report(records, failed)
-    print(f"⏭️  עמודים דלים שדילגנו עליהם: {len(thin)} (רשימה ב-data/thin.txt)")
-    print(f"🗑️  עמודים שנמחקו מהאתר (404): {len(not_found)} (רשימה ב-data/not_found.txt)")
+    print(f"📥 ירדו: {counts['downloaded']}  |  💤 לא השתנו: {counts['unchanged']}  |  📂 נשמרה גרסה קודמת: {counts['kept']}")
+    print(f"⏭️  עמודים דלים: {len(thin)}  |  🗑️  נמחקו מהאתר: {len(not_found)}  |  🧹 כפולים: {len(duplicates)}  |  🚫 טקסט פגום: {len(masked)}")
     if changes:
         print(f"\n📰 שינויים מאז הסריקה הקודמת (data/changes.json):")
         print(f"   ➕ עמודים חדשים: {len(changes['new'])}")
         print(f"   ✏️  עמודים שהתוכן שלהם השתנה: {len(changes['updated'])}")
         print(f"   ➖ עמודים שהוסרו: {len(changes['removed'])}")
     print(f"\n💾 נשמר ל: {output}")
-    if args.test:
-        print("👀 עכשיו פתחו את הקובץ ובדקו 2-3 עמודים מול האתר בדפדפן!")
 
 
 if __name__ == "__main__":

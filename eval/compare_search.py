@@ -12,6 +12,7 @@
 הרצה (מתיקיית הפרויקט):
   python eval/compare_search.py                 # הכל (צריך GEMINI_API_KEY בקובץ .env)
   python eval/compare_search.py --keyword-only  # רק חיפוש מילים, בלי Gemini
+  python eval/compare_search.py --sample        # בדיקה זולה על כ-980 פסקאות (לפני שמטמיעים הכל)
 
 ההטמעות נשמרות במטמון (data/emb_cache/). אם ההרצה נעצרה באמצע
 (מגבלת קצב, רשת) - מריצים שוב והיא ממשיכה מאיפה שעצרה, בלי לשלם שוב.
@@ -52,6 +53,7 @@ CACHE_DIR = ROOT / "data" / "emb_cache" / f"{MODEL}_{DIM}"
 API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:batchEmbedContents"
 BATCH_SIZE = 100      # כמה טקסטים בבקשה אחת. יורד אוטומטית אם השרת מסרב
 MAX_429_IN_A_ROW = 10 # אחרי כך עוצרים ושומרים, וממשיכים בהרצה הבאה
+SAMPLE_BASE = 900     # לבדיקה המוקטנת (--sample)
 
 # הפורמט שגוגל ממליצה עליו ל-gemini-embedding-2 (אין task_type, יש קידומת)
 QUERY_FORMATS = {
@@ -251,11 +253,22 @@ def refusal_check(name, top_score_fn, answerable, unanswerable):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--keyword-only", action="store_true", help="רק חיפוש מילים, בלי Gemini")
+    parser.add_argument("--sample", action="store_true",
+                        help=f"בדיקה מוקטנת: {SAMPLE_BASE} הפסקאות הראשונות + הפסקאות של העמודים הנכונים")
     args = parser.parse_args()
 
     chunks = [json.loads(line) for line in CHUNKS_FILE.open(encoding="utf-8")]
     qs = json.loads(QUESTIONS_FILE.read_text(encoding="utf-8"))
     answerable, unanswerable = qs["answerable"], qs["unanswerable"]
+    if args.sample:
+        # כל השיטות מחפשות באותה קבוצה, אז ההשוואה ביניהן הוגנת.
+        # המספרים עצמם אופטימיים: פחות פסקאות "מבלבלות" מאשר באתר המלא.
+        targets = [t for a in answerable for t in a["url"].split("|")]
+        chunks = [c for i, c in enumerate(chunks)
+                  if i < SAMPLE_BASE or any(t in c["url"] for t in targets)]
+        print(f"🔬 בדיקה מוקטנת (--sample): {len(chunks)} פסקאות")
+        global RESULTS_FILE
+        RESULTS_FILE = ROOT / "eval" / "results_search_sample.json"
 
     # בדיקת תקינות: לכל שאלה יש באמת עמוד נכון בנתונים
     for item in answerable:

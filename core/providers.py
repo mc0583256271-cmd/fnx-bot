@@ -40,6 +40,8 @@ class LLMProvider:
 
 def _sse_lines(response):
     """שורות 'data: ...' מתשובת streaming (Server-Sent Events), כ-dict."""
+    # חובה: בלי זה requests מנחש קידוד לטיני, והעברית יוצאת ג'יבריש (נמצא בבדיקה)
+    response.encoding = "utf-8"
     for line in response.iter_lines(decode_unicode=True):
         if line and line.startswith("data:"):
             payload = line[5:].strip()

@@ -107,6 +107,8 @@ def main():
     D = [r for r in rows if r["kind"] == "dialogue"]
 
     def count(rs, status):
+        if status == "not_found":  # סירוב = "לא מצאתי" או "אין לי גישה לפרטים אישיים"
+            return sum(r["status"] in ("not_found", "personal") for r in rs)
         return sum(r["status"] == status for r in rs)
     right_source = sum(r["status"] == "answer" and any(matches(s["url"], r["expected"], r["exact"]) for s in r["sources"])
                        for r in A)

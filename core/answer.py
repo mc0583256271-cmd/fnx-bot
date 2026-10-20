@@ -23,7 +23,7 @@ import re
 import time
 
 from core.embeddings import Stop
-from core.guardrails import small_talk_reply
+from core.guardrails import personal_reply, small_talk_reply
 from core.providers import Unavailable, default_provider
 from core.retriever import Retriever
 
@@ -162,6 +162,11 @@ def answer_stream(question, history=None, provider=None, retrieval="vectors"):
     chat = small_talk_reply(question)  # "תודה", "שלום" - תשובה מיד, בלי חיפוש
     if chat:
         yield "final", _result("chat", chat, question=question, search_query=None, model=None,
+                               retrieval=None, passages=[])
+        return
+    personal = personal_reply(question)  # "מה מספר הפוליסה שלי" - אין לבוט גישה, מפנים לשירות
+    if personal:
+        yield "final", _result("personal", personal, contact, question=question, search_query=None, model=None,
                                retrieval=None, passages=[])
         return
     provider = provider or _get_provider()

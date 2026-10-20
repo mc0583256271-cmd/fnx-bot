@@ -66,7 +66,7 @@ def sources_html(sources):
 
 def show(msg):
     status = msg.get("status")
-    if status in ("not_found", "unavailable"):
+    if status in ("not_found", "unavailable", "personal"):
         st.markdown(f'<div class="note">{html.escape(msg["text"])}<br>'
                     f'<a href="{CONTACT_URL}" target="_blank">לכל הדרכים ליצור קשר עם הפניקס</a></div>',
                     unsafe_allow_html=True)

@@ -74,7 +74,7 @@ class ClaudeProvider(LLMProvider):
     URL = "https://api.anthropic.com/v1/messages"
     _session = requests.Session()
 
-    def __init__(self, model="claude-haiku-5-5", timeout=20, max_tokens=2000):
+    def __init__(self, model="claude-haiku-5-5", timeout=30, max_tokens=4000):
         # בלי temperature: Claude Haiku 5.5 מחזיר שגיאה אם שולחים אותו ("deprecated for this model")
         self.model, self.timeout, self.max_tokens = model, timeout, max_tokens
         self.name = model
@@ -97,7 +97,9 @@ class ClaudeProvider(LLMProvider):
             data = r.json()
             text = "".join(part.get("text", "") for part in data.get("content", [])).strip()
             if data.get("stop_reason") == "max_tokens":
-                raise Unavailable(f"{self.model}: התשובה נקטעה (max_tokens)")
+                kinds = [part.get("type") for part in data.get("content", [])]
+                raise Unavailable(f"{self.model}: התשובה נקטעה (max_tokens) | חלקים: {kinds} | "
+                                  f"שימוש: {data.get('usage')} | התחלה: " + text[:200].replace("\n", " "))
             try:
                 if text.startswith("```"):  # לפעמים ה-JSON עטוף ב-```json ... ```
                     text = text.split("\n", 1)[1].rsplit("```", 1)[0]

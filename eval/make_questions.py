@@ -35,7 +35,7 @@ PAGES_FILE = ROOT / "data" / "pages.jsonl"
 AUTO_FILE = ROOT / "eval" / "questions_auto.jsonl"
 OUT_FILE = ROOT / "eval" / "questions_full.json"
 
-GEN_MODEL = "gemini-2.5-flash"
+GEN_MODEL = "gemini-3.8-flash"  # gemini-2.5-flash כבר לא זמין למשתמשים חדשים
 GEN_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{GEN_MODEL}:generateContent"
 SEED = 2026
 N_RANDOM = 100
@@ -100,8 +100,7 @@ def longest_copy(question, page_text):
 def generate(session, key, page, extra=""):
     content = " ".join(page["content_md"].split()[:MAX_PAGE_WORDS])
     body = {"contents": [{"parts": [{"text": PROMPT.format(extra=extra, title=page["title"], content=content)}]}],
-            "generationConfig": {"responseMimeType": "application/json", "temperature": 0.7,
-                                 "thinkingConfig": {"thinkingBudget": 0}}}
+            "generationConfig": {"responseMimeType": "application/json", "temperature": 0.7}}
     for attempt in range(6):
         try:
             r = session.post(GEN_URL, json=body, headers={"x-goog-api-key": key}, timeout=120)

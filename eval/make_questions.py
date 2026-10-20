@@ -35,7 +35,7 @@ PAGES_FILE = ROOT / "data" / "pages.jsonl"
 AUTO_FILE = ROOT / "eval" / "questions_auto.jsonl"
 OUT_FILE = ROOT / "eval" / "questions_full.json"
 
-GEN_MODEL = "gemini-3.8-flash"  # gemini-2.5-flash כבר לא זמין למשתמשים חדשים
+GEN_MODEL = "gemini-3.5-flash"  # נבדק: כ-4 שניות לבקשה (3.8-flash לקח כ-100 שניות)
 GEN_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{GEN_MODEL}:generateContent"
 SEED = 2026
 N_RANDOM = 100

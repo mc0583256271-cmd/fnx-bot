@@ -18,6 +18,8 @@
   result = answer("ותוך כמה זמן מקבלים תשובה?", history=[{"role": "user", "text": "..."},
                                                          {"role": "assistant", "text": "..."}])
 """
+import time
+
 from core import llm
 from core.embeddings import Stop
 from core.retriever import Retriever
@@ -108,17 +110,20 @@ def answer(question, history=None, model=llm.DEFAULT_MODEL, retrieval="vectors")
         except llm.Unavailable:
             pass  # בלי ניסוח מחדש: מחפשים את השאלה כמו שהיא
 
+    t0 = time.time()
     try:
         hits, used = search(info["search_query"], mode=retrieval)
     except Stop:
         return _result("unavailable", UNAVAILABLE_TEXT, contact, retrieval=None, passages=[], **info)
-    info.update(retrieval=used, passages=[{"url": h["url"], "title": h["title"], "score": h["score"]} for h in hits])
+    info.update(t_search=round(time.time() - t0, 1), retrieval=used, passages=[{"url": h["url"], "title": h["title"], "score": h["score"]} for h in hits])
 
     if used == "vectors" and hits[0]["score"] < MIN_SCORE:
         return _result("not_found", NOT_FOUND_TEXT, contact, reason="low_score", **info)
 
+    t0 = time.time()
     try:
         data = llm.generate_json(ANSWER_SYSTEM, _passages_text(info["search_query"], hits), model=model)
+        info["t_llm"] = round(time.time() - t0, 1)
     except llm.Unavailable as e:
         return _result("unavailable", UNAVAILABLE_TEXT, contact, reason=str(e), **info)
 

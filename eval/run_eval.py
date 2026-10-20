@@ -22,8 +22,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
-from core import llm  # noqa: E402
+from core import answer as answer_module, llm  # noqa: E402
 from core.answer import answer  # noqa: E402
+from core.retriever import Retriever  # noqa: E402
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -51,6 +52,8 @@ def main():
     args = parser.parse_args()
     out_file = ROOT / "eval" / f"results_answers_{args.retrieval}_{args.model}.jsonl"
 
+    # שאלות הבדיקה כבר הוטמעו בבדיקת החיפוש: לוקחים אותן מהמטמון ולא מבזבזים מכסה
+    answer_module._retriever = Retriever(use_cache=True)
     qs = json.loads(QUESTIONS_FILE.read_text(encoding="utf-8"))
     sample = random.Random(SEED).sample(qs["answerable"], min(args.n, len(qs["answerable"])))
     dialogues = json.loads(DIALOGUES_FILE.read_text(encoding="utf-8"))["dialogues"]
@@ -71,7 +74,8 @@ def main():
         done[key] = row
         with out_file.open("a", encoding="utf-8") as f:
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
-        print(f"   {row['status']:11} {row['seconds']:>5}s | {question[:60]}")
+        print(f"   {row['status']:11} {row['seconds']:>5}s (חיפוש {row.get('t_search', '-')}s, מודל {row.get('t_llm', '-')}s)"
+              f" | {question[:60]}")
         if res["status"] == "unavailable":
             raise SystemExit(f"\n🛑 השירות לא זמין ({res.get('reason')}). מריצים שוב מאוחר יותר - ממשיך מאיפה שעצר.")
         return row

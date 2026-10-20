@@ -2,15 +2,20 @@
  "results": [
   {
    "name": "מילים (טריגרמות)",
-   "hit1": 65,
-   "hit5": 101,
-   "mrr": 0.598,
-   "n": 136,
+   "hit1": 75,
+   "hit5": 115,
+   "mrr": 0.604,
+   "n": 154,
    "groups": {
     "אקראי": [
-     48,
-     67,
-     90
+     52,
+     73,
+     100
+    ],
+    "שמות": [
+     6,
+     8,
+     8
     ],
     "מסלולים": [
      5,
@@ -255,6 +260,46 @@
      ]
     },
     {
+     "q": "כמה דמי ניהול גבו ממני בממוצע על קרן ההשתלמות שלי במהלך שנת 2025?",
+     "expected": "/ishtalmutfund/tzishtalmut/964/",
+     "group": "אקראי",
+     "got": [
+      "/ishtalmutfund/tzishtalmut/686/",
+      "/ishtalmutfund/tzishtalmut/968/",
+      "/ishtalmutfund/tzishtalmut/1100/"
+     ]
+    },
+    {
+     "q": "איזה מספר פקס אני צריך כדי לשלוח מסמכים שקשורים לביטוח הבריאות הפרטי שלי?",
+     "expected": "/customer-service/contact-us/",
+     "group": "אקראי",
+     "got": [
+      "/claims-customer-service/claims-health-insurance/claims-medications-not-included/",
+      "/claims-customer-service/claims-health-insurance/surgery-treatment-covers/",
+      "/claims-customer-service/claims-health-insurance/surgery-transplants-treatments-abroad/"
+     ]
+    },
+    {
+     "q": "כמה אחוז מהמשכורת החודשית שלי כדאי לי להקדיש להחזר המשכנתא כדי לא להסתבך?",
+     "expected": "/mortgage-insurance/mortgage-insurance-info/apartment-race/",
+     "group": "אקראי",
+     "got": [
+      "/savings/savings-information/do-smart-insurance/",
+      "/mortgage-insurance/mortgage-insurance-info/life-vs-mortgage-insurance/",
+      "/mortgage-insurance/mortgage-insurance-info/mortgage-life-insurance/"
+     ]
+    },
+    {
+     "q": "קיבלתי דירה חדשה, האם כדאי לי להוסיף ביטוח תכולה לביטוח המשכנתא שלי?",
+     "expected": "/apartment-insurance/apartment-information/new-apartment-from-a-contractor/",
+     "group": "אקראי",
+     "got": [
+      "/mortgage-insurance/mortgage-insurance-info/fnx-advantages/",
+      "/mortgage-insurance/mortgage-insurance-info/changing-mortgage-life-insurance/",
+      "/mortgage-insurance/mortgage-insurance-info/not-in-the-bank/"
+     ]
+    },
+    {
      "q": "איך מפסיקים את ביטוח הרכב שלי?",
      "expected": "car_cancel_policy",
      "group": "ידני",
@@ -378,15 +423,20 @@
   },
   {
    "name": "משמעות (search, 3072)",
-   "hit1": 99,
-   "hit5": 125,
-   "mrr": 0.806,
-   "n": 136,
+   "hit1": 112,
+   "hit5": 140,
+   "mrr": 0.8,
+   "n": 154,
    "groups": {
     "אקראי": [
-     59,
-     79,
-     90
+     66,
+     87,
+     100
+    ],
+    "שמות": [
+     6,
+     7,
+     8
     ],
     "מסלולים": [
      14,
@@ -509,20 +559,55 @@
       "/disability-and-incapacity-to-work/incapacity-to-work/",
       "/disability-and-incapacity-to-work/professional-disability/"
      ]
+    },
+    {
+     "q": "כמה דמי ניהול גבו ממני בממוצע על קרן ההשתלמות שלי במהלך שנת 2025?",
+     "expected": "/ishtalmutfund/tzishtalmut/964/",
+     "group": "אקראי",
+     "got": [
+      "/ishtalmutfund/tzishtalmut/9528/",
+      "/ishtalmutfund/tzishtalmut/968/",
+      "/ishtalmutfund/tzishtalmut/715/"
+     ]
+    },
+    {
+     "q": "קיבלתי דירה חדשה, האם כדאי לי להוסיף ביטוח תכולה לביטוח המשכנתא שלי?",
+     "expected": "/apartment-insurance/apartment-information/new-apartment-from-a-contractor/",
+     "group": "אקראי",
+     "got": [
+      "/apartment-insurance/apartment-contents-insurance/",
+      "/apartment-insurance/apartment-contents-insurance/",
+      "/apartment-insurance/apartment-information/other-things-you-should-know-about-home-insurance/"
+     ]
+    },
+    {
+     "q": "האם אני יכול לעבור למסלול הפניקס בלאקרוק מהמסלול הנוכחי שלי בלי לשלם קנסות או מס?",
+     "expected": "/savings/savings-information/fnx-blackrock-global-solutions/",
+     "group": "שמות",
+     "got": [
+      "/savings/blackrock/",
+      "/savings/blackrock/",
+      "/savings/"
+     ]
     }
    ]
   },
   {
    "name": "שילוב (search, 3072)",
-   "hit1": 89,
-   "hit5": 119,
-   "mrr": 0.746,
-   "n": 136,
+   "hit1": 101,
+   "hit5": 135,
+   "mrr": 0.744,
+   "n": 154,
    "groups": {
     "אקראי": [
-     55,
-     77,
-     90
+     61,
+     85,
+     100
+    ],
+    "שמות": [
+     6,
+     8,
+     8
     ],
     "מסלולים": [
      13,
@@ -667,6 +752,26 @@
      ]
     },
     {
+     "q": "איזה מספר פקס אני צריך כדי לשלוח מסמכים שקשורים לביטוח הבריאות הפרטי שלי?",
+     "expected": "/customer-service/contact-us/",
+     "group": "אקראי",
+     "got": [
+      "/claims-customer-service/claims-health-insurance/surgery-treatment-covers/",
+      "/claims-customer-service/claims-health-insurance/surgery-transplants-treatments-abroad/",
+      "/claims-customer-service/claims-supportive-insurance/claims-supportive-insurance-regular/"
+     ]
+    },
+    {
+     "q": "קיבלתי דירה חדשה, האם כדאי לי להוסיף ביטוח תכולה לביטוח המשכנתא שלי?",
+     "expected": "/apartment-insurance/apartment-information/new-apartment-from-a-contractor/",
+     "group": "אקראי",
+     "got": [
+      "/apartment-insurance/apartment-information/reinstatement-value/",
+      "/apartment-insurance/apartment-contents-insurance/",
+      "/apartment-insurance/apartment-information/other-things-you-should-know-about-home-insurance/"
+     ]
+    },
+    {
      "q": "הרכב עומד במוסך חודשיים, אפשר להשהות את הביטוח?",
      "expected": "car_disable_policy",
      "group": "ידני",
@@ -710,15 +815,20 @@
   },
   {
    "name": "שילוב חצי (search, 3072)",
-   "hit1": 93,
-   "hit5": 122,
-   "mrr": 0.771,
-   "n": 136,
+   "hit1": 106,
+   "hit5": 136,
+   "mrr": 0.77,
+   "n": 154,
    "groups": {
     "אקראי": [
-     57,
-     79,
-     90
+     64,
+     86,
+     100
+    ],
+    "שמות": [
+     6,
+     7,
+     8
     ],
     "מסלולים": [
      14,
@@ -843,6 +953,46 @@
      ]
     },
     {
+     "q": "כמה דמי ניהול גבו ממני בממוצע על קרן ההשתלמות שלי במהלך שנת 2025?",
+     "expected": "/ishtalmutfund/tzishtalmut/964/",
+     "group": "אקראי",
+     "got": [
+      "/ishtalmutfund/tzishtalmut/968/",
+      "/ishtalmutfund/tzishtalmut/9528/",
+      "/ishtalmutfund/tzishtalmut/2058/"
+     ]
+    },
+    {
+     "q": "איזה מספר פקס אני צריך כדי לשלוח מסמכים שקשורים לביטוח הבריאות הפרטי שלי?",
+     "expected": "/customer-service/contact-us/",
+     "group": "אקראי",
+     "got": [
+      "/claims-customer-service/claims-health-insurance/surgery-transplants-treatments-abroad/",
+      "/claims-customer-service/claims-health-insurance/surgery-treatment-covers/",
+      "/claims-customer-service/claims-supportive-insurance/claims-supportive-insurance-regular/"
+     ]
+    },
+    {
+     "q": "קיבלתי דירה חדשה, האם כדאי לי להוסיף ביטוח תכולה לביטוח המשכנתא שלי?",
+     "expected": "/apartment-insurance/apartment-information/new-apartment-from-a-contractor/",
+     "group": "אקראי",
+     "got": [
+      "/apartment-insurance/apartment-contents-insurance/",
+      "/apartment-insurance/apartment-information/reinstatement-value/",
+      "/apartment-insurance/apartment-information/other-things-you-should-know-about-home-insurance/"
+     ]
+    },
+    {
+     "q": "האם אני יכול לעבור למסלול הפניקס בלאקרוק מהמסלול הנוכחי שלי בלי לשלם קנסות או מס?",
+     "expected": "/savings/savings-information/fnx-blackrock-global-solutions/",
+     "group": "שמות",
+     "got": [
+      "/savings/blackrock/",
+      "/savings/",
+      "/savings/savings-routes/"
+     ]
+    },
+    {
      "q": "הרכב עומד במוסך חודשיים, אפשר להשהות את הביטוח?",
      "expected": "car_disable_policy",
      "group": "ידני",
@@ -876,15 +1026,20 @@
   },
   {
    "name": "משמעות (search, 768)",
-   "hit1": 99,
-   "hit5": 125,
-   "mrr": 0.807,
-   "n": 136,
+   "hit1": 112,
+   "hit5": 140,
+   "mrr": 0.802,
+   "n": 154,
    "groups": {
     "אקראי": [
-     59,
-     79,
-     90
+     66,
+     87,
+     100
+    ],
+    "שמות": [
+     6,
+     7,
+     8
     ],
     "מסלולים": [
      14,
@@ -1007,20 +1162,55 @@
       "/pension-savings/fnx-all-embracing-pension/tzmekifa/9984/",
       "/pension-savings/fnx-all-embracing-pension/tzmekifa/9975/"
      ]
+    },
+    {
+     "q": "כמה דמי ניהול גבו ממני בממוצע על קרן ההשתלמות שלי במהלך שנת 2025?",
+     "expected": "/ishtalmutfund/tzishtalmut/964/",
+     "group": "אקראי",
+     "got": [
+      "/ishtalmutfund/tzishtalmut/9528/",
+      "/ishtalmutfund/tzishtalmut/968/",
+      "/ishtalmutfund/tzishtalmut/715/"
+     ]
+    },
+    {
+     "q": "קיבלתי דירה חדשה, האם כדאי לי להוסיף ביטוח תכולה לביטוח המשכנתא שלי?",
+     "expected": "/apartment-insurance/apartment-information/new-apartment-from-a-contractor/",
+     "group": "אקראי",
+     "got": [
+      "/apartment-insurance/apartment-contents-insurance/",
+      "/apartment-insurance/apartment-contents-insurance/",
+      "/apartment-insurance/apartment-information/other-things-you-should-know-about-home-insurance/"
+     ]
+    },
+    {
+     "q": "האם אני יכול לעבור למסלול הפניקס בלאקרוק מהמסלול הנוכחי שלי בלי לשלם קנסות או מס?",
+     "expected": "/savings/savings-information/fnx-blackrock-global-solutions/",
+     "group": "שמות",
+     "got": [
+      "/savings/blackrock/",
+      "/savings/blackrock/",
+      "/savings/"
+     ]
     }
    ]
   },
   {
    "name": "שילוב (search, 768)",
-   "hit1": 91,
-   "hit5": 119,
-   "mrr": 0.753,
-   "n": 136,
+   "hit1": 102,
+   "hit5": 135,
+   "mrr": 0.748,
+   "n": 154,
    "groups": {
     "אקראי": [
-     56,
-     77,
-     90
+     61,
+     85,
+     100
+    ],
+    "שמות": [
+     6,
+     8,
+     8
     ],
     "מסלולים": [
      14,
@@ -1165,6 +1355,26 @@
      ]
     },
     {
+     "q": "איזה מספר פקס אני צריך כדי לשלוח מסמכים שקשורים לביטוח הבריאות הפרטי שלי?",
+     "expected": "/customer-service/contact-us/",
+     "group": "אקראי",
+     "got": [
+      "/claims-customer-service/claims-health-insurance/surgery-treatment-covers/",
+      "/claims-customer-service/claims-health-insurance/surgery-transplants-treatments-abroad/",
+      "/claims-customer-service/claims-supportive-insurance/claims-supportive-insurance-regular/"
+     ]
+    },
+    {
+     "q": "קיבלתי דירה חדשה, האם כדאי לי להוסיף ביטוח תכולה לביטוח המשכנתא שלי?",
+     "expected": "/apartment-insurance/apartment-information/new-apartment-from-a-contractor/",
+     "group": "אקראי",
+     "got": [
+      "/apartment-insurance/apartment-information/reinstatement-value/",
+      "/apartment-insurance/apartment-contents-insurance/",
+      "/apartment-insurance/apartment-information/other-things-you-should-know-about-home-insurance/"
+     ]
+    },
+    {
      "q": "הרכב עומד במוסך חודשיים, אפשר להשהות את הביטוח?",
      "expected": "car_disable_policy",
      "group": "ידני",
@@ -1208,15 +1418,20 @@
   },
   {
    "name": "שילוב חצי (search, 768)",
-   "hit1": 91,
-   "hit5": 123,
-   "mrr": 0.765,
-   "n": 136,
+   "hit1": 104,
+   "hit5": 138,
+   "mrr": 0.764,
+   "n": 154,
    "groups": {
     "אקראי": [
-     56,
-     79,
-     90
+     63,
+     87,
+     100
+    ],
+    "שמות": [
+     6,
+     7,
+     8
     ],
     "מסלולים": [
      14,
@@ -1341,6 +1556,36 @@
      ]
     },
     {
+     "q": "איזה מספר פקס אני צריך כדי לשלוח מסמכים שקשורים לביטוח הבריאות הפרטי שלי?",
+     "expected": "/customer-service/contact-us/",
+     "group": "אקראי",
+     "got": [
+      "/claims-customer-service/claims-health-insurance/surgery-treatment-covers/",
+      "/claims-customer-service/claims-health-insurance/surgery-transplants-treatments-abroad/",
+      "/claims-customer-service/claims-supportive-insurance/claims-supportive-insurance-regular/"
+     ]
+    },
+    {
+     "q": "קיבלתי דירה חדשה, האם כדאי לי להוסיף ביטוח תכולה לביטוח המשכנתא שלי?",
+     "expected": "/apartment-insurance/apartment-information/new-apartment-from-a-contractor/",
+     "group": "אקראי",
+     "got": [
+      "/apartment-insurance/apartment-contents-insurance/",
+      "/apartment-insurance/apartment-information/reinstatement-value/",
+      "/apartment-insurance/apartment-information/other-things-you-should-know-about-home-insurance/"
+     ]
+    },
+    {
+     "q": "האם אני יכול לעבור למסלול הפניקס בלאקרוק מהמסלול הנוכחי שלי בלי לשלם קנסות או מס?",
+     "expected": "/savings/savings-information/fnx-blackrock-global-solutions/",
+     "group": "שמות",
+     "got": [
+      "/savings/blackrock/",
+      "/savings/",
+      "/savings/savings-routes/"
+     ]
+    },
+    {
      "q": "הרכב עומד במוסך חודשיים, אפשר להשהות את הביטוח?",
      "expected": "car_disable_policy",
      "group": "ידני",
@@ -1371,8 +1616,8 @@
    "unanswerable_max": 0.785,
    "unanswerable_median": 0.658,
    "best_threshold": 0.676,
-   "correct_at_best": 149,
-   "total": 156,
+   "correct_at_best": 167,
+   "total": 174,
    "unanswerable_scores": {
     "כמה עולה ביטוח רכב בחברת הראל?": 0.725,
     "אפשר לבטח אצלכם רחפן?": 0.672,
@@ -1403,8 +1648,8 @@
    "unanswerable_max": 0.796,
    "unanswerable_median": 0.667,
    "best_threshold": 0.691,
-   "correct_at_best": 148,
-   "total": 156,
+   "correct_at_best": 166,
+   "total": 174,
    "unanswerable_scores": {
     "כמה עולה ביטוח רכב בחברת הראל?": 0.734,
     "אפשר לבטח אצלכם רחפן?": 0.694,
@@ -1430,11 +1675,11 @@
   }
  ],
  "timing": {
-  "keyword_build_sec": 1.56,
-  "keyword_search_ms": 69.2,
+  "keyword_build_sec": 1.02,
+  "keyword_search_ms": 53.0,
   "index_size_mb_full": 29.6,
   "index_size_mb_768": 7.4,
-  "query_embed_ms_median": 496,
-  "semantic_search_ms_full": 1.17
+  "query_embed_ms_median": 891,
+  "semantic_search_ms_full": 0.67
  }
 }

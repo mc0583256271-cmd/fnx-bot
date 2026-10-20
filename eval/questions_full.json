@@ -542,6 +542,114 @@
    "exact": true
   },
   {
+   "q": "מה כדאי לעשות ברכב לפני שהגרר מגיע כדי שלא יאבדו לי דברים חשובים?",
+   "url": "/car-insurance/car_information/things-to-do-when-waiting-for-the-tow-truck/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "כמה דמי ניהול גבו ממני בממוצע על קרן ההשתלמות שלי במהלך שנת 2025?",
+   "url": "/ishtalmutfund/tzishtalmut/964/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "כמה אחוזים דמי ניהול גובים אצלי בקופת גמל שריעה לפי הנתונים של שנת 2025?",
+   "url": "/gemel/tzgemel/2049/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "הזמנתי שרברב בהסדר לתיקון נזילת מים, תוך כמה זמן הוא אמור להגיע לתקן את הנזק?",
+   "url": "/claims-customer-service/claims-appartment-insurance/pipeline-damage/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "איזה מספר פקס אני צריך כדי לשלוח מסמכים שקשורים לביטוח הבריאות הפרטי שלי?",
+   "url": "/customer-service/contact-us/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "כמה אחוז מהמשכורת החודשית שלי כדאי לי להקדיש להחזר המשכנתא כדי לא להסתבך?",
+   "url": "/mortgage-insurance/mortgage-insurance-info/apartment-race/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מהם ההבדלים העיקריים שקיימים במשכנתא ולא נמצאים בהלוואה רגילה?",
+   "url": "/mortgage-insurance/mortgage-insurance-info/mortgage-or-loan/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "עד איזה גיל אפשר להצטרף לביטוח משלים שב\"ן שלכם?",
+   "url": "/health-insurance/surgeries/mashlim-to-surgeries-and-treatments/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "האם אני יכול להעביר כסף שחסכתי בחיסכון פרטי לקרן הפנסיה כדי לקבל קצבה גבוהה יותר?",
+   "url": "/pension-savings/immediate-pension/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "קיבלתי דירה חדשה, האם כדאי לי להוסיף ביטוח תכולה לביטוח המשכנתא שלי?",
+   "url": "/apartment-insurance/apartment-information/new-apartment-from-a-contractor/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "היי, אני צריך להתקין עלוקה או איזה מיגון מיוחד ברכב טסלה שלי בשביל הביטוח שלכם?",
+   "url": "/car-insurance/comprehensive/insure-my-tesla/",
+   "group": "שמות",
+   "exact": true
+  },
+  {
+   "q": "היי, כמה עולה לי לקבוע תור לרופא בכיר דרך שירות הפניקס A LIST?",
+   "url": "/health-insurance/a-list/",
+   "group": "שמות",
+   "exact": true
+  },
+  {
+   "q": "איך אני יכול להאריך את ההנחה שיש לי בביטוח ריסק WELL מעבר לשלוש שנים הראשונות?",
+   "url": "/life-insurance/risk_well/",
+   "group": "שמות",
+   "exact": true
+  },
+  {
+   "q": "היי, האם במסלול הפניקס Apollo אני חשוף לתנודות של שער הדולר או המט\"ח?",
+   "url": "/savings/apollo/",
+   "group": "שמות",
+   "exact": true
+  },
+  {
+   "q": "שאלה קטנה, האם כשאני עובר בין מסלולים בפניקס BlackRock אני צריך לשלם מס על הרווחים?",
+   "url": "/savings/blackrock/",
+   "group": "שמות",
+   "exact": true
+  },
+  {
+   "q": "אם אני משקיע ב-הפניקס Bullet, האם אני חייב להוציא את הכסף בסוף שנת 2027?",
+   "url": "/savings/bullet/",
+   "group": "שמות",
+   "exact": true
+  },
+  {
+   "q": "האם אני יכול לעבור למסלול הפניקס בלאקרוק מהמסלול הנוכחי שלי בלי לשלם קנסות או מס?",
+   "url": "/savings/savings-information/fnx-blackrock-global-solutions/",
+   "group": "שמות",
+   "exact": true
+  },
+  {
+   "q": "אני מנהל משאבי אנוש, צריך לעדכן אתכם בכל פעם שעובד טס עם ביטוח הפניקס Smart Group?",
+   "url": "/travel-insurance/smart-group/",
+   "group": "שמות",
+   "exact": true
+  },
+  {
    "q": "כמה הרוויח הפניקס השתלמות אג\"ח סחיר מתחילת השנה?",
    "url": "/ishtalmutfund/tzishtalmut/15212/",
    "group": "מסלולים",

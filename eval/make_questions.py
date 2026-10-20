@@ -35,8 +35,10 @@ PAGES_FILE = ROOT / "data" / "pages.jsonl"
 AUTO_FILE = ROOT / "eval" / "questions_auto.jsonl"
 OUT_FILE = ROOT / "eval" / "questions_full.json"
 
-GEN_MODEL = "gemini-3.5-flash"  # נבדק: כ-4 שניות לבקשה (3.8-flash לקח כ-100 שניות)
-GEN_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{GEN_MODEL}:generateContent"
+# לפי סדר עדיפות. אם מודל עמוס (503) עוברים לבא בתור.
+# נבדק: 3.5-flash כ-4 שניות לבקשה; 3.8-flash כ-100 שניות; gemini-2.5-flash כבר לא זמין.
+GEN_MODELS = ["gemini-3.5-flash", "gemini-3.1-flash-lite", "gemini-3.8-flash"]
+GEN_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 SEED = 2026
 N_RANDOM = 100
 N_TRACKS = 15
@@ -101,11 +103,13 @@ def generate(session, key, page, extra=""):
     content = " ".join(page["content_md"].split()[:MAX_PAGE_WORDS])
     body = {"contents": [{"parts": [{"text": PROMPT.format(extra=extra, title=page["title"], content=content)}]}],
             "generationConfig": {"responseMimeType": "application/json", "temperature": 0.7}}
-    for attempt in range(6):
+    model_i = 0
+    for attempt in range(8):
+        model = GEN_MODELS[model_i]
         try:
-            r = session.post(GEN_URL, json=body, headers={"x-goog-api-key": key}, timeout=60)
+            r = session.post(GEN_URL.format(model=model), json=body, headers={"x-goog-api-key": key}, timeout=60)
         except requests.RequestException as e:
-            if attempt == 5:
+            if attempt == 7:
                 raise cs.Stop(f"בעיית רשת: {type(e).__name__}")
             print(f"      {type(e).__name__}, מנסים שוב")
             time.sleep(5 * (attempt + 1))
@@ -114,21 +118,26 @@ def generate(session, key, page, extra=""):
             try:
                 text = r.json()["candidates"][0]["content"]["parts"][0]["text"]
                 data = json.loads(text)
-                return data["question"].strip(), data["answer_quote"].strip()
+                return data["question"].strip(), data["answer_quote"].strip(), model
             except Exception:
-                return None, None  # תשובה לא תקינה - נרשם כנפסל
+                return None, None, model  # תשובה לא תקינה - נרשם כנפסל
         if r.status_code == 429:
             delay, quota = cs.parse_429(r)
             if "PerDay" in quota:
-                raise cs.Stop(f"נגמרה המכסה היומית של {GEN_MODEL} ({quota})")
+                if model_i + 1 < len(GEN_MODELS):
+                    model_i += 1
+                    print(f"      נגמרה המכסה היומית של {model}, עוברים ל-{GEN_MODELS[model_i]}")
+                    continue
+                raise cs.Stop(f"נגמרה המכסה היומית של כל המודלים ({quota})")
             print(f"      מגבלת קצב ({quota}), מחכים {delay:.0f} שניות")
             time.sleep(delay + 1)
             continue
         if r.status_code >= 500:
-            print(f"      השרת החזיר {r.status_code}, מנסים שוב")
-            time.sleep(10 * (attempt + 1))
+            model_i = (model_i + 1) % len(GEN_MODELS)
+            print(f"      {model} החזיר {r.status_code} (עמוס), עוברים ל-{GEN_MODELS[model_i]}")
+            time.sleep(3)
             continue
-        raise cs.Stop(f"{GEN_MODEL} החזיר {r.status_code}: " + r.text[:200].replace("\n", " "))
+        raise cs.Stop(f"{model} החזיר {r.status_code}: " + r.text[:200].replace("\n", " "))
     raise cs.Stop("יותר מדי ניסיונות כושלים")
 
 
@@ -161,8 +170,9 @@ def main():
                 if group == "אקראי" and sum(1 for r in done.values()
                                             if r["group"] == "אקראי" and r["status"] == "ok") >= N_RANDOM:
                     continue
-                q, quote = generate(session, key, page, NAME_EXTRA if group == "שמות" else "")
-                row = {"group": group, "url": page["url"], "title": page["title"], "q": q, "quote": quote}
+                q, quote, model = generate(session, key, page, NAME_EXTRA if group == "שמות" else "")
+                row = {"group": group, "url": page["url"], "title": page["title"], "q": q, "quote": quote,
+                       "model": model}
                 if not q or not quote:
                     row["status"] = "תשובה לא תקינה מהמודל"
                 elif norm(quote) not in norm(page["content_md"]):

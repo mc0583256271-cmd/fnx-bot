@@ -2,3 +2,5 @@ requests
 beautifulsoup4
 markdownify
 truststore
+numpy
+rank-bm25

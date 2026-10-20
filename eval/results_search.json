@@ -1,0 +1,145 @@
+{
+ "results": [
+  {
+   "name": "מילים (טריגרמות)",
+   "hit1": 12,
+   "hit5": 19,
+   "mrr": 0.491,
+   "n": 31,
+   "groups": {
+    "ידני": [
+     12,
+     19,
+     31
+    ]
+   },
+   "misses": [
+    {
+     "q": "איך מפסיקים את ביטוח הרכב שלי?",
+     "expected": "car_cancel_policy",
+     "group": "ידני",
+     "got": [
+      "/car-insurance/car_information/no-background/",
+      "/car-insurance/car_information/not-without-insurance/",
+      "/apartment-insurance/apartment-information/apartment-renovations/"
+     ]
+    },
+    {
+     "q": "הרכב עומד במוסך חודשיים, אפשר להשהות את הביטוח?",
+     "expected": "car_disable_policy",
+     "group": "ידני",
+     "got": [
+      "/car-insurance/car_information/what-we-had/",
+      "/car-insurance/car_information/comprehensive-insurance-when-should/",
+      "/car-insurance/car_information/know-the-assessor/"
+     ]
+    },
+    {
+     "q": "אבא שלי נפטר והיה לו ביטוח חיים, מה צריך להגיש?",
+     "expected": "claims-in-case-of-death",
+     "group": "ידני",
+     "got": [
+      "/health-insurance/health_information/rely-on-health-funds/",
+      "/claims-customer-service/claims-life-insurance/claims-pullmoney/",
+      "/gemel/itur_amitim/"
+     ]
+    },
+    {
+     "q": "מה זה ריסק וול?",
+     "expected": "risk_well",
+     "group": "ידני",
+     "got": [
+      "/life-insurance/life-insurance-info/risk-insurance/",
+      "/life-insurance/",
+      "/life-insurance/life-insurance-info/risk-insurance/"
+     ]
+    },
+    {
+     "q": "פרצו לי לדירה הלילה, מה אני צריך לעשות עכשיו?",
+     "expected": "in-case-of-break-in",
+     "group": "ידני",
+     "got": [
+      "/car-insurance/car_information/things-to-do-when-waiting-for-the-tow-truck/",
+      "/pension-savings/coronavirus/",
+      "/apartment-insurance/apartment-information/apartment_leaving_home/"
+     ]
+    },
+    {
+     "q": "אף פעם לא היה לי ביטוח רכב, אפשר בכלל לקבל אצלכם?",
+     "expected": "no-background",
+     "group": "ידני",
+     "got": [
+      "/travel-insurance/plan-your-trip/north-thailand-with-kids/",
+      "/apartment-insurance/",
+      "/car-insurance/car_information/window-glass-insurance/"
+     ]
+    },
+    {
+     "q": "לקחו לי את הרישיון לחצי שנה, זה ייקר לי את הביטוח?",
+     "expected": "suspended-license",
+     "group": "ידני",
+     "got": [
+      "/travel-insurance/travel_information/holiday-recommendations/",
+      "/travel-insurance/travel_information/insurance-to-sinai/",
+      "/travel-insurance/travel_information/travel-insurance-to-report/"
+     ]
+    },
+    {
+     "q": "יש מסלול בפנסיה שמתאים לשומרי תורה?",
+     "expected": "tzmekifa/9984|tzmashlima/15224",
+     "group": "ידני",
+     "got": [
+      "/pension-savings/fnx-all-embracing-pension/mekifa-join-and-insurance-options/",
+      "/gemel/employee/",
+      "/gemel/merging2/"
+     ]
+    },
+    {
+     "q": "שכרתי רכב באירופה ומישהו נכנס בי, את מי תובעים?",
+     "expected": "renting-a-car-abroad",
+     "group": "ידני",
+     "got": [
+      "/travel-insurance/travel_information/insurance-to-cyprus/",
+      "/apartment-insurance/apartment-information/safe-house/",
+      "/travel-insurance/travel_information/holiday-recommendations/"
+     ]
+    },
+    {
+     "q": "התקנתי עמדה להטענת הרכב החשמלי בחניה, אפשר לבטח אותה?",
+     "expected": "charging-station-insurance",
+     "group": "ידני",
+     "got": [
+      "/car-insurance/car_information/electric-car-expenses/",
+      "/car-insurance/car_information/charging-stations-for-multiresidential/",
+      "/car-insurance/car_information/charging-stations-for-multiresidential/"
+     ]
+    },
+    {
+     "q": "הכלב שלי מבוטח אצלכם ואני רוצה לבטל",
+     "expected": "pets_cancel_policy",
+     "group": "ידני",
+     "got": [
+      "/pets-insurance/pets-information/dogs-obesity/",
+      "/pets-insurance/pets-information/dogs-obesity/",
+      "/car-insurance/"
+     ]
+    },
+    {
+     "q": "קיבלתי SMS חשוד בשם הפניקס עם קישור, מה לעשות?",
+     "expected": "phishing",
+     "group": "ידני",
+     "got": [
+      "/travel-insurance/",
+      "/loans/loans-information/common-loan-mistakes/",
+      "/travel-insurance/smart-recommendations/"
+     ]
+    }
+   ]
+  }
+ ],
+ "refusal": [],
+ "timing": {
+  "keyword_build_sec": 1.94,
+  "keyword_search_ms": 72.5
+ }
+}

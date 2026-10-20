@@ -1,7 +1,10 @@
 """
 ספקי מודל שפה - מבנה מונחה עצמים, כדי שאפשר יהיה להחליף ספק או מודל בלי לגעת בשאר הקוד.
 
-  LLMProvider       מחלקה בסיסית: generate(system, user) -> (dict, שם המודל שענה), או Unavailable.
+  LLMProvider       מחלקה בסיסית:
+                      generate(system, user) -> (dict, שם המודל)   תשובת JSON שלמה (לניסוח שאלת המשך)
+                      stream(system, user)   -> חתיכות טקסט          התשובה ללקוח, מילה אחרי מילה
+                    שתיהן זורקות Unavailable כשהספק לא זמין.
   GeminiProvider    מודל אחד של Gemini (מודל, רמת חשיבה, מגבלת זמן).
   FallbackProvider  רשימת ספקים: מנסה לפי הסדר, ועובר מיד לבא בתור כשאחד נכשל.
 
@@ -30,6 +33,29 @@ class LLMProvider:
 
     def generate(self, system, user):
         raise NotImplementedError
+
+    def stream(self, system, user):
+        raise NotImplementedError
+
+
+def _sse_lines(response):
+    """שורות 'data: ...' מתשובת streaming (Server-Sent Events), כ-dict."""
+    for line in response.iter_lines(decode_unicode=True):
+        if line and line.startswith("data:"):
+            payload = line[5:].strip()
+            if payload and payload != "[DONE]":
+                try:
+                    yield json.loads(payload)
+                except ValueError:
+                    continue
+
+
+def _http_error(model, r):
+    if r.status_code == 429:
+        return Unavailable(f"{model}: מגבלת שימוש ({parse_429(r)[1]})")
+    if r.status_code in (529,) or r.status_code >= 500:
+        return Unavailable(f"{model}: עמוס ({r.status_code})")
+    return Unavailable(f"{model}: {r.status_code} " + r.text[:150].replace("\n", " "))
 
 
 class GeminiProvider(LLMProvider):
@@ -67,6 +93,33 @@ class GeminiProvider(LLMProvider):
             raise Unavailable(f"{self.model}: עמוס ({r.status_code})")
         # 400 וכו' - כנראה הגדרה לא נתמכת (למשל רמת חשיבה). לא שקט: רואים את זה בבדיקות
         raise Unavailable(f"{self.model}: {r.status_code} " + r.text[:150].replace("\n", " "))
+
+    STREAM_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:streamGenerateContent?alt=sse"
+
+    def stream(self, system, user):
+        if self._key is None:
+            self._key = load_key()
+        config = {"temperature": self.temperature}
+        if self.thinking:
+            config["thinkingConfig"] = {"thinkingLevel": self.thinking}
+        body = {"systemInstruction": {"parts": [{"text": system}]},
+                "contents": [{"role": "user", "parts": [{"text": user}]}],
+                "generationConfig": config}
+        try:
+            # timeout=(חיבור, המתנה בין חתיכות): מודל שלא מתחיל לענות - עוברים לבא בתור
+            r = self._session.post(self.STREAM_URL.format(model=self.model), json=body, stream=True,
+                                   headers={"x-goog-api-key": self._key}, timeout=(5, self.timeout))
+        except requests.RequestException as e:
+            raise Unavailable(f"{self.model}: {type(e).__name__}")
+        if r.status_code != 200:
+            raise _http_error(self.model, r)
+        try:
+            for event in _sse_lines(r):
+                for part in event.get("candidates", [{}])[0].get("content", {}).get("parts", []):
+                    if part.get("text") and not part.get("thought"):
+                        yield part["text"]
+        except requests.RequestException as e:
+            raise Unavailable(f"{self.model}: נקטע באמצע ({type(e).__name__})")
 
 
 class ClaudeProvider(LLMProvider):
@@ -112,6 +165,33 @@ class ClaudeProvider(LLMProvider):
             raise Unavailable(f"{self.model}: עמוס או מגבלת שימוש ({r.status_code})")
         raise Unavailable(f"{self.model}: {r.status_code} " + r.text[:150].replace("\n", " "))
 
+    def stream(self, system, user):
+        if self._key is None:
+            try:
+                self._key = load_key("ANTHROPIC_API_KEY")
+            except Exception:
+                raise Unavailable(f"{self.model}: אין ANTHROPIC_API_KEY")
+        body = {"model": self.model, "max_tokens": self.max_tokens, "stream": True,
+                "system": system, "messages": [{"role": "user", "content": user}]}
+        headers = {"x-api-key": self._key, "anthropic-version": "2023-06-01", "content-type": "application/json"}
+        try:
+            r = self._session.post(self.URL, json=body, headers=headers, stream=True, timeout=(5, 15))
+        except requests.RequestException as e:
+            raise Unavailable(f"{self.model}: {type(e).__name__}")
+        if r.status_code != 200:
+            raise _http_error(self.model, r)
+        try:
+            for event in _sse_lines(r):
+                kind = event.get("type")
+                if kind == "content_block_delta" and event.get("delta", {}).get("type") == "text_delta":
+                    yield event["delta"]["text"]
+                elif kind == "error":
+                    raise Unavailable(f"{self.model}: {event.get('error', {}).get('type', 'error')}")
+                elif kind == "message_delta" and event.get("delta", {}).get("stop_reason") == "max_tokens":
+                    raise Unavailable(f"{self.model}: התשובה נקטעה (max_tokens)")
+        except requests.RequestException as e:
+            raise Unavailable(f"{self.model}: נקטע באמצע ({type(e).__name__})")
+
 
 class FallbackProvider(LLMProvider):
     """מנסה כל ספק לפי הסדר. אם כולם נכשלו - סבב נוסף אחרי הפסקה קצרה (עד rounds סבבים)."""
@@ -132,6 +212,33 @@ class FallbackProvider(LLMProvider):
                     return p.generate(system, user)
                 except Unavailable as e:
                     self.last_errors.append(f"{e} [{time.time() - t0:.1f}s]")
+            if round_no + 1 < self.rounds:
+                time.sleep(self.pause)
+        raise Unavailable(" | ".join(self.last_errors[-3:]))
+
+    def stream(self, system, user):
+        """כמו generate, אבל מחזיר חתיכות טקסט. עוברים לספק הבא רק אם נכשל לפני החתיכה הראשונה;
+        כשל באמצע תשובה - Unavailable (אי אפשר "להחזיר" טקסט שכבר הוצג)."""
+        start, self.last_errors, self.model_used = time.time(), [], None
+        for round_no in range(self.rounds):
+            for p in self.providers:
+                if time.time() - start > self.budget:
+                    raise Unavailable("נגמר הזמן: " + " | ".join(self.last_errors[-3:]))
+                t0 = time.time()
+                chunks = p.stream(system, user)
+                try:
+                    first = next(chunks)
+                except StopIteration:
+                    self.last_errors.append(f"{p.name}: תשובה ריקה [{time.time() - t0:.1f}s]")
+                    continue
+                except Unavailable as e:
+                    self.last_errors.append(f"{e} [{time.time() - t0:.1f}s]")
+                    continue
+                self.model_used = p.name
+                self.first_chunk_seconds = round(time.time() - start, 1)
+                yield first
+                yield from chunks
+                return
             if round_no + 1 < self.rounds:
                 time.sleep(self.pause)
         raise Unavailable(" | ".join(self.last_errors[-3:]))

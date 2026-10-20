@@ -21,6 +21,7 @@
 import time
 
 from core.embeddings import Stop
+from core.guardrails import small_talk_reply
 from core.providers import Unavailable, default_provider
 from core.retriever import Retriever
 
@@ -113,6 +114,9 @@ def _result(status, text, sources=(), **extra):
 def answer(question, history=None, provider=None, retrieval="vectors"):
     """מחזיר dict: status, answer, sources [{title,url}], ועוד פרטים לבדיקה (search_query, retrieval, passages)."""
     history = history or []
+    chat = small_talk_reply(question)  # "תודה", "שלום" - תשובה מיד, בלי חיפוש
+    if chat:
+        return _result("chat", chat, question=question, search_query=None, model=None, retrieval=None, passages=[])
     provider = provider or _get_provider()
     contact = [{"title": CONTACT_TITLE, "url": CONTACT_URL}]
     info = {"question": question, "search_query": question, "model": None}

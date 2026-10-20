@@ -51,14 +51,15 @@ class Stop(Exception):
 
 
 # ---------- מפתח ----------
-def load_key():
-    key = os.environ.get("GEMINI_API_KEY", "")
+def load_key(name="GEMINI_API_KEY"):
+    """קורא מפתח ממשתנה סביבה או מקובץ .env (השורה האחרונה שלא בהערה). לעולם לא מודפס."""
+    key = os.environ.get(name, "")
     if not key and ENV_FILE.exists():
         for line in ENV_FILE.read_text(encoding="utf-8-sig").splitlines():
-            if line.strip().startswith("GEMINI_API_KEY="):
+            if line.strip().startswith(name + "="):
                 key = line.split("=", 1)[1].strip().strip('"').strip("'")
     if not key or key == "your-key-here":
-        raise Stop("לא נמצא GEMINI_API_KEY בקובץ .env")
+        raise Stop(f"לא נמצא {name} בקובץ .env")
     return key
 
 

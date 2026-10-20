@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 from core import answer as answer_module  # noqa: E402
 from core.answer import answer  # noqa: E402
-from core.providers import THINKING, GeminiProvider, default_provider  # noqa: E402
+from core.providers import THINKING, ClaudeProvider, GeminiProvider, default_provider  # noqa: E402
 from core.retriever import Retriever  # noqa: E402
 
 try:
@@ -52,7 +52,12 @@ def main():
     parser.add_argument("--n", type=int, default=N_ANSWERABLE, help="כמה שאלות עם תשובה לבדוק")
     args = parser.parse_args()
     out_file = ROOT / "eval" / f"results_answers_{args.retrieval}_{args.model}_{THINKING}.jsonl"
-    provider = default_provider() if args.model == "chain" else GeminiProvider(args.model, thinking=THINKING, timeout=30)
+    if args.model == "chain":
+        provider = default_provider()
+    elif args.model.startswith("claude"):
+        provider = ClaudeProvider(args.model, timeout=30)
+    else:
+        provider = GeminiProvider(args.model, thinking=THINKING, timeout=30)
 
     # שאלות הבדיקה כבר הוטמעו בבדיקת החיפוש: לוקחים אותן מהמטמון ולא מבזבזים מכסה
     answer_module._retriever = Retriever(use_cache=True)

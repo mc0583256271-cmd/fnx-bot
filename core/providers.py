@@ -5,7 +5,7 @@
   GeminiProvider    מודל אחד של Gemini (מודל, רמת חשיבה, מגבלת זמן).
   FallbackProvider  רשימת ספקים: מנסה לפי הסדר, ועובר מיד לבא בתור כשאחד נכשל.
 
-להוסיף ספק חדש (למשל Claude, או מפתח Gemini בתשלום) = מחלקה יורשת חדשה שמממשת generate,
+להוסיף ספק חדש (כמו ClaudeProvider, או מפתח Gemini בתשלום) = מחלקה יורשת חדשה שמממשת generate,
 והוספה שלה לרשימה ב-default_provider(). שום דבר ב-answer.py לא משתנה.
 
 למה רשימה: ה-API החינמי של Gemini מחזיר לפעמים 503 ("ביקוש גבוה") או לא עונה בכלל,
@@ -69,6 +69,42 @@ class GeminiProvider(LLMProvider):
         raise Unavailable(f"{self.model}: {r.status_code} " + r.text[:150].replace("\n", " "))
 
 
+class ClaudeProvider(LLMProvider):
+    """Claude של Anthropic (Messages API). תשתית נפרדת מגוגל - גיבוי אמיתי לעומס ב-Gemini."""
+    URL = "https://api.anthropic.com/v1/messages"
+    _session = requests.Session()
+
+    def __init__(self, model="claude-haiku-5-5", timeout=20, temperature=0.2, max_tokens=1024):
+        self.model, self.timeout, self.temperature, self.max_tokens = model, timeout, temperature, max_tokens
+        self.name = model
+        self._key = None
+
+    def generate(self, system, user):
+        if self._key is None:
+            try:
+                self._key = load_key("ANTHROPIC_API_KEY")
+            except Exception:
+                raise Unavailable(f"{self.model}: אין ANTHROPIC_API_KEY")
+        body = {"model": self.model, "max_tokens": self.max_tokens, "temperature": self.temperature,
+                "system": system, "messages": [{"role": "user", "content": user}]}
+        headers = {"x-api-key": self._key, "anthropic-version": "2023-06-01", "content-type": "application/json"}
+        try:
+            r = self._session.post(self.URL, json=body, headers=headers, timeout=self.timeout)
+        except requests.RequestException as e:
+            raise Unavailable(f"{self.model}: {type(e).__name__}")
+        if r.status_code == 200:
+            try:
+                text = "".join(part.get("text", "") for part in r.json()["content"]).strip()
+                if text.startswith("```"):  # לפעמים ה-JSON עטוף ב-```json ... ```
+                    text = text.split("\n", 1)[1].rsplit("```", 1)[0]
+                return json.loads(text[text.index("{"):text.rindex("}") + 1]), self.model
+            except Exception:
+                raise Unavailable(f"{self.model}: תשובה לא תקינה")
+        if r.status_code in (429, 529) or r.status_code >= 500:
+            raise Unavailable(f"{self.model}: עמוס או מגבלת שימוש ({r.status_code})")
+        raise Unavailable(f"{self.model}: {r.status_code} " + r.text[:150].replace("\n", " "))
+
+
 class FallbackProvider(LLMProvider):
     """מנסה כל ספק לפי הסדר. אם כולם נכשלו - סבב נוסף אחרי הפסקה קצרה (עד rounds סבבים)."""
     name = "fallback"
@@ -99,5 +135,15 @@ THINKING = "medium"
 DEFAULT_CHAIN = [("gemini-3.6-flash", 10), ("gemini-3.1-flash-lite", 10), ("gemini-flash-lite-latest", 20)]
 
 
+CLAUDE_MODEL = "claude-haiku-5-5"
+
+
 def default_provider():
-    return FallbackProvider([GeminiProvider(m, thinking=THINKING, timeout=t) for m, t in DEFAULT_CHAIN])
+    """Claude ראשון (אם יש מפתח), ואחריו רשימת Gemini כגיבוי."""
+    chain = [GeminiProvider(m, thinking=THINKING, timeout=t) for m, t in DEFAULT_CHAIN]
+    try:
+        load_key("ANTHROPIC_API_KEY")
+        chain.insert(0, ClaudeProvider(CLAUDE_MODEL))
+    except Exception:
+        pass  # בלי מפתח של Anthropic - Gemini בלבד
+    return FallbackProvider(chain)

@@ -78,9 +78,10 @@ def main():
         start = time.time()
         res = answer(question, history=history, provider=provider, retrieval=args.retrieval)
         row = dict(key=key, seconds=round(time.time() - start, 1), **meta, **res)
-        done[key] = row
-        with out_file.open("a", encoding="utf-8") as f:
-            f.write(json.dumps(row, ensure_ascii=False) + "\n")
+        if res["status"] != "unavailable":  # לא שומרים כישלון זמני - בהרצה הבאה מנסים שוב
+            done[key] = row
+            with out_file.open("a", encoding="utf-8") as f:
+                f.write(json.dumps(row, ensure_ascii=False) + "\n")
         print(f"   {row['status']:11} {row['seconds']:>5}s (חיפוש {row.get('t_search', '-')}s, מודל {row.get('t_llm', '-')}s)"
               f" | {question[:60]}")
         if res["status"] == "unavailable":

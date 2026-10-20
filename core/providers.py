@@ -74,7 +74,7 @@ class ClaudeProvider(LLMProvider):
     URL = "https://api.anthropic.com/v1/messages"
     _session = requests.Session()
 
-    def __init__(self, model="claude-haiku-5-5", timeout=20, max_tokens=1024):
+    def __init__(self, model="claude-haiku-5-5", timeout=20, max_tokens=2000):
         # בלי temperature: Claude Haiku 5.5 מחזיר שגיאה אם שולחים אותו ("deprecated for this model")
         self.model, self.timeout, self.max_tokens = model, timeout, max_tokens
         self.name = model
@@ -94,13 +94,18 @@ class ClaudeProvider(LLMProvider):
         except requests.RequestException as e:
             raise Unavailable(f"{self.model}: {type(e).__name__}")
         if r.status_code == 200:
+            data = r.json()
+            text = "".join(part.get("text", "") for part in data.get("content", [])).strip()
+            if data.get("stop_reason") == "max_tokens":
+                raise Unavailable(f"{self.model}: התשובה נקטעה (max_tokens)")
             try:
-                text = "".join(part.get("text", "") for part in r.json()["content"]).strip()
                 if text.startswith("```"):  # לפעמים ה-JSON עטוף ב-```json ... ```
                     text = text.split("\n", 1)[1].rsplit("```", 1)[0]
                 return json.loads(text[text.index("{"):text.rindex("}") + 1]), self.model
-            except Exception:
-                raise Unavailable(f"{self.model}: תשובה לא תקינה")
+            except Exception as e:
+                # מציגים את תחילת הטקסט כדי שאפשר יהיה להבין מה השתבש
+                raise Unavailable(f"{self.model}: תשובה לא תקינה ({type(e).__name__}): "
+                                  + text[:300].replace("\n", " "))
         if r.status_code in (429, 529) or r.status_code >= 500:
             raise Unavailable(f"{self.model}: עמוס או מגבלת שימוש ({r.status_code})")
         raise Unavailable(f"{self.model}: {r.status_code} " + r.text[:150].replace("\n", " "))

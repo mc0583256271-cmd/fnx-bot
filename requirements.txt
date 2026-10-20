@@ -4,3 +4,4 @@ markdownify
 truststore
 numpy
 rank-bm25
+streamlit

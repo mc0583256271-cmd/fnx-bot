@@ -22,8 +22,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
-from core import answer as answer_module, llm  # noqa: E402
+from core import answer as answer_module  # noqa: E402
 from core.answer import answer  # noqa: E402
+from core.providers import THINKING, GeminiProvider, default_provider  # noqa: E402
 from core.retriever import Retriever  # noqa: E402
 
 try:
@@ -47,10 +48,11 @@ def matches(url, expected, exact):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--retrieval", default="vectors", choices=["vectors", "keywords"])
-    parser.add_argument("--model", default=llm.DEFAULT_MODEL)
+    parser.add_argument("--model", default="chain", help="chain = רשימת המודלים של הבוט, או שם מודל אחד לבדיקה")
     parser.add_argument("--n", type=int, default=N_ANSWERABLE, help="כמה שאלות עם תשובה לבדוק")
     args = parser.parse_args()
-    out_file = ROOT / "eval" / f"results_answers_{args.retrieval}_{args.model}.jsonl"
+    out_file = ROOT / "eval" / f"results_answers_{args.retrieval}_{args.model}_{THINKING}.jsonl"
+    provider = default_provider() if args.model == "chain" else GeminiProvider(args.model, thinking=THINKING, timeout=30)
 
     # שאלות הבדיקה כבר הוטמעו בבדיקת החיפוש: לוקחים אותן מהמטמון ולא מבזבזים מכסה
     answer_module._retriever = Retriever(use_cache=True)
@@ -63,13 +65,13 @@ def main():
         for line in out_file.open(encoding="utf-8"):
             row = json.loads(line)
             done[row["key"]] = row
-    print(f"🧪 {args.retrieval} + {args.model} | {len(done)} תשובות כבר שמורות")
+    print(f"🧪 {args.retrieval} + {args.model} (חשיבה {THINKING}) | {len(done)} תשובות כבר שמורות")
 
     def run(key, question, history=None, **meta):
         if key in done:
             return done[key]
         start = time.time()
-        res = answer(question, history=history, model=args.model, retrieval=args.retrieval)
+        res = answer(question, history=history, provider=provider, retrieval=args.retrieval)
         row = dict(key=key, seconds=round(time.time() - start, 1), **meta, **res)
         done[key] = row
         with out_file.open("a", encoding="utf-8") as f:
@@ -120,6 +122,10 @@ def main():
     secs = sorted(r["seconds"] for r in rows)
     print(f"\n⏱️ זמן לתשובה: חציון {secs[len(secs) // 2]}s, מקסימום {secs[-1]}s | חיפוש: "
           + ", ".join(f"{k}={sum(r.get('retrieval') == k for r in rows)}" for k in ("vectors", "keywords")))
+    models = {}
+    for r in rows:
+        models[r.get("model")] = models.get(r.get("model"), 0) + 1
+    print("🤖 מי ענה:", models)
     print(f"💾 כל התשובות: {out_file.relative_to(ROOT)}")
 
 

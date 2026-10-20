@@ -7,7 +7,7 @@
   2. חיפוש 8 הקטעים הקרובים (core/retriever.py).
   3. אם גם הקטע הקרוב ביותר רחוק מאוד (דמיון < 0.60) -> "לא מצאתי" בלי לפנות למודל.
      (בבדיקה: כל השאלות שיש עליהן תשובה קיבלו 0.69 ומעלה. שאלות כמו "איך מכינים עוגת שוקולד" - 0.57.)
-  4. מודל השפה מקבל את השאלה ואת הקטעים (עם כותרת ומדור), ומחזיר אחד משלושה:
+  4. מודל השפה (core/providers.py: רשימת מודלים, מעבר אוטומטי כשאחד עמוס) מקבל את השאלה ואת הקטעים (עם כותרת ומדור), ומחזיר אחד משלושה:
      answer (עם מספרי הקטעים שבהם השתמש) / not_found / clarify (שאלת הבהרה, למשל "באיזה מסלול?").
   5. בדיקה בקוד: תשובה בלי מקור תקין = "לא מצאתי". הקישורים נבנים מהקטעים עצמם -
      המודל לא כותב כתובות, ולכן לא יכול להמציא קישור.
@@ -20,8 +20,8 @@
 """
 import time
 
-from core import llm
 from core.embeddings import Stop
+from core.providers import Unavailable, default_provider
 from core.retriever import Retriever
 
 CONTACT_URL = "https://www.fnx.co.il/customer-service/contact-us/"
@@ -54,6 +54,14 @@ REWRITE_SYSTEM = """לפניך שיחה בין לקוח לבוט שירות של
 
 _retriever = None
 _keyword = None
+_provider = None
+
+
+def _get_provider():
+    global _provider
+    if _provider is None:
+        _provider = default_provider()
+    return _provider
 
 
 def _get_retriever():
@@ -79,10 +87,10 @@ def search(question, mode="vectors"):
     return _keyword.search(question), "keywords"
 
 
-def rewrite_question(question, history, model=llm.DEFAULT_MODEL):
+def rewrite_question(question, history, provider):
     turns = "\n".join(f"{'לקוח' if h['role'] == 'user' else 'בוט'}: {h['text'][:400]}"
                       for h in history[-HISTORY_TURNS:])
-    data = llm.generate_json(REWRITE_SYSTEM, f"השיחה:\n{turns}\n\nהשאלה החדשה: {question}", model=model)
+    data, _ = provider.generate(REWRITE_SYSTEM, f"השיחה:\n{turns}\n\nהשאלה החדשה: {question}")
     rewritten = str(data.get("question", "")).strip()
     return rewritten or question
 
@@ -98,16 +106,17 @@ def _result(status, text, sources=(), **extra):
     return dict(status=status, answer=text, sources=list(sources), **extra)
 
 
-def answer(question, history=None, model=llm.DEFAULT_MODEL, retrieval="vectors"):
+def answer(question, history=None, provider=None, retrieval="vectors"):
     """מחזיר dict: status, answer, sources [{title,url}], ועוד פרטים לבדיקה (search_query, retrieval, passages)."""
     history = history or []
+    provider = provider or _get_provider()
     contact = [{"title": CONTACT_TITLE, "url": CONTACT_URL}]
-    info = {"question": question, "search_query": question, "model": model}
+    info = {"question": question, "search_query": question, "model": None}
 
     if history:
         try:
-            info["search_query"] = rewrite_question(question, history, model=model)
-        except llm.Unavailable:
+            info["search_query"] = rewrite_question(question, history, provider)
+        except Unavailable:
             pass  # בלי ניסוח מחדש: מחפשים את השאלה כמו שהיא
 
     t0 = time.time()
@@ -122,9 +131,9 @@ def answer(question, history=None, model=llm.DEFAULT_MODEL, retrieval="vectors")
 
     t0 = time.time()
     try:
-        data = llm.generate_json(ANSWER_SYSTEM, _passages_text(info["search_query"], hits), model=model)
+        data, info["model"] = provider.generate(ANSWER_SYSTEM, _passages_text(info["search_query"], hits))
         info["t_llm"] = round(time.time() - t0, 1)
-    except llm.Unavailable as e:
+    except Unavailable as e:
         return _result("unavailable", UNAVAILABLE_TEXT, contact, reason=str(e), **info)
 
     status = data.get("status")

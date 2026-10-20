@@ -15,3 +15,5 @@ __pycache__/
 *.pyc
 # מטמון הטמעות (נבנה מחדש מ-Gemini)
 data/emb_cache/
+# האינדקס הבנוי (נבנה מחדש ב-python ingest/index.py; איך מגיע לשרת - יוחלט בשלב האירוח)
+data/index/

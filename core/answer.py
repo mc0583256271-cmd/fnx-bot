@@ -29,7 +29,9 @@ from core.retriever import Retriever
 
 CONTACT_URL = "https://www.fnx.co.il/customer-service/contact-us/"
 CONTACT_TITLE = "כל הדרכים ליצור איתנו קשר"
-NOT_FOUND_TEXT = "לא מצאתי את המידע הזה באתר הפניקס. לבירור אפשר לפנות לשירות הלקוחות."
+NOT_FOUND_TEXT = ("לא מצאתי את המידע הזה באתר הפניקס. אפשר לשאול אותי למשל על ביטוח דירה, רכב, נסיעות לחו\"ל, "
+                  "בריאות, חיות מחמד, פנסיה וחיסכון - ולבירורים אחרים לפנות לשירות הלקוחות.")
+CHAT_MAX_CHARS = 200      # תגובת "שיחה" מהמודל: קצרה ובלי מספרים, אחרת "לא מצאתי"
 UNAVAILABLE_TEXT = "השירות לא זמין כרגע. אפשר לנסות שוב בעוד כמה דקות, או לפנות לשירות הלקוחות."
 MIN_SCORE = 0.60          # מתחת לזה - לא שולחים למודל בכלל
 HISTORY_TURNS = 6         # כמה הודעות אחרונות משמשות לניסוח שאלת המשך
@@ -47,13 +49,15 @@ ANSWER_SYSTEM = """אתה נציג שירות דיגיטלי של חברת הב�
 5. מידע אישי וייעוץ: אין לך גישה לפוליסה, לתביעה או לחשבון של הלקוח, ואתה לא נותן המלצה אישית. לעולם אל תשאל שאלת הבהרה על הפוליסה האישית.
    - שאלה על הפוליסה של הלקוח ("האם הפוליסה שלי מכסה...") - הסבר מה הכיסוי כולל לפי הקטעים, וסיים במשפט שאת הפוליסה האישית בודקים בשירות הלקוחות.
    - שאלה על פרט אישי (מספר הפוליסה, מצב התביעה, החשבון) - STATUS: not_found.
-   - בקשה להמלצה ("מה הכי כדאי לי", "באיזה בנק/מסלול לבחור") - STATUS: not_found, אלא אם הקטעים עונים עליה במפורש.
+   - בקשה להמלצה אישית או להשוואה לחברות אחרות ("מה הכי מתאים לי", "באיזה בנק לבחור", "מי זול יותר") - STATUS: not_found.
+   - שאלה על היתרונות של הפניקס או של מוצר שלה ("למה לבחור בפניקס", "מה היתרונות של...") - ענה רק לפי מה שכתוב בקטעים.
 6. סגנון: עברית ברורה ופשוטה. עד 3 משפטים קצרים, או עד 5 שלבים קצרים כשמדובר בתהליך. בלי פתיח ובלי ברכות.
 7. אל תכתוב כתובות אתר בתוך התשובה.
 8. הלקוח לא רואה את הקטעים: אל תכתוב "הקטעים", "לפי הקטעים" או "קטע מספר". כשמשהו לא מופיע - כתוב "באתר לא מופיע..." או "לפי המידע באתר...".
+9. הודעה שאינה שאלה על מידע (תגובה רגשית או הערה, למשל "אוי, מה נעשה איתך") - STATUS: chat: משפט אחד קצר ומנומס שמזמין לשאול שאלה, בלי שום מידע עובדתי (בלי מספרים, מוצרים או תנאים).
 
 פורמט התשובה - בדיוק כך, שלושה חלקים:
-STATUS: answer או not_found או clarify
+STATUS: answer או not_found או clarify או chat
 הטקסט ללקוח (בשורה חדשה; ב-not_found אפשר להשאיר ריק)
 SOURCES: מספרי הקטעים שהתשובה מבוססת עליהם, מופרדים בפסיק (למשל: SOURCES: 1, 3)"""
 
@@ -117,7 +121,7 @@ def _result(status, text, sources=(), **extra):
     return dict(status=status, answer=text, sources=list(sources), **extra)
 
 
-STATUS_LINE = re.compile(r"^\s*\**\s*STATUS\s*:\s*\**\s*(answer|not_found|clarify)", re.IGNORECASE)
+STATUS_LINE = re.compile(r"^\s*\**\s*STATUS\s*:\s*\**\s*(answer|not_found|clarify|chat)", re.IGNORECASE)
 SOURCES_LINE = re.compile(r"^\s*\**\s*SOURCES\s*:(.*)$", re.IGNORECASE | re.MULTILINE)
 
 
@@ -216,6 +220,9 @@ def answer_stream(question, history=None, provider=None, retrieval="vectors"):
     numbers = [n for i, n in enumerate(numbers) if 1 <= n <= len(hits) and n not in numbers[:i]]
     if status == "clarify" and text:
         yield "final", _result("clarify", text, **info)
+        return
+    if status == "chat" and text and len(text) <= CHAT_MAX_CHARS and not re.search(r"\d", text):
+        yield "final", _result("chat", text, **info)  # תגובה מנומסת בלי מידע עובדתי - לא צריך מקור
         return
     if status in ("answer", None) and text and numbers:
         sources, seen = [], set()

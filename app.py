@@ -76,6 +76,17 @@ def show(msg):
         st.markdown(sources_html(msg["sources"]), unsafe_allow_html=True)
 
 
+def transcript(messages):
+    """השיחה כטקסט להורדה: שאלות, תשובות ומקורות."""
+    lines = [f"שיחה עם הבוט של אתר הפניקס - {datetime.now():%d/%m/%Y %H:%M}", ""]
+    for m in messages:
+        lines.append(("לקוח: " if m["role"] == "user" else "בוט: ") + m["text"])
+        for src in m.get("sources") or []:
+            lines.append(f"   מקור: {src['title']} - {src['url']}")
+        lines.append("")
+    return "\n".join(lines)
+
+
 def respond(question, history, manifest, cache):
     """מציג את התשובה תוך כדי כתיבה, ומחזיר את ההודעה הסופית לשמירה בהיסטוריה."""
     key = (manifest["built_at"], normalize(question))
@@ -124,6 +135,9 @@ with st.sidebar:
     if st.button("שיחה חדשה", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
+    if st.session_state.get("messages"):
+        st.download_button("הורדת השיחה", transcript(st.session_state.messages).encode("utf-8"),
+                           file_name="fnx-bot-conversation.txt", mime="text/plain", use_container_width=True)
     st.divider()
     st.caption("הבוט מסביר מה כתוב באתר. הוא לא נותן ייעוץ אישי ואין לו גישה לפוליסה שלך - "
                "את אלה בודקים בשירות הלקוחות.")
@@ -153,3 +167,4 @@ if question:
         st.markdown(question)
     with st.chat_message("assistant", avatar=AVATARS["assistant"]):
         st.session_state.messages.append(respond(question, history, manifest, cache))
+    st.rerun()  # מצייר מחדש מההיסטוריה, כדי שגם כפתור ההורדה יכלול את התשובה האחרונה

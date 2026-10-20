@@ -123,7 +123,8 @@ def main():
     print(f"=== שיחות ({len(D)} תורות) ===")
     for r in D:
         mark = "✅" if (r["expect"] == r["status"] or (r["expect"] == "answer_or_not_found" and r["status"] in ("answer", "not_found"))
-                       or (r["expect"] == "personal" and r["status"] == "answer")) else "❓"
+                       or (r["expect"] == "personal" and r["status"] == "answer")
+                       or (r["expect"] == "chat" and r["status"] in ("chat", "not_found"))) else "❓"
         src = ", ".join(s["url"].split(".co.il")[1][:45] for s in r["sources"])
         print(f"   {mark} {r['dialogue']} | תור {r['turn'] + 1}: {r['status']} (צפוי {r['expect']})")
         print(f"      חיפשנו: {r['search_query']}\n      ענה: {r['answer'][:180]}\n      מקורות: {src}")

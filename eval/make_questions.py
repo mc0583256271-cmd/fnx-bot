@@ -103,10 +103,11 @@ def generate(session, key, page, extra=""):
             "generationConfig": {"responseMimeType": "application/json", "temperature": 0.7}}
     for attempt in range(6):
         try:
-            r = session.post(GEN_URL, json=body, headers={"x-goog-api-key": key}, timeout=120)
+            r = session.post(GEN_URL, json=body, headers={"x-goog-api-key": key}, timeout=60)
         except requests.RequestException as e:
             if attempt == 5:
                 raise cs.Stop(f"בעיית רשת: {type(e).__name__}")
+            print(f"      {type(e).__name__}, מנסים שוב")
             time.sleep(5 * (attempt + 1))
             continue
         if r.status_code == 200:
@@ -124,6 +125,7 @@ def generate(session, key, page, extra=""):
             time.sleep(delay + 1)
             continue
         if r.status_code >= 500:
+            print(f"      השרת החזיר {r.status_code}, מנסים שוב")
             time.sleep(10 * (attempt + 1))
             continue
         raise cs.Stop(f"{GEN_MODEL} החזיר {r.status_code}: " + r.text[:200].replace("\n", " "))

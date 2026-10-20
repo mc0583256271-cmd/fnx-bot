@@ -17,6 +17,7 @@
 
 הרצה:  python eval/make_questions.py
 אפשר לעצור ולהריץ שוב: שאלות שכבר נוצרו נשמרות ב-eval/questions_auto.jsonl.
+  python eval/make_questions.py --finish   # בונים את הסט ממה שכבר נוצר (אם המודלים עמוסים)
 """
 import json
 import random
@@ -142,6 +143,7 @@ def generate(session, key, page, extra=""):
 
 
 def main():
+    finish_now = "--finish" in sys.argv  # בונים את הסט ממה שכבר נוצר, בלי לבקש שאלות חדשות
     pages = [json.loads(line) for line in PAGES_FILE.open(encoding="utf-8")]
     chunk_urls = {json.loads(line)["url"] for line in cs.CHUNKS_FILE.open(encoding="utf-8")}
     pages = sorted((p for p in pages if p["url"] in chunk_urls), key=lambda p: p["url"])
@@ -162,6 +164,8 @@ def main():
 
     key, session = cs.load_key(), requests.Session()
     print(f"📝 {len(plan)} עמודים לשאלות ({len(done)} כבר מוכנים)")
+    if finish_now:
+        plan = []
     try:
         with AUTO_FILE.open("a", encoding="utf-8") as out:
             for group, page in plan:

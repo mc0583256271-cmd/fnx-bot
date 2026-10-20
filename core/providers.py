@@ -83,10 +83,11 @@ class FallbackProvider(LLMProvider):
             for p in self.providers:
                 if time.time() - start > self.budget:
                     raise Unavailable("נגמר הזמן: " + " | ".join(self.last_errors[-3:]))
+                t0 = time.time()
                 try:
                     return p.generate(system, user)
                 except Unavailable as e:
-                    self.last_errors.append(str(e))
+                    self.last_errors.append(f"{e} [{time.time() - t0:.1f}s]")
             if round_no + 1 < self.rounds:
                 time.sleep(self.pause)
         raise Unavailable(" | ".join(self.last_errors[-3:]))

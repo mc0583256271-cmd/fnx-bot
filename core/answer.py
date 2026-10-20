@@ -136,6 +136,7 @@ def answer(question, history=None, provider=None, retrieval="vectors"):
     try:
         data, info["model"] = provider.generate(ANSWER_SYSTEM, _passages_text(info["search_query"], hits))
         info["t_llm"] = round(time.time() - t0, 1)
+        info["llm_errors"] = list(getattr(provider, "last_errors", []))  # מודלים שנכשלו לפני שאחד ענה
     except Unavailable as e:
         return _result("unavailable", UNAVAILABLE_TEXT, contact, reason=str(e), **info)
 

@@ -1,0 +1,812 @@
+{
+ "_הסבר": "בניית סט שאלות בדיקה גדול ובלתי תלוי (eval/questions_full.json).",
+ "answerable": [
+  {
+   "q": "היי, רציתי לבדוק עד איזה גיל נהג נחשב נהג צעיר לפי החוק?",
+   "url": "/car-insurance/car_information/mark-young/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "היי, רציתי לדעת מה אחוז התשואה שהמדינה מבטיחה לי בתוך קרן הפנסיה?",
+   "url": "/gemel/gemel-information/gemel-vs-pension/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "היי, אם נסדק לי השיש במטבח או נשברה אסלה, יש כיסוי לזה בביטוח מבנה למשכנתא?",
+   "url": "/mortgage-insurance/mortgage-insurance-mivne/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מתי התחילו להפעיל את מסלול הפנסיה הזה שעוקב אחרי מדדים?",
+   "url": "/pension-savings/fnx-all-embracing-pension/tzmekifa/14286/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "למה אסור לי לקחת אדוויל או נורופן אם אני חושד שנדבקתי בדנגי בתאילנד?",
+   "url": "/travel-insurance/travel_information/dengue-fever/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "כמה בערך יעלה לי להתקין עמדת טעינה ביתית לרכב החשמלי שלי?",
+   "url": "/car-insurance/car_information/electric-car-expenses/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "סבא שלי בן 70 וצריך להגיש תביעת אחריות מקצועית, הוא חייב למלא את כל הטפסים בכתב?",
+   "url": "/claims-customer-service/claims-liability-insurance/professional-liability/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "הכלב שלי אכל בטעות כמה ענבים, זה מסוכן לו או שאני סתם דואג?",
+   "url": "/pets-insurance/pets-information/toxic-foods-for-dogs/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "איך אני מקבל את הפיצוי על עיכוב במזוודה בזמן שאני בחו\"ל?",
+   "url": "/travel-insurance/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מי מנהל את ההשקעות בקופה המרכזית לקצבה של חברת החשמל?",
+   "url": "/pension-savings/iec-pension/iec-officers/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "כמה פעולות יומיומיות אני צריך לא להצליח לבצע כדי להיות מוגדר כסיעודי?",
+   "url": "/health-insurance/health_information/setting-long-term-care-situation/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מתי הפניקס התחילו לנהל את הקרן של עורכי הדין במקום הלמן אלדובי?",
+   "url": "/pension-savings/fnx-pension-ltd/pension-vatikot/keren-lawyers/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "האם אני יכול לשנות את המוטבים בביטוח חיים למשכנתא כמו בביטוח חיים רגיל?",
+   "url": "/mortgage-insurance/mortgage-insurance-info/life-vs-mortgage-insurance/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "החתול שלי לא מפסיק לשתות ולהשתין וגם ירד במשקל, מה זה יכול להיות?",
+   "url": "/pets-insurance/pets-information/cats-diseases/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "יש לי כבר קרן השתלמות בחברה אחרת, אני יכול להעביר אותה אליכם?",
+   "url": "/ishtalmutfund/ishtalmutfund-information/choose-a-training-fund/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "הגעתי לגיל פרישה, אילו מסמכים אני צריך לשלוח אליכם כדי להתחיל לקבל את הקצבה?",
+   "url": "/claims-customer-service/pension-benefits/magen-lawyers-pension-vatika/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "האם ביטוח כל הסיכונים מכסה גם את התכשיטים היקרים שלי כשאני לוקח אותם איתי לטיול בחוץ לארץ?",
+   "url": "/apartment-insurance/apartment-information/all-risks-insurance/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "איך הגיל שלי משפיע על הבחירה במסלול השקעה בקרן הפנסיה?",
+   "url": "/savings/savings-information/invest-during-uncertainty/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "איזה נזק אחוז נחשב לטוטאל לוס בפוליסת הפניקס זהיר?",
+   "url": "/car-insurance/car_information/car-insurance-comparison/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "האם הרפורמה בביטוח חובה לאופנועים השפיעה על המחיר שמשלמים נהגים ותיקים?",
+   "url": "/car-insurance/car_information/insurance-reform-two-wheeled-vehicle/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "אני רוצה לבטל את הביטוח שעשיתי לנסיעה, האם אפשר לבטל רק חלק מהנוסעים בפוליסה?",
+   "url": "/customer-service/travel-insurance/travel_cancel_policy/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "אני רוצה להוסיף את הבן שלי לנהיגה ברכב לכמה ימים, יש הגבלה על כמות הימים?",
+   "url": "/car-insurance/car_information/daily-temporary-insurance/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מתי בעצם התחלתם להפעיל את מסלול ההשתלמות המשולב הסחיר שלכם?",
+   "url": "/ishtalmutfund/tzishtalmut/15211/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מה קורה אם עשיתי ביטוח למבנה הדירה בלבד, האם אני מכוסה גם עבור צד ג'?",
+   "url": "/apartment-insurance/apartment-information/apartment-third-party-guide/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "האם אני צריך לשלם תוספת כדי לבטח את הנוסעים איתי ברכב בביטוח נסיעות שלכם?",
+   "url": "/travel-insurance/travel_information/travel-rent-abroad/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "איך הכי כדאי לי לעקוב אחרי כל ההוצאות וההכנסות של המשפחה שלי?",
+   "url": "/gemel/gemel-information/4-tips/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "הגשתי תביעה על מחלה קשה, תוך כמה זמן אני אמור לקבל מכם תשובה סופית?",
+   "url": "/claims-customer-service/claims-health-insurance/claims-serious-illness/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "עד איזה גיל הילד שלי יכול להיות מבוטח בתוכנית הזאת של התפתחות הילד?",
+   "url": "/health-insurance/extra-covers/child-development/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "אם יש הבדל במידע שמופיע באפליקציה לבין מה שכתוב אצלכם במערכת, למה אני צריך להאמין?",
+   "url": "/customer-service/app/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "כמה זמן לוקח לכם לטפל בבקשה למשיכת כספים של נפטר אחרי שהגשתי את כל המסמכים?",
+   "url": "/gemel/money-withrawl/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "כמה דמי ניהול גובים ממני בממוצע על הקופה המרכזית לפיצויים לשנת 2025?",
+   "url": "/gemel/tzmerkaziot/242/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מתי בעצם התחילו לפעול במסלול הפנסיה של אג\"ח סחיר?",
+   "url": "/pension-savings/fnx-all-embracing-pension/tzmekifa/15217/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "האם מותר להביא סיגריה אלקטרונית לטיול בתאילנד או שזה יכול לסבך אותי?",
+   "url": "/travel-insurance/plan-your-trip/thailand-watch-vacation/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מתי התחילו לעבוד עם מסלול הגמל להשקעה שעוקב אחרי מדדי מניות?",
+   "url": "/gemel/gemelhashkaa/tzgemelhashkaa/7907/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "חוץ ממחיר זול יותר, איזה הטבות אני מקבל אם אני מצטרף לביטוח הפניקס זהיר?",
+   "url": "/car-insurance/car_information/caution-is-money-insurance-careful-drivers/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "לא מרוצה מהשירות שקיבלתי לגבי הפנסיה שלי בחברת החשמל, למי אני יכול לשלוח תלונה רשמית?",
+   "url": "/pension-savings/iec-pension/iec-pension-pniot/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "כמה דמי ניהול ממוצעים גובים ממני על הצבירה במסלול הפנסיה הזה לשנת 2025?",
+   "url": "/pension-savings/fnx-mashlima-pension/tzmashlima/7235/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "אני בן 70 ונמצא בחו\"ל, לכמה ימים מקסימום אני יכול להאריך את הביטוח שלי?",
+   "url": "/customer-service/travel-insurance/travel_policy_extension/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מי מחליט אם לשלוח צוות חילוץ למטייל בחו\"ל אם אי אפשר ליצור איתו קשר?",
+   "url": "/travel-insurance/travel_information/rescue/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מאיזו שנה קרן ההשתלמות במסלול הלכה של הפניקס התחילה לפעול?",
+   "url": "/ishtalmutfund/tzishtalmut/9528/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "האם המחיר של ביטוח חובה הוא אחיד בכל החברות או שאני יכול למצוא מחיר יותר זול?",
+   "url": "/car-insurance/car_information/simple-math/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מה יקרה אם אני עצמאי ולא אפקיד כסף לקרן פנסיה לפי החוק?",
+   "url": "/pension-savings/pensya-self-employee/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "כמה דמי ניהול אני משלם על החיסכון לילד במסלול שריעה?",
+   "url": "/gemel/child_investment/tzchildinvestment/11352/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "האם אני מקבל החזר כספי אם הדירה לא ראויה למגורים בגלל פיצוץ בצינור?",
+   "url": "/apartment-insurance/apartment-information/guide-covers-and-extensions/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "כמה דמי ניהול ממוצעים לוקחים לי מהצבירה בקופת גמל שקלית של הפניקס בשנת 2025?",
+   "url": "/gemel/tzgemel/9906/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "כמה דמי ניהול בממוצע גובים ממני בקופת הגמל הזו בשנת 2025?",
+   "url": "/gemel/tzgemel/528/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "אני בן 68, אני עדיין יכול להצטרף לביטוח הכנסה למשפחה שלכם?",
+   "url": "/life-insurance/family-income/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "למה כדאי לי לעשות ביטוח בריאות פרטי אם יש לי כבר ביטוח דרך קופת החולים?",
+   "url": "/health-insurance/health_information/the-importance-of-private-health-insurance/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "היי, הייתי מעורב בתאונת שרשרת עם עוד רכבים, מי מאיתנו נחשב לאשם במצב כזה?",
+   "url": "/car-insurance/car_information/chain-accident/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "כמה אצטרך לשלם אם אני רוצה להתייעץ עם רופא מומחה בשיחת וידאו?",
+   "url": "/health-insurance/extra-covers/online-consult/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "אני חייב ללכת לוטרינר ספציפי שאתם עובדים איתו או שאני יכול לבחור מי שבא לי?",
+   "url": "/pets-insurance/pets-cover/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "איך אני יכול ליצור קשר עם הפניקס חח\"י כדי לברר משהו על הקופה?",
+   "url": "/pension-savings/iec-pension/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מה זה בכלל אומר למחזר משכנתא ואיך זה עובד?",
+   "url": "/mortgage-insurance/mortgage-insurance-info/mortgage/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "איך אני יכול לדעת מה לחץ האוויר הנכון לצמיגים ברכב שלי?",
+   "url": "/car-insurance/car_information/little-tests-you-should-do-before-driving/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "עד איזה סכום הפניקס תכסה השתלת איברים אם אני עושה את זה אצל רופא שלא בהסכם?",
+   "url": "/health-insurance/implants-and-special-treatments-abroad/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מה היה אחוז דמי הניהול המקסימלי שהקרן רשאית לגבות מהפקדות החיסכון שלי?",
+   "url": "/pension-savings/fnx-all-embracing-pension/management-fee-commission-mekifa/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "הכלב שלי הוכש על ידי נחש, מותר לי לנסות למצוץ את הארס מהפצע?",
+   "url": "/pets-insurance/pets-information/snake-bite-cats-dogs/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "יש לי קיבה רגישה בטיול, מה כדאי לי לעשות כדי לא לסבול מהאוכל שם?",
+   "url": "/travel-insurance/travel_information/metayel/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "כמה טיפולים של רפואה משלימה מותר לי לקבל בשנה דרך הביטוח?",
+   "url": "/health-insurance/extra-covers/complete/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מה היו דמי הניהול הממוצעים שנגבו בפועל מהצבירה בקרן הפנסיה בשנת 2023?",
+   "url": "/pension-savings/fnx-mashlima-pension/mashlima-management-fee-commission/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "איך אני יכול להוציא עכשיו העתק של הפוליסה שלי כדי לראות את כל פרטי הביטוח?",
+   "url": "/customer-service/car-insurance/car_policy_copy_and_conditions/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "האם ביטוח נסיעות רגיל לחו\"ל מכסה גם פציעות שקורות לי במהלך גלישת סקי?",
+   "url": "/travel-insurance/travel_information/travel_best_ski_trip/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "תוך כמה זמן מהרגע שהעוזרת התחילה לעבוד אצלי אני חייב להתחיל להפריש לה פנסיה?",
+   "url": "/pension-savings/pension-savings-information/housekeeper-pension/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "האם אני יכולה לפרוע את ההלוואה שלקחתי לחופשה לפני הזמן בלי לשלם קנסות?",
+   "url": "/loans/loans-information/loan-vacation/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מה אני עושה אם המזוודה שלי לא הגיעה ליעד כשאני בחו\"ל עם ביטוח שלכם?",
+   "url": "/travel-insurance/travel_information/insurance-to-cyprus/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מה אחוז דמי הניהול שאני משלם מהצבירה שלי במסלול הפנסיה הזה?",
+   "url": "/pension-savings/fnx-all-embracing-pension/tzmekifa/2189/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מה אני צריך לעשות אם גנבו לי את התיק בזמן שאני מטייל בחוץ לארץ?",
+   "url": "/travel-insurance/travel_information/activate-travel-insurance/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מה קורה לביטוח שעשיתי דרך העבודה אם אני עוזב את החברה ומפסיק לעבוד שם?",
+   "url": "/pension-savings/pension-savings-information/sure-to-be-an-employee/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "אני נוהג עד היום על הרכב של ההורים, האם אני יכול להשתמש בעבר הביטוחי שלהם?",
+   "url": "/car-insurance/car_information/no-background/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "האם ביטוח התכולה שלי מכסה גם מזומן ששמרתי בבית במקרה של פריצה?",
+   "url": "/apartment-insurance/apartment-information/what-is-and-is-not-included-in-the-flat-contents-insurance/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "כמה דמי ניהול ממוצעים יגבו ממני השנה על הפנסיה במסלול הלכה?",
+   "url": "/pension-savings/fnx-all-embracing-pension/tzmekifa/9984/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "עד איזה שבוע של ההיריון אפשר בדרך כלל לרכוש הרחבה לביטוח נסיעות לחו\"ל?",
+   "url": "/travel-insurance/travel_information/travel_pregnancy_vac/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "עד איזה גיל אפשר להצטרף לביטוח התרופות שלכם?",
+   "url": "/health-insurance/sal-a-zahav/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "תוך כמה זמן אקבל את הכסף מהביטוח אם הרכב שלי נגנב ולא נמצא?",
+   "url": "/car-insurance/car_information/stolen-car/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "אבא שלי נפטר לפני כמה שנים ויש לו פוליסה קטנה, אני חייב להוציא צו ירושה כדי לקבל את הכסף?",
+   "url": "/claims-customer-service/claims-life-insurance/claims-pullmoney/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "האם כדאי להשאיר את החלונות קצת פתוחים כשהרכב חונה בשמש כדי שלא יהיה רותח בפנים?",
+   "url": "/car-insurance/car_information/moving-into-summer-driving/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מתי מסלול קרן ההשתלמות הזה התחיל לעבוד?",
+   "url": "/ishtalmutfund/tzishtalmut/8629/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "אם אני רוצה לקבל את הכסף מהביטוח בתשלומים חודשיים במקום בבת אחת, מה המינימום שאפשר לקבל?",
+   "url": "/life-insurance/risk_gamish/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "כל כמה זמן חברי הדירקטוריון של הפניקס פנסיה נפגשים לישיבות שלהם?",
+   "url": "/pension-savings/fnx-pension-ltd/pension-members-of-the-board-commities/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מה קורה אם אני צריך רופא בארה\"ב, האם אני צריך לשלם מהכיס ולבקש החזר?",
+   "url": "/travel-insurance/travel_information/insurance-to-the-states/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מהו סכום הפיצוי המקסימלי שאוכל לקבל במקרה של אובדן כושר עבודה בביטוח הזה?",
+   "url": "/pension-savings/managers-insurance/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "למה גם אני וגם אשתי קיבלנו דיווח נפרד מביטוח הבריאות שלכם?",
+   "url": "/health-insurance/health_information/annual_mail_health/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "איך אתם מוודאים שהכסף בחיסכון לילד מושקע בהתאם לכללים של ההלכה היהודית?",
+   "url": "/gemel/child_investment/tzchildinvestment/11335/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "עד איזה גיל אפשר להצטרף לביטוח חיים למשכנתא ועד מתי הוא תקף?",
+   "url": "/mortgage-insurance/mortgage-insurance-life/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "אני עובד בזק, האם הביטוח שלי כולל הגבלה על סכום ההוצאות הרפואיות בחו\"ל?",
+   "url": "/travel-insurance/bezeq/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "אם אני רוצה לשנות את מסלול ההשקעה שלי, האם אצטרך לשלם מס על הרווחים?",
+   "url": "/savings/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מה זה בעצם הפוליסה האחידה לניתוחים שכולם מדברים עליה?",
+   "url": "/health-insurance/surgeries/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "מה אני צריך לשלוח לכם אם כבר תיקנתי את הרכב ואני רוצה לקבל החזר כספי?",
+   "url": "/claims-customer-service/claims-car-insurance-third-party/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "איך אני יכול להוציא העתק של הפוליסה לכלב שלי כדי לראות מה בדיוק כולל הכיסוי?",
+   "url": "/customer-service/pets-services/pets_policy_copy_and_conditions/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "המזגן שלי בבית לא מקרר כמו שצריך, האם אני חייב להזמין טכנאי או שיש משהו לעשות לבד?",
+   "url": "/apartment-insurance/apartment-information/apartment-manual-for-house-maintenance/",
+   "group": "אקראי",
+   "exact": true
+  },
+  {
+   "q": "כמה הרוויח הפניקס השתלמות אג\"ח סחיר מתחילת השנה?",
+   "url": "/ishtalmutfund/tzishtalmut/15212/",
+   "group": "מסלולים",
+   "exact": true
+  },
+  {
+   "q": "מה דמי הניהול בהפניקס גמל עוקב מדדי מניות?",
+   "url": "/gemel/tzgemel/15210/",
+   "group": "מסלולים",
+   "exact": true
+  },
+  {
+   "q": "מה התשואה של הפניקס השתלמות עוקב מדד S&P 500 ב-12 החודשים האחרונים?",
+   "url": "/ishtalmutfund/tzishtalmut/13264/",
+   "group": "מסלולים",
+   "exact": true
+  },
+  {
+   "q": "כמה הרוויח הפניקס פנסיה משלימה - מניות מתחילת השנה?",
+   "url": "/pension-savings/fnx-mashlima-pension/tzmashlima/8318/",
+   "group": "מסלולים",
+   "exact": true
+  },
+  {
+   "q": "מה דמי הניהול בהפניקס השתלמות כספי (שקלי)?",
+   "url": "/ishtalmutfund/tzishtalmut/715/",
+   "group": "מסלולים",
+   "exact": true
+  },
+  {
+   "q": "מה התשואה של הפניקס גמל להשקעה אג\"ח סחיר ב-12 החודשים האחרונים?",
+   "url": "/gemel/gemelhashkaa/tzgemelhashkaa/15215/",
+   "group": "מסלולים",
+   "exact": true
+  },
+  {
+   "q": "כמה הרוויח משלימה מסלול עוקב מדדים גמיש מתחילת השנה?",
+   "url": "/pension-savings/fnx-mashlima-pension/tzmashlima/14287/",
+   "group": "מסלולים",
+   "exact": true
+  },
+  {
+   "q": "מה דמי הניהול בהפניקס גמל כספי (שקלי)?",
+   "url": "/gemel/tzgemel/9906/",
+   "group": "מסלולים",
+   "exact": true
+  },
+  {
+   "q": "מה התשואה של הפניקס השתלמות עוקב מדדים גמיש ב-12 החודשים האחרונים?",
+   "url": "/ishtalmutfund/tzishtalmut/8629/",
+   "group": "מסלולים",
+   "exact": true
+  },
+  {
+   "q": "כמה הרוויח הפניקס מרכזית לפיצויים מחקה מדדים מתחילת השנה?",
+   "url": "/gemel/tzmerkaziot/8765/",
+   "group": "מסלולים",
+   "exact": true
+  },
+  {
+   "q": "מה דמי הניהול בהפניקס גמל להשקעה עוקב מדדי מניות?",
+   "url": "/gemel/gemelhashkaa/tzgemelhashkaa/7907/",
+   "group": "מסלולים",
+   "exact": true
+  },
+  {
+   "q": "מה התשואה של הפניקס גמל עוקב מדדים גמיש ב-12 החודשים האחרונים?",
+   "url": "/gemel/tzgemel/15234/",
+   "group": "מסלולים",
+   "exact": true
+  },
+  {
+   "q": "כמה הרוויח הפניקס פנסיה משלימה מסלול כספי (שקלי) מתחילת השנה?",
+   "url": "/pension-savings/fnx-mashlima-pension/tzmashlima/8320/",
+   "group": "מסלולים",
+   "exact": true
+  },
+  {
+   "q": "מה דמי הניהול בהפניקס השתלמות אשראי ואג\"ח עם מניות (עד 25% מניות)?",
+   "url": "/ishtalmutfund/tzishtalmut/1100/",
+   "group": "מסלולים",
+   "exact": true
+  },
+  {
+   "q": "מה התשואה של הפניקס גמל עוקב מדד S&P 500 ב-12 החודשים האחרונים?",
+   "url": "/gemel/tzgemel/13263/",
+   "group": "מסלולים",
+   "exact": true
+  },
+  {
+   "q": "עד מתי אפשר להגיש תביעה על נזק בדירה?",
+   "url": "when-apartment-insurance-claim",
+   "group": "ידני"
+  },
+  {
+   "q": "קיבלתי מכתב תביעה מבית משפט, מה עושים?",
+   "url": "legal-claim",
+   "group": "ידני"
+  },
+  {
+   "q": "נזילה מהשכן למעלה הרסה לי את התקרה, הביטוח מכסה?",
+   "url": "water-plumbing-damages|pipeline-damage",
+   "group": "ידני"
+  },
+  {
+   "q": "המזוודה שלי לא הגיעה בטיסה, איך מקבלים פיצוי?",
+   "url": "claims-travel-abroad/|travel_the_suitcase_did_not_arrive",
+   "group": "ידני"
+  },
+  {
+   "q": "מי זה השמאי שמגיע אחרי תאונה?",
+   "url": "car_information/appraiser",
+   "group": "ידני"
+  },
+  {
+   "q": "אני חולה סוכרת ונוסע לחול, אפשר לקנות ביטוח נסיעות?",
+   "url": "chronicdiseases",
+   "group": "ידני"
+  },
+  {
+   "q": "איך מפסיקים את ביטוח הרכב שלי?",
+   "url": "car_cancel_policy",
+   "group": "ידני"
+  },
+  {
+   "q": "יש לכם ביטוח לבית הכנסת שלנו?",
+   "url": "extra-synagogues",
+   "group": "ידני"
+  },
+  {
+   "q": "הרכב עומד במוסך חודשיים, אפשר להשהות את הביטוח?",
+   "url": "car_disable_policy",
+   "group": "ידני"
+  },
+  {
+   "q": "כמה הרוויח מסלול גיל 50 ומטה בקרן הפנסיה המקיפה?",
+   "url": "tzmekifa/9974",
+   "group": "ידני"
+  },
+  {
+   "q": "אבא שלי נפטר והיה לו ביטוח חיים, מה צריך להגיש?",
+   "url": "claims-in-case-of-death",
+   "group": "ידני"
+  },
+  {
+   "q": "אני כבר בחול ורוצה להישאר עוד שבוע, אפשר להאריך?",
+   "url": "travel_policy_extension|how-to-extend-travel-insurance",
+   "group": "ידני"
+  },
+  {
+   "q": "עזבתי את העבודה, מה קורה עם הכסף בפנסיה?",
+   "url": "quit-workplace-money-withrawl",
+   "group": "ידני"
+  },
+  {
+   "q": "צריך כסף למימון חתונה",
+   "url": "wedding-loan",
+   "group": "ידני"
+  },
+  {
+   "q": "מה זה ריסק וול?",
+   "url": "risk_well",
+   "group": "ידני"
+  },
+  {
+   "q": "עשיתי תאונה עם הרכב, איך מגישים תביעה על הנזק לרכב?",
+   "url": "claims-property-car-insurance",
+   "group": "ידני"
+  },
+  {
+   "q": "נגנבו לי תכשיטים מהבית",
+   "url": "jewelry-insurance",
+   "group": "ידני"
+  },
+  {
+   "q": "הרכב נתקע בדרך, מי מגיע לגרור?",
+   "url": "car_towing_services",
+   "group": "ידני"
+  },
+  {
+   "q": "פרצו לי לדירה הלילה, מה אני צריך לעשות עכשיו?",
+   "url": "in-case-of-break-in",
+   "group": "ידני"
+  },
+  {
+   "q": "הוספתי לרכב חישוקים ומערכת שמע, צריך לעדכן את חברת הביטוח?",
+   "url": "not-built-for-changes",
+   "group": "ידני"
+  },
+  {
+   "q": "אף פעם לא היה לי ביטוח רכב, אפשר בכלל לקבל אצלכם?",
+   "url": "no-background",
+   "group": "ידני"
+  },
+  {
+   "q": "לקחו לי את הרישיון לחצי שנה, זה ייקר לי את הביטוח?",
+   "url": "suspended-license",
+   "group": "ידני"
+  },
+  {
+   "q": "יש מסלול בפנסיה שמתאים לשומרי תורה?",
+   "url": "tzmekifa/9984|tzmashlima/15224",
+   "group": "ידני"
+  },
+  {
+   "q": "שכרתי רכב באירופה ומישהו נכנס בי, את מי תובעים?",
+   "url": "renting-a-car-abroad",
+   "group": "ידני"
+  },
+  {
+   "q": "אני נוסע מעט מאוד, יש ביטוח שמשלמים לפי כמה שנוסעים?",
+   "url": "car-insurance-by-km",
+   "group": "ידני"
+  },
+  {
+   "q": "יש לי בקופת גמל סכום קטן, אפשר למשוך בלי לשלם מס?",
+   "url": "gemel-information/notax",
+   "group": "ידני"
+  },
+  {
+   "q": "פוטרתי אחרי 5 שנים, איך יודעים כמה פיצויים מגיעים לי?",
+   "url": "severance-pay",
+   "group": "ידני"
+  },
+  {
+   "q": "התקנתי עמדה להטענת הרכב החשמלי בחניה, אפשר לבטח אותה?",
+   "url": "charging-station-insurance",
+   "group": "ידני"
+  },
+  {
+   "q": "הכלב שלי מבוטח אצלכם ואני רוצה לבטל",
+   "url": "pets_cancel_policy",
+   "group": "ידני"
+  },
+  {
+   "q": "קיבלתי SMS חשוד בשם הפניקס עם קישור, מה לעשות?",
+   "url": "phishing",
+   "group": "ידני"
+  },
+  {
+   "q": "אשתי לא עובדת מחוץ לבית, אפשר לפתוח לה פנסיה?",
+   "url": "housewife-pension",
+   "group": "ידני"
+  }
+ ],
+ "unanswerable": [
+  "כמה עולה ביטוח רכב בחברת הראל?",
+  "אפשר לבטח אצלכם רחפן?",
+  "אפשר להשקיע דרככם בביטקוין?",
+  "מה שער הדולר היום?",
+  "מה ריבית הפריים היום?",
+  "איך מחדשים דרכון שפג תוקפו?",
+  "מה הטלפון של משטרת התנועה?",
+  "כמה ימי חופשה מגיעים לעובד במשרה מלאה?",
+  "איך מכינים עוגת שוקולד?",
+  "מתי יוצאת הרכבת הבאה לירושלים?",
+  "מה שעות הפתיחה של הסניף שלכם בבאר שבע?",
+  "מה מספר הפוליסה שלי?",
+  "האם התביעה ששלחתי בשבוע שעבר אושרה?",
+  "כמה עולה מניה של הפניקס היום?",
+  "באיזה בנק הכי כדאי לקחת משכנתא?",
+  "מה התחזית למזג האוויר בטיסה שלי ליוון?",
+  "איך מזמינים תור לטסט שנתי במכון רישוי?",
+  "מה שעות הפתיחה של מוסך מורשה בחולון?",
+  "כמה עולה כרטיס טיסה לאילת?",
+  "איך מגישים ערעור על דוח חניה?"
+ ]
+}

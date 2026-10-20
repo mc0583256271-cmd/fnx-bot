@@ -1,0 +1,1440 @@
+{
+ "results": [
+  {
+   "name": "מילים (טריגרמות)",
+   "hit1": 65,
+   "hit5": 101,
+   "mrr": 0.598,
+   "n": 136,
+   "groups": {
+    "אקראי": [
+     48,
+     67,
+     90
+    ],
+    "מסלולים": [
+     5,
+     15,
+     15
+    ],
+    "ידני": [
+     12,
+     19,
+     31
+    ]
+   },
+   "misses": [
+    {
+     "q": "יש לי כבר קרן השתלמות בחברה אחרת, אני יכול להעביר אותה אליכם?",
+     "expected": "/ishtalmutfund/ishtalmutfund-information/choose-a-training-fund/",
+     "group": "אקראי",
+     "got": [
+      "/ishtalmutfund/employee/",
+      "/ishtalmutfund/",
+      "/ishtalmutfund/faq/"
+     ]
+    },
+    {
+     "q": "הגעתי לגיל פרישה, אילו מסמכים אני צריך לשלוח אליכם כדי להתחיל לקבל את הקצבה?",
+     "expected": "/claims-customer-service/pension-benefits/magen-lawyers-pension-vatika/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/pension-savings-information/not-real-retirement/",
+      "/pension-savings/immediate-pension/",
+      "/claims-customer-service/pension-benefits/mekifa-mashlima-oldage-pension/"
+     ]
+    },
+    {
+     "q": "איך הגיל שלי משפיע על הבחירה במסלול השקעה בקרן הפנסיה?",
+     "expected": "/savings/savings-information/invest-during-uncertainty/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/fnx-all-embracing-pension/",
+      "/gemel/gemel-information/gemel-vs-pension/",
+      "/ishtalmutfund/ishtalmutfund-information/choose-a-training-fund/"
+     ]
+    },
+    {
+     "q": "אני רוצה לבטל את הביטוח שעשיתי לנסיעה, האם אפשר לבטל רק חלק מהנוסעים בפוליסה?",
+     "expected": "/customer-service/travel-insurance/travel_cancel_policy/",
+     "group": "אקראי",
+     "got": [
+      "/travel-insurance/travel_information/dont-wait-for-the-last-minute/",
+      "/car-insurance/car-insurance-for-young-drivers/",
+      "/travel-insurance/flight-cancellation-insurance/"
+     ]
+    },
+    {
+     "q": "אני רוצה להוסיף את הבן שלי לנהיגה ברכב לכמה ימים, יש הגבלה על כמות הימים?",
+     "expected": "/car-insurance/car_information/daily-temporary-insurance/",
+     "group": "אקראי",
+     "got": [
+      "/car-insurance/car_information/guide-tips-parents-for-young-drivers/",
+      "/car-insurance/",
+      "/car-insurance/car_information/best_car_insurance/"
+     ]
+    },
+    {
+     "q": "מה קורה אם עשיתי ביטוח למבנה הדירה בלבד, האם אני מכוסה גם עבור צד ג'?",
+     "expected": "/apartment-insurance/apartment-information/apartment-third-party-guide/",
+     "group": "אקראי",
+     "got": [
+      "/apartment-insurance/third-party/",
+      "/apartment-insurance/apartment-information/rental-home-insurance/",
+      "/apartment-insurance/structure/"
+     ]
+    },
+    {
+     "q": "אם יש הבדל במידע שמופיע באפליקציה לבין מה שכתוב אצלכם במערכת, למה אני צריך להאמין?",
+     "expected": "/customer-service/app/",
+     "group": "אקראי",
+     "got": [
+      "/customer-service/terms-of-use/car-app-terms/",
+      "/customer-service/terms-of-use/group-app-terms-of-use/",
+      "/customer-service/terms-of-use/group-app-terms-of-use/"
+     ]
+    },
+    {
+     "q": "כמה דמי ניהול גובים ממני בממוצע על הקופה המרכזית לפיצויים לשנת 2025?",
+     "expected": "/gemel/tzmerkaziot/242/",
+     "group": "אקראי",
+     "got": [
+      "/gemel/tzmerkaziot/9484/",
+      "/gemel/tzmerkaziot/682/",
+      "/gemel/tzmerkaziot/804/"
+     ]
+    },
+    {
+     "q": "חוץ ממחיר זול יותר, איזה הטבות אני מקבל אם אני מצטרף לביטוח הפניקס זהיר?",
+     "expected": "/car-insurance/car_information/caution-is-money-insurance-careful-drivers/",
+     "group": "אקראי",
+     "got": [
+      "/ishtalmutfund/employee/",
+      "/claims-customer-service/claims-car-insurance-third-party/",
+      "/car-insurance/"
+     ]
+    },
+    {
+     "q": "כמה דמי ניהול ממוצעים גובים ממני על הצבירה במסלול הפנסיה הזה לשנת 2025?",
+     "expected": "/pension-savings/fnx-mashlima-pension/tzmashlima/7235/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/8318/",
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/8320/",
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/15224/"
+     ]
+    },
+    {
+     "q": "כמה דמי ניהול אני משלם על החיסכון לילד במסלול שריעה?",
+     "expected": "/gemel/child_investment/tzchildinvestment/11352/",
+     "group": "אקראי",
+     "got": [
+      "/gemel/child_investment/faq/",
+      "/gemel/child_investment/",
+      "/gemel/child_investment/"
+     ]
+    },
+    {
+     "q": "כמה דמי ניהול בממוצע גובים ממני בקופת הגמל הזו בשנת 2025?",
+     "expected": "/gemel/tzgemel/528/",
+     "group": "אקראי",
+     "got": [
+      "/gemel/gemelhashkaa/tzgemelhashkaa/15233/",
+      "/gemel/",
+      "/gemel/tzgemel/15209/"
+     ]
+    },
+    {
+     "q": "אני חייב ללכת לוטרינר ספציפי שאתם עובדים איתו או שאני יכול לבחור מי שבא לי?",
+     "expected": "/pets-insurance/pets-cover/",
+     "group": "אקראי",
+     "got": [
+      "/business-insurance/",
+      "/pets-insurance/pets-information/dogs-epilepsy/",
+      "/pets-insurance/pets-information/dog-illnesses/"
+     ]
+    },
+    {
+     "q": "מה זה בכלל אומר למחזר משכנתא ואיך זה עובד?",
+     "expected": "/mortgage-insurance/mortgage-insurance-info/mortgage/",
+     "group": "אקראי",
+     "got": [
+      "/mortgage-insurance/mortgage-insurance-info/changing-mortgage-life-insurance/",
+      "/mortgage-insurance/mortgage-insurance-info/changing-mortgage-life-insurance/",
+      "/mortgage-insurance/mortgage-insurance-info/changing-mortgage-life-insurance/"
+     ]
+    },
+    {
+     "q": "מה היה אחוז דמי הניהול המקסימלי שהקרן רשאית לגבות מהפקדות החיסכון שלי?",
+     "expected": "/pension-savings/fnx-all-embracing-pension/management-fee-commission-mekifa/",
+     "group": "אקראי",
+     "got": [
+      "/gemel/gemel-information/magazine_gemel/",
+      "/pension-savings/pension-savings-information/mandatory-pension-law/",
+      "/pension-savings/pension-savings-information/differencemenaalimgemel/"
+     ]
+    },
+    {
+     "q": "מה אני עושה אם המזוודה שלי לא הגיעה ליעד כשאני בחו\"ל עם ביטוח שלכם?",
+     "expected": "/travel-insurance/travel_information/insurance-to-cyprus/",
+     "group": "אקראי",
+     "got": [
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/"
+     ]
+    },
+    {
+     "q": "מה אחוז דמי הניהול שאני משלם מהצבירה שלי במסלול הפנסיה הזה?",
+     "expected": "/pension-savings/fnx-all-embracing-pension/tzmekifa/2189/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/pension-savings-information/mandatory-pension-law/",
+      "/gemel/gemel-information/gemel-vs-pension/",
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/8320/"
+     ]
+    },
+    {
+     "q": "מה קורה לביטוח שעשיתי דרך העבודה אם אני עוזב את החברה ומפסיק לעבוד שם?",
+     "expected": "/pension-savings/pension-savings-information/sure-to-be-an-employee/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/pension-savings-information/pension-between-jobs/",
+      "/travel-insurance/travel_information/insurance-to-the-states/",
+      "/pension-savings/pension-savings-information/form-161/"
+     ]
+    },
+    {
+     "q": "אני נוהג עד היום על הרכב של ההורים, האם אני יכול להשתמש בעבר הביטוחי שלהם?",
+     "expected": "/car-insurance/car_information/no-background/",
+     "group": "אקראי",
+     "got": [
+      "/car-insurance/car_information/vehicle-encountered-the-poll/",
+      "/car-insurance/car_information/car-young-annunciation/",
+      "/car-insurance/car_information/israeli-driver/"
+     ]
+    },
+    {
+     "q": "עד איזה גיל אפשר להצטרף לביטוח התרופות שלכם?",
+     "expected": "/health-insurance/sal-a-zahav/",
+     "group": "אקראי",
+     "got": [
+      "/pets-insurance/pets-information/gdv/",
+      "/ishtalmutfund/employee/",
+      "/health-insurance/supportive-insurance/meuhedet-siudi-product/"
+     ]
+    },
+    {
+     "q": "מתי מסלול קרן ההשתלמות הזה התחיל לעבוד?",
+     "expected": "/ishtalmutfund/tzishtalmut/8629/",
+     "group": "אקראי",
+     "got": [
+      "/ishtalmutfund/self-employee/",
+      "/ishtalmutfund/ishtalmutfund-information/choose-a-training-fund/",
+      "/ishtalmutfund/"
+     ]
+    },
+    {
+     "q": "מהו סכום הפיצוי המקסימלי שאוכל לקבל במקרה של אובדן כושר עבודה בביטוח הזה?",
+     "expected": "/pension-savings/managers-insurance/",
+     "group": "אקראי",
+     "got": [
+      "/disability-and-incapacity-to-work/incapacity-to-work/",
+      "/disability-and-incapacity-to-work/professional-disability/",
+      "/disability-and-incapacity-to-work/normal-disability/"
+     ]
+    },
+    {
+     "q": "איך אני יכול להוציא העתק של הפוליסה לכלב שלי כדי לראות מה בדיוק כולל הכיסוי?",
+     "expected": "/customer-service/pets-services/pets_policy_copy_and_conditions/",
+     "group": "אקראי",
+     "got": [
+      "/pets-insurance/pets-information/dogs-fruits/",
+      "/pets-insurance/pets-information/exercise-for-dogs/",
+      "/pets-insurance/pets-information/gdv/"
+     ]
+    },
+    {
+     "q": "איך מפסיקים את ביטוח הרכב שלי?",
+     "expected": "car_cancel_policy",
+     "group": "ידני",
+     "got": [
+      "/car-insurance/car_information/no-background/",
+      "/car-insurance/car_information/not-without-insurance/",
+      "/apartment-insurance/apartment-information/apartment-renovations/"
+     ]
+    },
+    {
+     "q": "הרכב עומד במוסך חודשיים, אפשר להשהות את הביטוח?",
+     "expected": "car_disable_policy",
+     "group": "ידני",
+     "got": [
+      "/car-insurance/car_information/what-we-had/",
+      "/car-insurance/car_information/comprehensive-insurance-when-should/",
+      "/car-insurance/car_information/know-the-assessor/"
+     ]
+    },
+    {
+     "q": "אבא שלי נפטר והיה לו ביטוח חיים, מה צריך להגיש?",
+     "expected": "claims-in-case-of-death",
+     "group": "ידני",
+     "got": [
+      "/health-insurance/health_information/rely-on-health-funds/",
+      "/claims-customer-service/claims-life-insurance/claims-pullmoney/",
+      "/gemel/itur_amitim/"
+     ]
+    },
+    {
+     "q": "מה זה ריסק וול?",
+     "expected": "risk_well",
+     "group": "ידני",
+     "got": [
+      "/life-insurance/life-insurance-info/risk-insurance/",
+      "/life-insurance/",
+      "/life-insurance/life-insurance-info/risk-insurance/"
+     ]
+    },
+    {
+     "q": "פרצו לי לדירה הלילה, מה אני צריך לעשות עכשיו?",
+     "expected": "in-case-of-break-in",
+     "group": "ידני",
+     "got": [
+      "/car-insurance/car_information/things-to-do-when-waiting-for-the-tow-truck/",
+      "/pension-savings/coronavirus/",
+      "/apartment-insurance/apartment-information/apartment_leaving_home/"
+     ]
+    },
+    {
+     "q": "אף פעם לא היה לי ביטוח רכב, אפשר בכלל לקבל אצלכם?",
+     "expected": "no-background",
+     "group": "ידני",
+     "got": [
+      "/travel-insurance/plan-your-trip/north-thailand-with-kids/",
+      "/apartment-insurance/",
+      "/car-insurance/car_information/window-glass-insurance/"
+     ]
+    },
+    {
+     "q": "לקחו לי את הרישיון לחצי שנה, זה ייקר לי את הביטוח?",
+     "expected": "suspended-license",
+     "group": "ידני",
+     "got": [
+      "/travel-insurance/travel_information/holiday-recommendations/",
+      "/travel-insurance/travel_information/insurance-to-sinai/",
+      "/travel-insurance/travel_information/travel-insurance-to-report/"
+     ]
+    },
+    {
+     "q": "יש מסלול בפנסיה שמתאים לשומרי תורה?",
+     "expected": "tzmekifa/9984|tzmashlima/15224",
+     "group": "ידני",
+     "got": [
+      "/pension-savings/fnx-all-embracing-pension/mekifa-join-and-insurance-options/",
+      "/gemel/employee/",
+      "/gemel/merging2/"
+     ]
+    },
+    {
+     "q": "שכרתי רכב באירופה ומישהו נכנס בי, את מי תובעים?",
+     "expected": "renting-a-car-abroad",
+     "group": "ידני",
+     "got": [
+      "/travel-insurance/travel_information/insurance-to-cyprus/",
+      "/apartment-insurance/apartment-information/safe-house/",
+      "/travel-insurance/travel_information/holiday-recommendations/"
+     ]
+    },
+    {
+     "q": "התקנתי עמדה להטענת הרכב החשמלי בחניה, אפשר לבטח אותה?",
+     "expected": "charging-station-insurance",
+     "group": "ידני",
+     "got": [
+      "/car-insurance/car_information/electric-car-expenses/",
+      "/car-insurance/car_information/charging-stations-for-multiresidential/",
+      "/car-insurance/car_information/charging-stations-for-multiresidential/"
+     ]
+    },
+    {
+     "q": "הכלב שלי מבוטח אצלכם ואני רוצה לבטל",
+     "expected": "pets_cancel_policy",
+     "group": "ידני",
+     "got": [
+      "/pets-insurance/pets-information/dogs-obesity/",
+      "/pets-insurance/pets-information/dogs-obesity/",
+      "/car-insurance/"
+     ]
+    },
+    {
+     "q": "קיבלתי SMS חשוד בשם הפניקס עם קישור, מה לעשות?",
+     "expected": "phishing",
+     "group": "ידני",
+     "got": [
+      "/travel-insurance/",
+      "/loans/loans-information/common-loan-mistakes/",
+      "/travel-insurance/smart-recommendations/"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "משמעות (search, 3072)",
+   "hit1": 99,
+   "hit5": 125,
+   "mrr": 0.806,
+   "n": 136,
+   "groups": {
+    "אקראי": [
+     59,
+     79,
+     90
+    ],
+    "מסלולים": [
+     14,
+     15,
+     15
+    ],
+    "ידני": [
+     26,
+     31,
+     31
+    ]
+   },
+   "misses": [
+    {
+     "q": "היי, רציתי לדעת מה אחוז התשואה שהמדינה מבטיחה לי בתוך קרן הפנסיה?",
+     "expected": "/gemel/gemel-information/gemel-vs-pension/",
+     "group": "אקראי",
+     "got": [
+      "/gemel/tzgemel/528/",
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/7236/",
+      "/pension-savings/fnx-all-embracing-pension/"
+     ]
+    },
+    {
+     "q": "איך אני מקבל את הפיצוי על עיכוב במזוודה בזמן שאני בחו\"ל?",
+     "expected": "/travel-insurance/",
+     "group": "אקראי",
+     "got": [
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/",
+      "/travel-insurance/protection-for-buggage/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/"
+     ]
+    },
+    {
+     "q": "האם אני יכול לשנות את המוטבים בביטוח חיים למשכנתא כמו בביטוח חיים רגיל?",
+     "expected": "/mortgage-insurance/mortgage-insurance-info/life-vs-mortgage-insurance/",
+     "group": "אקראי",
+     "got": [
+      "/mortgage-insurance/mortgage-insurance-info/changing-mortgage-life-insurance/",
+      "/mortgage-insurance/mortgage-insurance-life/",
+      "/mortgage-insurance/mortgage-insurance-info/changing-mortgage-life-insurance/"
+     ]
+    },
+    {
+     "q": "הגעתי לגיל פרישה, אילו מסמכים אני צריך לשלוח אליכם כדי להתחיל לקבל את הקצבה?",
+     "expected": "/claims-customer-service/pension-benefits/magen-lawyers-pension-vatika/",
+     "group": "אקראי",
+     "got": [
+      "/claims-customer-service/pension-benefits/mekifa-mashlima-oldage-pension/",
+      "/claims-customer-service/claims-all-embracing-pension/oldage-pension-claim/",
+      "/claims-customer-service/pension-benefits/yesod-claims-oldage-pension/"
+     ]
+    },
+    {
+     "q": "איך הגיל שלי משפיע על הבחירה במסלול השקעה בקרן הפנסיה?",
+     "expected": "/savings/savings-information/invest-during-uncertainty/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/fnx-mashlima-pension/",
+      "/savings/savings-information/choosing-investment-routes/",
+      "/pension-savings/"
+     ]
+    },
+    {
+     "q": "מה קורה אם עשיתי ביטוח למבנה הדירה בלבד, האם אני מכוסה גם עבור צד ג'?",
+     "expected": "/apartment-insurance/apartment-information/apartment-third-party-guide/",
+     "group": "אקראי",
+     "got": [
+      "/apartment-insurance/structure/",
+      "/apartment-insurance/third-party/",
+      "/apartment-insurance/apartment-information/body-damage-insurance/"
+     ]
+    },
+    {
+     "q": "כמה דמי ניהול ממוצעים גובים ממני על הצבירה במסלול הפנסיה הזה לשנת 2025?",
+     "expected": "/pension-savings/fnx-mashlima-pension/tzmashlima/7235/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9974/",
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9984/",
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9975/"
+     ]
+    },
+    {
+     "q": "מה היה אחוז דמי הניהול המקסימלי שהקרן רשאית לגבות מהפקדות החיסכון שלי?",
+     "expected": "/pension-savings/fnx-all-embracing-pension/management-fee-commission-mekifa/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/yesod-pension-fund/yesod-management-fee-commission/",
+      "/gemel/child_investment/faq/",
+      "/pension-savings/"
+     ]
+    },
+    {
+     "q": "מה אני עושה אם המזוודה שלי לא הגיעה ליעד כשאני בחו\"ל עם ביטוח שלכם?",
+     "expected": "/travel-insurance/travel_information/insurance-to-cyprus/",
+     "group": "אקראי",
+     "got": [
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/"
+     ]
+    },
+    {
+     "q": "מה אחוז דמי הניהול שאני משלם מהצבירה שלי במסלול הפנסיה הזה?",
+     "expected": "/pension-savings/fnx-all-embracing-pension/tzmekifa/2189/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9974/",
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9984/",
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9976/"
+     ]
+    },
+    {
+     "q": "מהו סכום הפיצוי המקסימלי שאוכל לקבל במקרה של אובדן כושר עבודה בביטוח הזה?",
+     "expected": "/pension-savings/managers-insurance/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/freelance-rewards/",
+      "/disability-and-incapacity-to-work/incapacity-to-work/",
+      "/disability-and-incapacity-to-work/professional-disability/"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "שילוב (search, 3072)",
+   "hit1": 89,
+   "hit5": 119,
+   "mrr": 0.746,
+   "n": 136,
+   "groups": {
+    "אקראי": [
+     55,
+     77,
+     90
+    ],
+    "מסלולים": [
+     13,
+     15,
+     15
+    ],
+    "ידני": [
+     21,
+     27,
+     31
+    ]
+   },
+   "misses": [
+    {
+     "q": "יש לי כבר קרן השתלמות בחברה אחרת, אני יכול להעביר אותה אליכם?",
+     "expected": "/ishtalmutfund/ishtalmutfund-information/choose-a-training-fund/",
+     "group": "אקראי",
+     "got": [
+      "/ishtalmutfund/employee/",
+      "/ishtalmutfund/faq/",
+      "/ishtalmutfund/"
+     ]
+    },
+    {
+     "q": "איך הגיל שלי משפיע על הבחירה במסלול השקעה בקרן הפנסיה?",
+     "expected": "/savings/savings-information/invest-during-uncertainty/",
+     "group": "אקראי",
+     "got": [
+      "/savings/savings-information/choosing-investment-routes/",
+      "/savings/savings-information/choosing-investment-routes/",
+      "/pension-savings/"
+     ]
+    },
+    {
+     "q": "אני רוצה לבטל את הביטוח שעשיתי לנסיעה, האם אפשר לבטל רק חלק מהנוסעים בפוליסה?",
+     "expected": "/customer-service/travel-insurance/travel_cancel_policy/",
+     "group": "אקראי",
+     "got": [
+      "/travel-insurance/flight-cancellation-insurance/",
+      "/travel-insurance/",
+      "/customer-service/request-for-cancel-policy/"
+     ]
+    },
+    {
+     "q": "מה קורה אם עשיתי ביטוח למבנה הדירה בלבד, האם אני מכוסה גם עבור צד ג'?",
+     "expected": "/apartment-insurance/apartment-information/apartment-third-party-guide/",
+     "group": "אקראי",
+     "got": [
+      "/apartment-insurance/apartment-information/body-damage-insurance/",
+      "/apartment-insurance/third-party/",
+      "/apartment-insurance/third-party/"
+     ]
+    },
+    {
+     "q": "כמה דמי ניהול ממוצעים גובים ממני על הצבירה במסלול הפנסיה הזה לשנת 2025?",
+     "expected": "/pension-savings/fnx-mashlima-pension/tzmashlima/7235/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9974/",
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/15224/",
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/8320/"
+     ]
+    },
+    {
+     "q": "כמה דמי ניהול בממוצע גובים ממני בקופת הגמל הזו בשנת 2025?",
+     "expected": "/gemel/tzgemel/528/",
+     "group": "אקראי",
+     "got": [
+      "/gemel/tzgemel/961/",
+      "/gemel/tzgemel/2049/",
+      "/gemel/gemelhashkaa/tzgemelhashkaa/7975/"
+     ]
+    },
+    {
+     "q": "אני חייב ללכת לוטרינר ספציפי שאתם עובדים איתו או שאני יכול לבחור מי שבא לי?",
+     "expected": "/pets-insurance/pets-cover/",
+     "group": "אקראי",
+     "got": [
+      "/pets-insurance/pets-information/dog-illnesses/",
+      "/pets-insurance/pets-information/toxic-foods-for-dogs/",
+      "/pets-insurance/"
+     ]
+    },
+    {
+     "q": "מה היה אחוז דמי הניהול המקסימלי שהקרן רשאית לגבות מהפקדות החיסכון שלי?",
+     "expected": "/pension-savings/fnx-all-embracing-pension/management-fee-commission-mekifa/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/",
+      "/ishtalmutfund/faq/",
+      "/gemel/child_investment/faq/"
+     ]
+    },
+    {
+     "q": "מה אני עושה אם המזוודה שלי לא הגיעה ליעד כשאני בחו\"ל עם ביטוח שלכם?",
+     "expected": "/travel-insurance/travel_information/insurance-to-cyprus/",
+     "group": "אקראי",
+     "got": [
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/"
+     ]
+    },
+    {
+     "q": "מה אחוז דמי הניהול שאני משלם מהצבירה שלי במסלול הפנסיה הזה?",
+     "expected": "/pension-savings/fnx-all-embracing-pension/tzmekifa/2189/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/8320/",
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/15224/",
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/8318/"
+     ]
+    },
+    {
+     "q": "מתי מסלול קרן ההשתלמות הזה התחיל לעבוד?",
+     "expected": "/ishtalmutfund/tzishtalmut/8629/",
+     "group": "אקראי",
+     "got": [
+      "/ishtalmutfund/",
+      "/ishtalmutfund/employee/",
+      "/ishtalmutfund/"
+     ]
+    },
+    {
+     "q": "מהו סכום הפיצוי המקסימלי שאוכל לקבל במקרה של אובדן כושר עבודה בביטוח הזה?",
+     "expected": "/pension-savings/managers-insurance/",
+     "group": "אקראי",
+     "got": [
+      "/disability-and-incapacity-to-work/incapacity-to-work/",
+      "/disability-and-incapacity-to-work/professional-disability/",
+      "/disability-and-incapacity-to-work/normal-disability/"
+     ]
+    },
+    {
+     "q": "איך אני יכול להוציא העתק של הפוליסה לכלב שלי כדי לראות מה בדיוק כולל הכיסוי?",
+     "expected": "/customer-service/pets-services/pets_policy_copy_and_conditions/",
+     "group": "אקראי",
+     "got": [
+      "/customer-service/travel-insurance/travel_policy_copy_and_conditions/",
+      "/customer-service/car-insurance/car_policy_copy_and_conditions/",
+      "/pets-insurance/pets-information/exercise-for-dogs/"
+     ]
+    },
+    {
+     "q": "הרכב עומד במוסך חודשיים, אפשר להשהות את הביטוח?",
+     "expected": "car_disable_policy",
+     "group": "ידני",
+     "got": [
+      "/car-insurance/car_information/what-we-had/",
+      "/car-insurance/car_information/tips-to-decrease-the-insurance/",
+      "/car-insurance/car_information/second-hand-from-agent/"
+     ]
+    },
+    {
+     "q": "אבא שלי נפטר והיה לו ביטוח חיים, מה צריך להגיש?",
+     "expected": "claims-in-case-of-death",
+     "group": "ידני",
+     "got": [
+      "/claims-customer-service/claims-life-insurance/claims-pullmoney/",
+      "/claims-customer-service/claims-all-embracing-pension/pension-deceased-pull-money/",
+      "/gemel/money-withrawl/"
+     ]
+    },
+    {
+     "q": "הכלב שלי מבוטח אצלכם ואני רוצה לבטל",
+     "expected": "pets_cancel_policy",
+     "group": "ידני",
+     "got": [
+      "/pets-insurance/pets-information/dogs-obesity/",
+      "/pets-insurance/dogs/",
+      "/pets-insurance/pets-information/dog-illnesses/"
+     ]
+    },
+    {
+     "q": "קיבלתי SMS חשוד בשם הפניקס עם קישור, מה לעשות?",
+     "expected": "phishing",
+     "group": "ידני",
+     "got": [
+      "/customer-service/terms-of-use/security/",
+      "/customer-service/terms-of-use/group-app-terms-of-use/",
+      "/customer-service/terms-of-use/privacy-policy/"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "שילוב חצי (search, 3072)",
+   "hit1": 93,
+   "hit5": 122,
+   "mrr": 0.771,
+   "n": 136,
+   "groups": {
+    "אקראי": [
+     57,
+     79,
+     90
+    ],
+    "מסלולים": [
+     14,
+     15,
+     15
+    ],
+    "ידני": [
+     22,
+     28,
+     31
+    ]
+   },
+   "misses": [
+    {
+     "q": "האם אני יכול לשנות את המוטבים בביטוח חיים למשכנתא כמו בביטוח חיים רגיל?",
+     "expected": "/mortgage-insurance/mortgage-insurance-info/life-vs-mortgage-insurance/",
+     "group": "אקראי",
+     "got": [
+      "/mortgage-insurance/mortgage-insurance-life/",
+      "/mortgage-insurance/mortgage-insurance-info/changing-mortgage-life-insurance/",
+      "/mortgage-insurance/mortgage-insurance-life/"
+     ]
+    },
+    {
+     "q": "הגעתי לגיל פרישה, אילו מסמכים אני צריך לשלוח אליכם כדי להתחיל לקבל את הקצבה?",
+     "expected": "/claims-customer-service/pension-benefits/magen-lawyers-pension-vatika/",
+     "group": "אקראי",
+     "got": [
+      "/claims-customer-service/pension-benefits/mekifa-mashlima-oldage-pension/",
+      "/claims-customer-service/pension-benefits/yesod-claims-oldage-pension/",
+      "/claims-customer-service/pension-benefits/a-comprehensive-and-supplementary-survivors-pension/"
+     ]
+    },
+    {
+     "q": "איך הגיל שלי משפיע על הבחירה במסלול השקעה בקרן הפנסיה?",
+     "expected": "/savings/savings-information/invest-during-uncertainty/",
+     "group": "אקראי",
+     "got": [
+      "/savings/savings-information/choosing-investment-routes/",
+      "/savings/savings-information/choosing-investment-routes/",
+      "/pension-savings/"
+     ]
+    },
+    {
+     "q": "מה קורה אם עשיתי ביטוח למבנה הדירה בלבד, האם אני מכוסה גם עבור צד ג'?",
+     "expected": "/apartment-insurance/apartment-information/apartment-third-party-guide/",
+     "group": "אקראי",
+     "got": [
+      "/apartment-insurance/apartment-information/body-damage-insurance/",
+      "/apartment-insurance/structure/",
+      "/apartment-insurance/third-party/"
+     ]
+    },
+    {
+     "q": "כמה דמי ניהול ממוצעים גובים ממני על הצבירה במסלול הפנסיה הזה לשנת 2025?",
+     "expected": "/pension-savings/fnx-mashlima-pension/tzmashlima/7235/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9974/",
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9975/",
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/15224/"
+     ]
+    },
+    {
+     "q": "כמה דמי ניהול בממוצע גובים ממני בקופת הגמל הזו בשנת 2025?",
+     "expected": "/gemel/tzgemel/528/",
+     "group": "אקראי",
+     "got": [
+      "/gemel/tzgemel/961/",
+      "/gemel/tzgemel/2049/",
+      "/gemel/tzmerkaziot/804/"
+     ]
+    },
+    {
+     "q": "מה היה אחוז דמי הניהול המקסימלי שהקרן רשאית לגבות מהפקדות החיסכון שלי?",
+     "expected": "/pension-savings/fnx-all-embracing-pension/management-fee-commission-mekifa/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/",
+      "/gemel/child_investment/faq/",
+      "/ishtalmutfund/faq/"
+     ]
+    },
+    {
+     "q": "מה אני עושה אם המזוודה שלי לא הגיעה ליעד כשאני בחו\"ל עם ביטוח שלכם?",
+     "expected": "/travel-insurance/travel_information/insurance-to-cyprus/",
+     "group": "אקראי",
+     "got": [
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/"
+     ]
+    },
+    {
+     "q": "מה אחוז דמי הניהול שאני משלם מהצבירה שלי במסלול הפנסיה הזה?",
+     "expected": "/pension-savings/fnx-all-embracing-pension/tzmekifa/2189/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/15224/",
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/8320/",
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9974/"
+     ]
+    },
+    {
+     "q": "מתי מסלול קרן ההשתלמות הזה התחיל לעבוד?",
+     "expected": "/ishtalmutfund/tzishtalmut/8629/",
+     "group": "אקראי",
+     "got": [
+      "/ishtalmutfund/",
+      "/ishtalmutfund/tzishtalmut/9528/",
+      "/ishtalmutfund/employee/"
+     ]
+    },
+    {
+     "q": "מהו סכום הפיצוי המקסימלי שאוכל לקבל במקרה של אובדן כושר עבודה בביטוח הזה?",
+     "expected": "/pension-savings/managers-insurance/",
+     "group": "אקראי",
+     "got": [
+      "/disability-and-incapacity-to-work/incapacity-to-work/",
+      "/disability-and-incapacity-to-work/professional-disability/",
+      "/disability-and-incapacity-to-work/normal-disability/"
+     ]
+    },
+    {
+     "q": "הרכב עומד במוסך חודשיים, אפשר להשהות את הביטוח?",
+     "expected": "car_disable_policy",
+     "group": "ידני",
+     "got": [
+      "/car-insurance/car_information/what-we-had/",
+      "/car-insurance/car_information/tips-to-decrease-the-insurance/",
+      "/car-insurance/car_information/second-hand-from-agent/"
+     ]
+    },
+    {
+     "q": "אבא שלי נפטר והיה לו ביטוח חיים, מה צריך להגיש?",
+     "expected": "claims-in-case-of-death",
+     "group": "ידני",
+     "got": [
+      "/claims-customer-service/claims-life-insurance/claims-pullmoney/",
+      "/claims-customer-service/claims-all-embracing-pension/pension-deceased-pull-money/",
+      "/claims-customer-service/claims-life-insurance/"
+     ]
+    },
+    {
+     "q": "הכלב שלי מבוטח אצלכם ואני רוצה לבטל",
+     "expected": "pets_cancel_policy",
+     "group": "ידני",
+     "got": [
+      "/pets-insurance/dogs/",
+      "/customer-service/request-for-cancel-policy/",
+      "/pets-insurance/pets-information/dog-illnesses/"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "משמעות (search, 768)",
+   "hit1": 99,
+   "hit5": 125,
+   "mrr": 0.807,
+   "n": 136,
+   "groups": {
+    "אקראי": [
+     59,
+     79,
+     90
+    ],
+    "מסלולים": [
+     14,
+     15,
+     15
+    ],
+    "ידני": [
+     26,
+     31,
+     31
+    ]
+   },
+   "misses": [
+    {
+     "q": "היי, רציתי לדעת מה אחוז התשואה שהמדינה מבטיחה לי בתוך קרן הפנסיה?",
+     "expected": "/gemel/gemel-information/gemel-vs-pension/",
+     "group": "אקראי",
+     "got": [
+      "/gemel/tzgemel/528/",
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/7236/",
+      "/pension-savings/fnx-mashlima-pension/"
+     ]
+    },
+    {
+     "q": "איך אני מקבל את הפיצוי על עיכוב במזוודה בזמן שאני בחו\"ל?",
+     "expected": "/travel-insurance/",
+     "group": "אקראי",
+     "got": [
+      "/travel-insurance/protection-for-buggage/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/"
+     ]
+    },
+    {
+     "q": "האם אני יכול לשנות את המוטבים בביטוח חיים למשכנתא כמו בביטוח חיים רגיל?",
+     "expected": "/mortgage-insurance/mortgage-insurance-info/life-vs-mortgage-insurance/",
+     "group": "אקראי",
+     "got": [
+      "/mortgage-insurance/mortgage-insurance-info/changing-mortgage-life-insurance/",
+      "/mortgage-insurance/mortgage-insurance-life/",
+      "/mortgage-insurance/mortgage-insurance-info/changing-mortgage-life-insurance/"
+     ]
+    },
+    {
+     "q": "הגעתי לגיל פרישה, אילו מסמכים אני צריך לשלוח אליכם כדי להתחיל לקבל את הקצבה?",
+     "expected": "/claims-customer-service/pension-benefits/magen-lawyers-pension-vatika/",
+     "group": "אקראי",
+     "got": [
+      "/claims-customer-service/pension-benefits/mekifa-mashlima-oldage-pension/",
+      "/claims-customer-service/claims-all-embracing-pension/oldage-pension-claim/",
+      "/claims-customer-service/pension-benefits/yesod-claims-oldage-pension/"
+     ]
+    },
+    {
+     "q": "איך הגיל שלי משפיע על הבחירה במסלול השקעה בקרן הפנסיה?",
+     "expected": "/savings/savings-information/invest-during-uncertainty/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/fnx-mashlima-pension/",
+      "/savings/savings-information/choosing-investment-routes/",
+      "/savings/savings-information/choosing-investment-routes/"
+     ]
+    },
+    {
+     "q": "מה קורה אם עשיתי ביטוח למבנה הדירה בלבד, האם אני מכוסה גם עבור צד ג'?",
+     "expected": "/apartment-insurance/apartment-information/apartment-third-party-guide/",
+     "group": "אקראי",
+     "got": [
+      "/apartment-insurance/structure/",
+      "/apartment-insurance/third-party/",
+      "/apartment-insurance/apartment-information/body-damage-insurance/"
+     ]
+    },
+    {
+     "q": "כמה דמי ניהול ממוצעים גובים ממני על הצבירה במסלול הפנסיה הזה לשנת 2025?",
+     "expected": "/pension-savings/fnx-mashlima-pension/tzmashlima/7235/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9984/",
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9974/",
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9975/"
+     ]
+    },
+    {
+     "q": "כמה דמי ניהול ממוצעים לוקחים לי מהצבירה בקופת גמל שקלית של הפניקס בשנת 2025?",
+     "expected": "/gemel/tzgemel/9906/",
+     "group": "אקראי",
+     "got": [
+      "/gemel/tzmerkaziot/242/",
+      "/gemel/tzmerkaziot/9475/",
+      "/gemel/tzgemel/961/"
+     ]
+    },
+    {
+     "q": "מה היה אחוז דמי הניהול המקסימלי שהקרן רשאית לגבות מהפקדות החיסכון שלי?",
+     "expected": "/pension-savings/fnx-all-embracing-pension/management-fee-commission-mekifa/",
+     "group": "אקראי",
+     "got": [
+      "/gemel/child_investment/faq/",
+      "/pension-savings/yesod-pension-fund/yesod-management-fee-commission/",
+      "/pension-savings/yesod-pension-fund/yesod-management-fee-commission/"
+     ]
+    },
+    {
+     "q": "מה אני עושה אם המזוודה שלי לא הגיעה ליעד כשאני בחו\"ל עם ביטוח שלכם?",
+     "expected": "/travel-insurance/travel_information/insurance-to-cyprus/",
+     "group": "אקראי",
+     "got": [
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/"
+     ]
+    },
+    {
+     "q": "מה אחוז דמי הניהול שאני משלם מהצבירה שלי במסלול הפנסיה הזה?",
+     "expected": "/pension-savings/fnx-all-embracing-pension/tzmekifa/2189/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9974/",
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9984/",
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9975/"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "שילוב (search, 768)",
+   "hit1": 91,
+   "hit5": 119,
+   "mrr": 0.753,
+   "n": 136,
+   "groups": {
+    "אקראי": [
+     56,
+     77,
+     90
+    ],
+    "מסלולים": [
+     14,
+     15,
+     15
+    ],
+    "ידני": [
+     21,
+     27,
+     31
+    ]
+   },
+   "misses": [
+    {
+     "q": "יש לי כבר קרן השתלמות בחברה אחרת, אני יכול להעביר אותה אליכם?",
+     "expected": "/ishtalmutfund/ishtalmutfund-information/choose-a-training-fund/",
+     "group": "אקראי",
+     "got": [
+      "/ishtalmutfund/employee/",
+      "/ishtalmutfund/faq/",
+      "/ishtalmutfund/"
+     ]
+    },
+    {
+     "q": "איך הגיל שלי משפיע על הבחירה במסלול השקעה בקרן הפנסיה?",
+     "expected": "/savings/savings-information/invest-during-uncertainty/",
+     "group": "אקראי",
+     "got": [
+      "/savings/savings-information/choosing-investment-routes/",
+      "/savings/savings-information/choosing-investment-routes/",
+      "/pension-savings/"
+     ]
+    },
+    {
+     "q": "אני רוצה לבטל את הביטוח שעשיתי לנסיעה, האם אפשר לבטל רק חלק מהנוסעים בפוליסה?",
+     "expected": "/customer-service/travel-insurance/travel_cancel_policy/",
+     "group": "אקראי",
+     "got": [
+      "/travel-insurance/flight-cancellation-insurance/",
+      "/travel-insurance/",
+      "/customer-service/request-for-cancel-policy/"
+     ]
+    },
+    {
+     "q": "מה קורה אם עשיתי ביטוח למבנה הדירה בלבד, האם אני מכוסה גם עבור צד ג'?",
+     "expected": "/apartment-insurance/apartment-information/apartment-third-party-guide/",
+     "group": "אקראי",
+     "got": [
+      "/apartment-insurance/apartment-information/body-damage-insurance/",
+      "/apartment-insurance/third-party/",
+      "/apartment-insurance/third-party/"
+     ]
+    },
+    {
+     "q": "כמה דמי ניהול ממוצעים גובים ממני על הצבירה במסלול הפנסיה הזה לשנת 2025?",
+     "expected": "/pension-savings/fnx-mashlima-pension/tzmashlima/7235/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9974/",
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/15224/",
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9975/"
+     ]
+    },
+    {
+     "q": "כמה דמי ניהול בממוצע גובים ממני בקופת הגמל הזו בשנת 2025?",
+     "expected": "/gemel/tzgemel/528/",
+     "group": "אקראי",
+     "got": [
+      "/gemel/tzgemel/961/",
+      "/gemel/tzgemel/2049/",
+      "/gemel/gemelhashkaa/tzgemelhashkaa/7975/"
+     ]
+    },
+    {
+     "q": "אני חייב ללכת לוטרינר ספציפי שאתם עובדים איתו או שאני יכול לבחור מי שבא לי?",
+     "expected": "/pets-insurance/pets-cover/",
+     "group": "אקראי",
+     "got": [
+      "/pets-insurance/pets-information/dog-illnesses/",
+      "/pets-insurance/pets-information/toxic-foods-for-dogs/",
+      "/pets-insurance/"
+     ]
+    },
+    {
+     "q": "מה היה אחוז דמי הניהול המקסימלי שהקרן רשאית לגבות מהפקדות החיסכון שלי?",
+     "expected": "/pension-savings/fnx-all-embracing-pension/management-fee-commission-mekifa/",
+     "group": "אקראי",
+     "got": [
+      "/ishtalmutfund/faq/",
+      "/pension-savings/",
+      "/gemel/child_investment/faq/"
+     ]
+    },
+    {
+     "q": "מה אני עושה אם המזוודה שלי לא הגיעה ליעד כשאני בחו\"ל עם ביטוח שלכם?",
+     "expected": "/travel-insurance/travel_information/insurance-to-cyprus/",
+     "group": "אקראי",
+     "got": [
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/"
+     ]
+    },
+    {
+     "q": "מה אחוז דמי הניהול שאני משלם מהצבירה שלי במסלול הפנסיה הזה?",
+     "expected": "/pension-savings/fnx-all-embracing-pension/tzmekifa/2189/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/8320/",
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/15224/",
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/8318/"
+     ]
+    },
+    {
+     "q": "מתי מסלול קרן ההשתלמות הזה התחיל לעבוד?",
+     "expected": "/ishtalmutfund/tzishtalmut/8629/",
+     "group": "אקראי",
+     "got": [
+      "/ishtalmutfund/",
+      "/ishtalmutfund/",
+      "/ishtalmutfund/employee/"
+     ]
+    },
+    {
+     "q": "מהו סכום הפיצוי המקסימלי שאוכל לקבל במקרה של אובדן כושר עבודה בביטוח הזה?",
+     "expected": "/pension-savings/managers-insurance/",
+     "group": "אקראי",
+     "got": [
+      "/disability-and-incapacity-to-work/incapacity-to-work/",
+      "/disability-and-incapacity-to-work/professional-disability/",
+      "/disability-and-incapacity-to-work/normal-disability/"
+     ]
+    },
+    {
+     "q": "איך אני יכול להוציא העתק של הפוליסה לכלב שלי כדי לראות מה בדיוק כולל הכיסוי?",
+     "expected": "/customer-service/pets-services/pets_policy_copy_and_conditions/",
+     "group": "אקראי",
+     "got": [
+      "/customer-service/travel-insurance/travel_policy_copy_and_conditions/",
+      "/customer-service/car-insurance/car_policy_copy_and_conditions/",
+      "/pets-insurance/pets-information/exercise-for-dogs/"
+     ]
+    },
+    {
+     "q": "הרכב עומד במוסך חודשיים, אפשר להשהות את הביטוח?",
+     "expected": "car_disable_policy",
+     "group": "ידני",
+     "got": [
+      "/car-insurance/car_information/what-we-had/",
+      "/car-insurance/car_information/tips-to-decrease-the-insurance/",
+      "/car-insurance/car_information/second-hand-from-agent/"
+     ]
+    },
+    {
+     "q": "אבא שלי נפטר והיה לו ביטוח חיים, מה צריך להגיש?",
+     "expected": "claims-in-case-of-death",
+     "group": "ידני",
+     "got": [
+      "/claims-customer-service/claims-life-insurance/claims-pullmoney/",
+      "/claims-customer-service/claims-all-embracing-pension/pension-deceased-pull-money/",
+      "/gemel/money-withrawl/"
+     ]
+    },
+    {
+     "q": "הכלב שלי מבוטח אצלכם ואני רוצה לבטל",
+     "expected": "pets_cancel_policy",
+     "group": "ידני",
+     "got": [
+      "/pets-insurance/pets-information/dogs-obesity/",
+      "/pets-insurance/dogs/",
+      "/pets-insurance/pets-information/dog-illnesses/"
+     ]
+    },
+    {
+     "q": "קיבלתי SMS חשוד בשם הפניקס עם קישור, מה לעשות?",
+     "expected": "phishing",
+     "group": "ידני",
+     "got": [
+      "/customer-service/terms-of-use/security/",
+      "/customer-service/terms-of-use/group-app-terms-of-use/",
+      "/customer-service/terms-of-use/privacy-policy/"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "שילוב חצי (search, 768)",
+   "hit1": 91,
+   "hit5": 123,
+   "mrr": 0.765,
+   "n": 136,
+   "groups": {
+    "אקראי": [
+     56,
+     79,
+     90
+    ],
+    "מסלולים": [
+     14,
+     15,
+     15
+    ],
+    "ידני": [
+     21,
+     29,
+     31
+    ]
+   },
+   "misses": [
+    {
+     "q": "האם אני יכול לשנות את המוטבים בביטוח חיים למשכנתא כמו בביטוח חיים רגיל?",
+     "expected": "/mortgage-insurance/mortgage-insurance-info/life-vs-mortgage-insurance/",
+     "group": "אקראי",
+     "got": [
+      "/mortgage-insurance/mortgage-insurance-life/",
+      "/mortgage-insurance/mortgage-insurance-info/changing-mortgage-life-insurance/",
+      "/mortgage-insurance/mortgage-insurance-life/"
+     ]
+    },
+    {
+     "q": "הגעתי לגיל פרישה, אילו מסמכים אני צריך לשלוח אליכם כדי להתחיל לקבל את הקצבה?",
+     "expected": "/claims-customer-service/pension-benefits/magen-lawyers-pension-vatika/",
+     "group": "אקראי",
+     "got": [
+      "/claims-customer-service/pension-benefits/mekifa-mashlima-oldage-pension/",
+      "/claims-customer-service/pension-benefits/yesod-claims-oldage-pension/",
+      "/claims-customer-service/claims-all-embracing-pension/oldage-pension-claim/"
+     ]
+    },
+    {
+     "q": "איך הגיל שלי משפיע על הבחירה במסלול השקעה בקרן הפנסיה?",
+     "expected": "/savings/savings-information/invest-during-uncertainty/",
+     "group": "אקראי",
+     "got": [
+      "/savings/savings-information/choosing-investment-routes/",
+      "/savings/savings-information/choosing-investment-routes/",
+      "/pension-savings/"
+     ]
+    },
+    {
+     "q": "מה קורה אם עשיתי ביטוח למבנה הדירה בלבד, האם אני מכוסה גם עבור צד ג'?",
+     "expected": "/apartment-insurance/apartment-information/apartment-third-party-guide/",
+     "group": "אקראי",
+     "got": [
+      "/apartment-insurance/structure/",
+      "/apartment-insurance/apartment-information/body-damage-insurance/",
+      "/apartment-insurance/third-party/"
+     ]
+    },
+    {
+     "q": "כמה דמי ניהול ממוצעים גובים ממני על הצבירה במסלול הפנסיה הזה לשנת 2025?",
+     "expected": "/pension-savings/fnx-mashlima-pension/tzmashlima/7235/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9984/",
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9974/",
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9975/"
+     ]
+    },
+    {
+     "q": "כמה דמי ניהול בממוצע גובים ממני בקופת הגמל הזו בשנת 2025?",
+     "expected": "/gemel/tzgemel/528/",
+     "group": "אקראי",
+     "got": [
+      "/gemel/tzgemel/961/",
+      "/gemel/tzgemel/2049/",
+      "/gemel/tzmerkaziot/804/"
+     ]
+    },
+    {
+     "q": "מה היה אחוז דמי הניהול המקסימלי שהקרן רשאית לגבות מהפקדות החיסכון שלי?",
+     "expected": "/pension-savings/fnx-all-embracing-pension/management-fee-commission-mekifa/",
+     "group": "אקראי",
+     "got": [
+      "/gemel/child_investment/faq/",
+      "/ishtalmutfund/faq/",
+      "/pension-savings/"
+     ]
+    },
+    {
+     "q": "מה אני עושה אם המזוודה שלי לא הגיעה ליעד כשאני בחו\"ל עם ביטוח שלכם?",
+     "expected": "/travel-insurance/travel_information/insurance-to-cyprus/",
+     "group": "אקראי",
+     "got": [
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/",
+      "/travel-insurance/travel_information/travel_the_suitcase_did_not_arrive/"
+     ]
+    },
+    {
+     "q": "מה אחוז דמי הניהול שאני משלם מהצבירה שלי במסלול הפנסיה הזה?",
+     "expected": "/pension-savings/fnx-all-embracing-pension/tzmekifa/2189/",
+     "group": "אקראי",
+     "got": [
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/8320/",
+      "/pension-savings/fnx-mashlima-pension/tzmashlima/15224/",
+      "/pension-savings/fnx-all-embracing-pension/tzmekifa/9974/"
+     ]
+    },
+    {
+     "q": "מתי מסלול קרן ההשתלמות הזה התחיל לעבוד?",
+     "expected": "/ishtalmutfund/tzishtalmut/8629/",
+     "group": "אקראי",
+     "got": [
+      "/ishtalmutfund/",
+      "/ishtalmutfund/tzishtalmut/9528/",
+      "/ishtalmutfund/employee/"
+     ]
+    },
+    {
+     "q": "מהו סכום הפיצוי המקסימלי שאוכל לקבל במקרה של אובדן כושר עבודה בביטוח הזה?",
+     "expected": "/pension-savings/managers-insurance/",
+     "group": "אקראי",
+     "got": [
+      "/disability-and-incapacity-to-work/incapacity-to-work/",
+      "/disability-and-incapacity-to-work/professional-disability/",
+      "/disability-and-incapacity-to-work/normal-disability/"
+     ]
+    },
+    {
+     "q": "הרכב עומד במוסך חודשיים, אפשר להשהות את הביטוח?",
+     "expected": "car_disable_policy",
+     "group": "ידני",
+     "got": [
+      "/car-insurance/car_information/what-we-had/",
+      "/car-insurance/car_information/tips-to-decrease-the-insurance/",
+      "/car-insurance/car_information/second-hand-from-agent/"
+     ]
+    },
+    {
+     "q": "הכלב שלי מבוטח אצלכם ואני רוצה לבטל",
+     "expected": "pets_cancel_policy",
+     "group": "ידני",
+     "got": [
+      "/pets-insurance/dogs/",
+      "/customer-service/request-for-cancel-policy/",
+      "/pets-insurance/pets-information/dogs-obesity/"
+     ]
+    }
+   ]
+  }
+ ],
+ "refusal": [
+  {
+   "name": "משמעות (search, 3072)",
+   "answerable_min": 0.676,
+   "answerable_median": 0.782,
+   "unanswerable_max": 0.785,
+   "unanswerable_median": 0.658,
+   "best_threshold": 0.676,
+   "correct_at_best": 149,
+   "total": 156,
+   "unanswerable_scores": {
+    "כמה עולה ביטוח רכב בחברת הראל?": 0.725,
+    "אפשר לבטח אצלכם רחפן?": 0.672,
+    "אפשר להשקיע דרככם בביטקוין?": 0.661,
+    "מה שער הדולר היום?": 0.623,
+    "מה ריבית הפריים היום?": 0.733,
+    "איך מחדשים דרכון שפג תוקפו?": 0.64,
+    "מה הטלפון של משטרת התנועה?": 0.672,
+    "כמה ימי חופשה מגיעים לעובד במשרה מלאה?": 0.645,
+    "איך מכינים עוגת שוקולד?": 0.567,
+    "מתי יוצאת הרכבת הבאה לירושלים?": 0.576,
+    "מה שעות הפתיחה של הסניף שלכם בבאר שבע?": 0.619,
+    "מה מספר הפוליסה שלי?": 0.738,
+    "האם התביעה ששלחתי בשבוע שעבר אושרה?": 0.724,
+    "כמה עולה מניה של הפניקס היום?": 0.741,
+    "באיזה בנק הכי כדאי לקחת משכנתא?": 0.785,
+    "מה התחזית למזג האוויר בטיסה שלי ליוון?": 0.655,
+    "איך מזמינים תור לטסט שנתי במכון רישוי?": 0.729,
+    "מה שעות הפתיחה של מוסך מורשה בחולון?": 0.625,
+    "כמה עולה כרטיס טיסה לאילת?": 0.637,
+    "איך מגישים ערעור על דוח חניה?": 0.63
+   }
+  },
+  {
+   "name": "משמעות (search, 768)",
+   "answerable_min": 0.691,
+   "answerable_median": 0.795,
+   "unanswerable_max": 0.796,
+   "unanswerable_median": 0.667,
+   "best_threshold": 0.691,
+   "correct_at_best": 148,
+   "total": 156,
+   "unanswerable_scores": {
+    "כמה עולה ביטוח רכב בחברת הראל?": 0.734,
+    "אפשר לבטח אצלכם רחפן?": 0.694,
+    "אפשר להשקיע דרככם בביטקוין?": 0.666,
+    "מה שער הדולר היום?": 0.643,
+    "מה ריבית הפריים היום?": 0.746,
+    "איך מחדשים דרכון שפג תוקפו?": 0.655,
+    "מה הטלפון של משטרת התנועה?": 0.682,
+    "כמה ימי חופשה מגיעים לעובד במשרה מלאה?": 0.662,
+    "איך מכינים עוגת שוקולד?": 0.586,
+    "מתי יוצאת הרכבת הבאה לירושלים?": 0.592,
+    "מה שעות הפתיחה של הסניף שלכם בבאר שבע?": 0.632,
+    "מה מספר הפוליסה שלי?": 0.741,
+    "האם התביעה ששלחתי בשבוע שעבר אושרה?": 0.745,
+    "כמה עולה מניה של הפניקס היום?": 0.745,
+    "באיזה בנק הכי כדאי לקחת משכנתא?": 0.796,
+    "מה התחזית למזג האוויר בטיסה שלי ליוון?": 0.667,
+    "איך מזמינים תור לטסט שנתי במכון רישוי?": 0.737,
+    "מה שעות הפתיחה של מוסך מורשה בחולון?": 0.638,
+    "כמה עולה כרטיס טיסה לאילת?": 0.66,
+    "איך מגישים ערעור על דוח חניה?": 0.643
+   }
+  }
+ ],
+ "timing": {
+  "keyword_build_sec": 1.56,
+  "keyword_search_ms": 69.2,
+  "index_size_mb_full": 29.6,
+  "index_size_mb_768": 7.4,
+  "query_embed_ms_median": 496,
+  "semantic_search_ms_full": 1.17
+ }
+}

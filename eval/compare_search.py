@@ -267,9 +267,12 @@ def main():
     parser.add_argument("--keyword-only", action="store_true", help="רק חיפוש מילים, בלי Gemini")
     parser.add_argument("--sample", action="store_true",
                         help=f"בדיקה מוקטנת: {SAMPLE_BASE} הפסקאות הראשונות + הפסקאות של העמודים הנכונים")
+    parser.add_argument("--formats", default=",".join(QUERY_FORMATS),
+                        help="אילו ניסוחי שאלה לבדוק (search,qa). פחות ניסוחים = פחות בקשות")
     parser.add_argument("--questions", default=str(QUESTIONS_FILE),
                         help="קובץ השאלות (ברירת מחדל: eval/questions.json)")
     args = parser.parse_args()
+    formats = [f for f in args.formats.split(",") if f in QUERY_FORMATS]
     global RESULTS_FILE
     questions_file = Path(args.questions)
     if questions_file.resolve() != QUESTIONS_FILE.resolve():
@@ -312,7 +315,8 @@ def main():
             doc_texts = [doc_format(c) for c in chunks]
             all_q = [a["q"] for a in answerable] + unanswerable
             embed_all(doc_texts, cache, key, "פסקאות")
-            for fmt_name, fmt in QUERY_FORMATS.items():
+            for fmt_name in formats:
+                fmt = QUERY_FORMATS[fmt_name]
                 embed_all([fmt.format(q=q) for q in all_q], cache, key, f"שאלות ({fmt_name})")
         except Stop as e:
             print(f"\n🛑 {e}\n   מציגה רק את מה שאפשר בלי Gemini.\n")
@@ -336,7 +340,7 @@ def main():
                     return matrix @ v
                 return scores
 
-            for fmt in QUERY_FORMATS:
+            for fmt in formats:
                 for dim_name, matrix in ((str(DIM), docs), (str(SMALL_DIM), small)):
                     s = sem(fmt, matrix)
                     name = f"משמעות ({fmt}, {dim_name})"
@@ -372,7 +376,7 @@ def main():
                   f"{f['best_threshold']:>7} ({f['correct_at_best']}/{f['total']} נכון)")
     print("\nזמנים:", timing)
     for r in results:
-        if r["misses"] and (len(r["misses"]) <= 12 or r["name"].startswith("משמעות (qa, 768")):
+        if r["misses"] and (len(r["misses"]) <= 12 or r["name"].startswith("משמעות (") and r["name"].endswith(", 768)")):
             print(f"\n❌ פספוסים - {r['name']}:")
             for m in r["misses"]:
                 print(f"   {m['q']}  (צפוי: {m['expected']})\n      קיבלנו: {m['got']}")

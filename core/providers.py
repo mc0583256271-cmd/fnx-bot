@@ -74,8 +74,9 @@ class ClaudeProvider(LLMProvider):
     URL = "https://api.anthropic.com/v1/messages"
     _session = requests.Session()
 
-    def __init__(self, model="claude-haiku-5-5", timeout=20, temperature=0.2, max_tokens=1024):
-        self.model, self.timeout, self.temperature, self.max_tokens = model, timeout, temperature, max_tokens
+    def __init__(self, model="claude-haiku-5-5", timeout=20, max_tokens=1024):
+        # בלי temperature: Claude Haiku 5.5 מחזיר שגיאה אם שולחים אותו ("deprecated for this model")
+        self.model, self.timeout, self.max_tokens = model, timeout, max_tokens
         self.name = model
         self._key = None
 
@@ -85,7 +86,7 @@ class ClaudeProvider(LLMProvider):
                 self._key = load_key("ANTHROPIC_API_KEY")
             except Exception:
                 raise Unavailable(f"{self.model}: אין ANTHROPIC_API_KEY")
-        body = {"model": self.model, "max_tokens": self.max_tokens, "temperature": self.temperature,
+        body = {"model": self.model, "max_tokens": self.max_tokens,
                 "system": system, "messages": [{"role": "user", "content": user}]}
         headers = {"x-api-key": self._key, "anthropic-version": "2023-06-01", "content-type": "application/json"}
         try:

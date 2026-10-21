@@ -86,6 +86,15 @@ header[data-testid="stHeader"] {display: none;}
 @keyframes blink {50% {opacity: 0;}}
 @media (prefers-reduced-motion: reduce) {.cursor {animation: none;}}
 
+/* "הבוט כותב..." - שלוש נקודות כמו באפליקציות צ'אט */
+.typing {display: inline-flex; align-items: center; gap: .3rem; background: var(--paper); border-radius: 20px;
+  padding: .55rem 1rem; box-shadow: var(--shadow); color: var(--gray); font-size: .92rem;}
+.typing span {width: .45rem; height: .45rem; border-radius: 50%; background: var(--orange); opacity: .35;
+  animation: dot 1.2s infinite;}
+.typing span:nth-child(2) {animation-delay: .2s;} .typing span:nth-child(3) {animation-delay: .4s; margin-left: .4rem;}
+@keyframes dot {30% {opacity: 1; transform: translateY(-2px);}}
+@media (prefers-reduced-motion: reduce) {.typing span {animation: none; opacity: .8;}}
+
 /* מקור ואימות */
 .trust {display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .8rem; margin-top: .5rem; padding-top: .7rem;
   border-top: 1px solid #EEEFF2; font-size: .9rem; color: var(--gray);}
@@ -244,7 +253,8 @@ def respond(question, history, manifest, cache):
         result = None
         for kind, value in answer_stream(question, history=history):
             if kind == "status":
-                progress.caption(value)
+                progress.markdown(f'<div class="typing"><span></span><span></span><span></span>{html.escape(value)}</div>',
+                                  unsafe_allow_html=True)
             elif kind == "text":
                 progress.empty()
                 box.markdown(f'<div class="answer"><div class="answer-body">\n\n{_md(value)} '
@@ -278,7 +288,10 @@ st.markdown(f'<div class="topbar"><div class="brand"><div class="dot">💬</div>
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-if not st.session_state.messages:
+# תיבת הכתיבה תמיד מוצמדת לתחתית; קוראים אותה כבר כאן כדי לא להציג את מסך הפתיחה מעל שאלה שנשלחה
+question = st.chat_input("כתבו שאלה...", max_chars=MAX_CHARS) or st.session_state.pop("pending", None)
+
+if not st.session_state.messages and not question:
     st.markdown('<div class="welcome"><h1>שלום, איך אפשר לעזור?</h1>'
                 '<p>אפשר לשאול אותי על ביטוח, תביעות, פנסיה וחיסכון. אני עונה לפי המידע שבאתר הפניקס, '
                 'ולכל תשובה מצרף קישור לעמוד שממנו היא נלקחה.</p></div>', unsafe_allow_html=True)
@@ -318,7 +331,6 @@ if st.session_state.messages:
         st.download_button("הורדת השיחה", transcript(st.session_state.messages).encode("utf-8"),
                            file_name="fnx-bot-conversation.txt", mime="text/plain")
 
-question = st.chat_input("כתבו שאלה...", max_chars=MAX_CHARS) or st.session_state.pop("pending", None)
 if question:
     question = question.strip()[:MAX_CHARS]
     if rate_limited():

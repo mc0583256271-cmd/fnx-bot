@@ -58,37 +58,44 @@ header[data-testid="stHeader"] {display: none;}
 /* מקום שמור מתחת לשיחה: השאלה החדשה עולה לראש המסך מהרגע הראשון, ולא "קופצת" כשהתשובה נגמרת */
 .block-container:has(.msg-user) {padding-bottom: calc(100vh - 240px);}
 
-/* סרגל צד - כמו בצ'אטבוטים מקצועיים: מותג, פעולות, נושאים, מידע */
-.st-key-side {position: fixed; top: 0; right: 0; bottom: 0; width: var(--side); z-index: 1000; background: var(--paper);
-  border-left: 1px solid #ECEDF0; box-shadow: -4px 0 24px rgba(17,28,63,.05); padding: 1.4rem 1.1rem 1rem;
-  overflow-y: auto; gap: .6rem; direction: rtl; text-align: right;}
+/* בזמן שנכתבת תשובה חדשה Streamlit משאיר את רכיבי המסך הקודם "דהויים" עד שהם מוחלפים - כך נראתה התשובה
+   הקודמת מתחת לשאלה החדשה. מסתירים אותם: רואים רק את השאלה החדשה ואת התשובה שנכתבת */
+[data-stale="true"] {display: none !important;}
+
+/* סרגל צד - כחול הפניקס, כמו בצ'אטבוטים מקצועיים: מותג, פעולות, נושאים, מידע */
+.st-key-side {position: fixed; top: 0; right: 0; bottom: 0; width: var(--side); z-index: 1000;
+  background: linear-gradient(180deg, #16234D 0%, var(--blue) 55%, #0C1530 100%); color: #fff;
+  box-shadow: -6px 0 28px rgba(17,28,63,.18); padding: 1.4rem 1.1rem 1rem; overflow-y: auto; gap: .6rem;}
+.st-key-side, .st-key-side * {direction: rtl; text-align: right;}
 .st-key-side::before {content: ""; position: absolute; top: 0; right: 0; left: 0; height: 4px; background: var(--orange);}
-.brand {display: flex; align-items: center; gap: .7rem; padding-bottom: .9rem; border-bottom: 1px solid #EEEFF2;}
+.brand {display: flex; align-items: center; gap: .7rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,.12);}
 .brand .dot {width: 2.6rem; height: 2.6rem; border-radius: 12px; background: var(--orange); color: #fff;
-  display: grid; place-items: center; flex: none;}
-.brand b {display: block; font-size: 1.12rem; font-weight: 700;}
-.brand span {display: block; color: var(--gray); font-size: .82rem;}
-.st-key-side_actions {gap: .45rem; margin-top: .2rem;}
-.st-key-side .stButton button, .st-key-side .stLinkButton a {border-radius: 10px; font-weight: 500; justify-content: flex-start;
-  padding: .55rem .9rem; min-height: 0;}
+  display: grid; place-items: center; flex: none; box-shadow: 0 4px 14px rgba(255,78,49,.35);}
+.brand b {display: block; font-size: 1.12rem; font-weight: 700; color: #fff;}
+.brand span {display: block; color: rgba(255,255,255,.62); font-size: .82rem;}
+.st-key-side_actions {gap: .5rem; margin-top: .3rem;}
+.st-key-side .stButton button, .st-key-side .stLinkButton a {border-radius: 10px; font-weight: 500; padding: .6rem .9rem;
+  min-height: 0; justify-content: center;}
 .st-key-side .stButton button[kind="primary"] {background: var(--orange); border-color: var(--orange); color: #fff;
-  justify-content: center; font-size: 1rem;}
-.st-key-side .stButton button[kind="primary"]:hover {background: #E8432A; border-color: #E8432A; color: #fff;}
-.st-key-side .stLinkButton a {background: var(--paper); border: 1px solid var(--line); color: var(--blue); justify-content: center;}
-.st-key-side .stLinkButton a:hover {border-color: var(--blue);}
-.side-label {color: var(--gray); font-size: .78rem; font-weight: 600; margin: 1rem .2rem .35rem; line-height: 1.3;}
+  font-size: 1rem; box-shadow: 0 6px 16px rgba(255,78,49,.3);}
+.st-key-side .stButton button[kind="primary"]:hover {background: #FF6448; border-color: #FF6448; color: #fff;}
+.st-key-side .stLinkButton a {background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.28); color: #fff;}
+.st-key-side .stLinkButton a:hover {background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.5); color: #fff;}
+.side-label {color: rgba(255,255,255,.5); font-size: .76rem; font-weight: 600; letter-spacing: .02em;
+  margin: 1.1rem .2rem .6rem; line-height: 1.3;}
 .st-key-side_more {gap: .1rem;}
-.st-key-side_more .stButton button {color: var(--blue); padding: .45rem .6rem; border-radius: 8px; font-size: .95rem;
-  border-color: transparent; background: transparent; box-shadow: none; justify-content: flex-start; gap: .55rem;}
-.st-key-side_more .stButton button:hover {background: var(--surface); color: var(--blue); border-color: transparent;}
-.st-key-side_more .stButton button p {text-align: right;}
+.st-key-side_more .stButton button {color: rgba(255,255,255,.9); padding: .5rem .65rem; border-radius: 8px; font-size: .95rem;
+  border-color: transparent; background: transparent; box-shadow: none; justify-content: flex-start; gap: .6rem;}
+.st-key-side_more .stButton button:hover {background: rgba(255,255,255,.08); color: #fff; border-color: transparent;}
 .st-key-side_more .stButton button, .st-key-side_more .stButton button > div {justify-content: flex-start !important;}
 .st-key-side_more [data-testid="stElementContainer"], .st-key-side_more .stButton {width: 100% !important;}
 .st-key-side_more .stButton button [data-testid="stIconMaterial"] {color: var(--orange);}
-.how {list-style: none; padding: 0; margin: 0; font-size: .86rem; color: var(--gray); line-height: 1.45;}
-.how li {display: flex; gap: .5rem; align-items: flex-start; margin: 0 0 .55rem;}
-.how .material {font-size: 1.1rem; flex: none;}
-.side-foot {margin-top: .8rem; padding-top: .8rem; border-top: 1px solid #EEEFF2; color: #9A9CA3; font-size: .76rem; line-height: 1.6;}
+.how {list-style: none; padding: 0; margin: 0; font-size: .86rem; color: rgba(255,255,255,.72); line-height: 1.5;}
+.how li {display: flex; gap: .55rem; align-items: flex-start; margin: 0 0 .6rem;}
+.how li span:last-child {flex: 1 1 auto; text-align: right;}
+.how .material {font-size: 1.1rem; flex: none; color: var(--orange);}
+.side-foot {margin-top: .8rem; padding-top: .8rem; border-top: 1px solid rgba(255,255,255,.12);
+  color: rgba(255,255,255,.45); font-size: .76rem; line-height: 1.6;}
 .st-key-end_actions {margin-top: .8rem;}
 .st-key-end_actions .stDownloadButton button {border-radius: 22px; border: 1px solid var(--line); background: var(--paper);
   color: var(--blue); font-weight: 500; font-size: .9rem; padding: .35rem 1rem;}
@@ -106,6 +113,7 @@ header[data-testid="stHeader"] {display: none;}
     flex-wrap: nowrap; padding: .55rem .7rem; margin: .4rem 0 .8rem; border-radius: 14px;
     box-shadow: 0 2px 12px rgba(17,28,63,.1); border-left: none; overflow: hidden;}
   .st-key-side::before {top: auto; bottom: 0;}
+  .st-key-side {background: var(--blue);}
   .st-key-side_more, [data-testid="stLayoutWrapper"]:has(> .st-key-side_more) {display: none !important;}
   [data-testid="stLayoutWrapper"]:has(> .st-key-side_actions) {flex: none; width: auto !important;}
   .brand {border: none; padding: 0; flex: 1 1 auto; min-width: 0;}
@@ -516,10 +524,10 @@ with st.container(key="side"):
             st.button(name, icon=icon, key=f"side{i}", on_click=ask, args=(q,), type="tertiary", use_container_width=True)
         st.markdown(f"""<div class="side-label">איך זה עובד</div>
 <ul class="how">
-<li><span class="material">language</span>עונה רק לפי המידע באתר הפניקס</li>
-<li><span class="material">link</span>לכל תשובה מצורף העמוד שממנו היא נלקחה</li>
-<li><span class="material">fact_check</span>המשפטים מהאתר נבדקים לפני שהתשובה מוצגת</li>
-<li><span class="material">lock</span>אין גישה לפרטים אישיים - אותם בודקים בשירות הלקוחות</li>
+<li><span class="material">language</span><span>עונה רק לפי המידע באתר הפניקס</span></li>
+<li><span class="material">link</span><span>לכל תשובה מצורף העמוד שממנו היא נלקחה</span></li>
+<li><span class="material">fact_check</span><span>המשפטים מהאתר נבדקים לפני שהתשובה מוצגת</span></li>
+<li><span class="material">lock</span><span>אין גישה לפרטים אישיים - אותם בודקים בשירות הלקוחות</span></li>
 </ul>
 <div class="side-foot">המידע נאסף מהאתר ב-{html.escape(crawled_nice)} · {manifest.get("pages", "")} עמודים<br>
 השיחה לא נשמרת אחרי סגירת החלון</div>""", unsafe_allow_html=True)
@@ -576,26 +584,28 @@ def feedback_row(i):
         st.feedback("thumbs", key=f"fb{i}", on_change=on_feedback, args=(i,))
 
 
-for i, msg in enumerate(st.session_state.messages):
-    with st.chat_message(msg["role"]):
-        show(msg)
-        if msg["role"] == "assistant" and msg.get("status") in ("answer", "not_found", "clarify"):
-            feedback_row(i)
-
-# שאלה חדשה: נכתבת ונענית באותו ריצה - בלי לצייר את הדף מחדש בסוף (זה מה שגרם לקפיצה)
+# כל הודעה מצוירת תמיד באותו מקום בדף (Streamlit מזהה רכיבים לפי מיקום): השאלה החדשה נכנסת לסוף הרשימה ונענית
+# באותה לולאה - כך היא לא "יורשת" מקום שהיה שייך לתשובה קודמת (שאריות של התשובה הקודמת נראו מתחת לשאלה).
 if question:
     history = [{"role": m["role"], "text": m["text"]} for m in st.session_state.messages]
     st.session_state.messages.append({"role": "user", "text": question})
-    with st.chat_message("user"):
-        show(st.session_state.messages[-1])
-    scroll_to_question(len(st.session_state.messages), seconds=45)  # השאלה בראש המסך, התשובה נכתבת מתחתיה
-    with st.chat_message("assistant"):
-        reply = respond(question, history, manifest, cache)
-        st.session_state.messages.append(reply)
-        if reply.get("status") in ("answer", "not_found", "clarify"):
-            feedback_row(len(st.session_state.messages) - 1)
-    if st.session_state.get("pending"):  # נשלחה עוד שאלה בזמן הכתיבה - עונים עליה עכשיו
-        st.rerun()
+
+for i, msg in enumerate(list(st.session_state.messages)):
+    is_new = bool(question) and i == len(st.session_state.messages) - 1 and msg["role"] == "user"
+    with st.chat_message(msg["role"]):
+        show(msg)
+        if is_new:
+            scroll_to_question(i, seconds=45)  # השאלה בראש המסך, התשובה נכתבת מתחתיה
+        if msg["role"] == "assistant" and msg.get("status") in ("answer", "not_found", "clarify"):
+            feedback_row(i)
+    if is_new:  # התשובה לשאלה החדשה - נכתבת ונשמרת באותה ריצה, בלי לצייר את הדף מחדש
+        with st.chat_message("assistant"):
+            reply = respond(question, history, manifest, cache)
+            st.session_state.messages.append(reply)
+            if reply.get("status") in ("answer", "not_found", "clarify"):
+                feedback_row(len(st.session_state.messages) - 1)
+        if st.session_state.get("pending"):  # נשלחה עוד שאלה בזמן הכתיבה - עונים עליה עכשיו
+            st.rerun()
 
 last = st.session_state.messages[-1] if st.session_state.messages else None
 if last and last["role"] == "assistant":

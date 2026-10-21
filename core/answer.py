@@ -338,13 +338,13 @@ def answer_stream(question, history=None, provider=None, retrieval="vectors"):
     info = {"question": question, "search_query": question, "model": None}
 
     if history:
-        yield "status", "מבין את ההקשר של השאלה..."
+        yield "status", "מבין את השאלה"
         try:
             info["search_query"] = rewrite_question(question, history, provider)
         except Unavailable:
             pass  # בלי ניסוח מחדש: מחפשים את השאלה כמו שהיא
 
-    yield "status", "מחפש באתר הפניקס..."
+    yield "status", "מחפש את המידע באתר הפניקס"
     t0 = time.time()
     try:
         hits, used = search(info["search_query"], mode=retrieval)
@@ -358,7 +358,7 @@ def answer_stream(question, history=None, provider=None, retrieval="vectors"):
         yield "final", _result("not_found", NOT_FOUND_TEXT, contact, reason="low_score", **info)
         return
 
-    yield "status", "מנסח תשובה..."
+    yield "status", "כותב תשובה"
     t0, extra = time.time(), []
     for pass_no in (1, 2):  # מעבר שני רק כששאלת ההבהרה לא מוצדקת (ראו למטה)
         raw, shown = "", ""
@@ -392,7 +392,7 @@ def answer_stream(question, history=None, provider=None, retrieval="vectors"):
         if pass_no == 1 and status == "clarify" and not re.search(r"מסלול|קרן|קופ|תשוא|דמי ניהול", text):
             info["clarify_retry"] = text[:200]
             extra = ["אסור לשאול שאלת הבהרה. ענה ותאר בקצרה כל אחת מהאפשרויות שבקטעים (\"אם... / ואם...\")"]
-            yield "status", "מנסח תשובה..."
+            yield "status", "כותב תשובה"
             continue
         break
     numbers = [n for i, n in enumerate(numbers) if 1 <= n <= len(hits) and n not in numbers[:i]]
@@ -412,7 +412,7 @@ def answer_stream(question, history=None, provider=None, retrieval="vectors"):
     quotes = verify_quotes(evidence, hits)
     unknown = _unknown_words(question) if status in ("answer", None) and text and numbers else []
     if unknown and not bad_numbers and not bad_terms:
-        yield "status", "בודק שהתשובה עוסקת במה ששאלתם..."
+        yield "status", "מוודא שהתשובה עוסקת במה ששאלתם"
         same, why = subject_check(question, unknown, text, quotes, provider)
         info["subject_check"] = why
         if not same:

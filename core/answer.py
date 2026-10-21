@@ -142,6 +142,29 @@ def rewrite_question(question, history, provider):
     return rewritten or question
 
 
+SUBJECT_SYSTEM = """אתה בודק איכות של בוט שירות. לפניך שאלת לקוח, מילים מהשאלה שלא מופיעות בשום מקום באתר החברה,
+התשובה שהבוט כתב, והציטוטים מהאתר שעליהם התשובה מבוססת.
+בדוק דבר אחד: האם הציטוטים עוסקים באותו דבר שהלקוח שאל עליו - או בדבר אחר שרק נשמע דומה או קשור
+(למשל: הלקוח שאל על רחפן - כלי טיס - והציטוטים מדברים על רחיפה או גלישה - ספורט).
+false גם כשהתשובה מסיקה משהו על הדבר שנשאל מתוך כלל כללי שלא מזכיר אותו במפורש
+(למשל: "לא מכוסה טיסה בכלי טיס" -> "רחפן לא מכוסה"; זה כלל על אדם שטס, לא על ביטוח לרחפן).
+true כשהציטוטים מדברים על אותו דבר, גם אם התשובה נותנת את המידע בניסוח או ביחידות אחרות (למשל "כמה הרוויח" ותשואה באחוזים),
+וגם כשמילים מהשאלה שלא באתר אינן הנושא (פעלים, מילות שיחה, שם שכתוב באתר באנגלית או בכתיב אחר).
+החזר JSON בלבד: {"same_subject": true או false, "why": "משפט קצר"}"""
+
+
+def subject_check(question, unknown, text, quotes, provider):
+    """True אם התשובה עוסקת במה שנשאל. רץ רק כשיש בשאלה מילה שלא מופיעה באתר. בספק (תקלה) - True,
+    כי שאר הבדיקות (מקור, מספרים, ציטוטים) עדיין חלות."""
+    evidence = "\n".join(f'- "{q["quote"]}" ({q["title"]})' for q in quotes) or "(אין ציטוטים)"
+    try:
+        data, _ = provider.generate(SUBJECT_SYSTEM, f"שאלת הלקוח: {question}\nמילים שלא באתר: {', '.join(unknown)}\n"
+                                                    f"תשובת הבוט: {text[:1200]}\nציטוטים:\n{evidence}")
+    except Unavailable:
+        return True, "unavailable"
+    return data.get("same_subject") is not False, str(data.get("why", ""))[:200]
+
+
 _site_words = None
 
 
@@ -152,17 +175,31 @@ def _unknown_words(question):
     retriever = _get_retriever()
     if _site_words is None or _site_words[0] is not retriever:  # אחרי רענון - אינדקס חדש, מילים חדשות
         chunks = getattr(retriever, "chunks", None) or []
-        _site_words = (retriever, set(re.findall(r"[א-ת]+", " ".join(f"{c.get('title', '')} {c.get('text', '')}"
-                                                                       for c in chunks))))
+        site = set(re.findall(r"[א-ת]+", " ".join(f"{c.get('title', '')} {c.get('text', '')}" for c in chunks)))
+        _site_words = (retriever, set().union(*(_forms(w) for w in site)) if site else set())  # "האסלה" -> גם "אסלה"
     words = _site_words[1]
     if not words:
         return []
     out = []
     for w in re.findall(r"[א-ת]{3,}", question):
-        forms = {w} | {w[i:] for i in (1, 2) if len(w) - i >= 3 and all(ch in "והבלמשכ" for ch in w[:i])}
-        if not forms & words:
+        if not _forms(w) & words:
             out.append(w)
     return out
+
+
+def _forms(word):
+    return {word} | {word[i:] for i in (1, 2) if len(word) - i >= 3 and all(ch in "והבלמשכ" for ch in word[:i])}
+
+
+def _mentions(text, word):
+    """האם התשובה כותבת את המילה (גם עם ו/ה/ב/ל... בתחילתה)."""
+    target = _forms(word)
+    return any(_forms(w) & target for w in re.findall(r"[א-ת]{3,}", text))
+
+
+def _looks_like_verb(word):
+    """פועל בגוף ראשון/שני ("עשיתי", "שלחנו", "קיבלתם") - חוזר בתשובה בלי להיות הנושא, לא סיבה לחסום."""
+    return len(word) >= 4 and word.endswith(("תי", "נו", "תם", "תן"))
 
 
 def _passages_text(question, hits):
@@ -170,8 +207,10 @@ def _passages_text(question, hits):
     parts = [f"<שאלה>{question}</שאלה>"]
     unknown = _unknown_words(question)
     if unknown:
-        parts.append(f"(בדיקה אוטומטית: המילים {', '.join(unknown)} מהשאלה לא מופיעות בשום מקום באתר. "
-                     "אם אחת מהן היא הנושא שעליו נשאלת השאלה - STATUS: not_found, גם אם בקטעים יש מילה שנשמעת דומה.)")
+        parts.append(f"(בדיקה אוטומטית: המילים {', '.join(unknown)} מהשאלה לא מופיעות באתר בכתיב הזה. "
+                     "אם אחת מהן היא שם הדבר שעליו שואלים (חפץ, מוצר, שירות) והקטעים עוסקים בדבר אחר שרק נשמע "
+                     "דומה - STATUS: not_found. פעלים ומילות שיחה (\"הרוויח\", \"רציתי\"), או שם שמופיע בקטעים "
+                     "בכתיב אחר או באנגלית (\"וול\" = WELL) - לא סיבה לסרב.)")
     parts.append("קטעים מאתר הפניקס:")
     for n, h in enumerate(hits, 1):
         parts.append(f"[{n}] {h['text']}")  # text = כותרת הקשר (עמוד | מדור | נושא) + גוף הקטע
@@ -309,8 +348,20 @@ def answer_stream(question, history=None, provider=None, retrieval="vectors"):
         return
     text = _hide_passages_word(text)
     bad_numbers = unverified_numbers(text, hits, question) if status in ("answer", None) and text else []
-    if status in ("answer", None) and text and numbers and not bad_numbers:
-        quotes = verify_quotes(evidence, hits)
+    # מילה מהשאלה שלא מופיעה בשום מקום באתר ("רחפן"), והתשובה בכל זאת כותבת עליה - התשובה לא יכולה להיות
+    # מבוססת על האתר (בבדיקה: המודל ענה על "רחיפה" כאילו זה רחפן). גם פועל שחוזר מהשאלה נחסם - עדיף סירוב מטעות.
+    bad_terms = [w for w in _unknown_words(info["search_query"] + " " + question)
+                 if not _looks_like_verb(w) and _mentions(text, w)] \
+        if status in ("answer", None) and text else []
+    quotes = verify_quotes(evidence, hits)
+    unknown = _unknown_words(question) if status in ("answer", None) and text and numbers else []
+    if unknown and not bad_numbers and not bad_terms:
+        yield "status", "בודק שהתשובה עוסקת במה ששאלתם..."
+        same, why = subject_check(question, unknown, text, quotes, provider)
+        info["subject_check"] = why
+        if not same:
+            bad_terms = unknown
+    if status in ("answer", None) and text and numbers and not bad_numbers and not bad_terms:
         sources, seen = [], set()
         for n in numbers + [q["n"] for q in quotes]:
             h = hits[n - 1]
@@ -322,7 +373,8 @@ def answer_stream(question, history=None, provider=None, retrieval="vectors"):
         return
     # not_found, תשובה בלי מקור תקין ("אין מקור - אין תשובה"), או מספר שלא מופיע באתר - הטקסט שהוצג מוחלף
     reason = ("model_not_found" if status == "not_found" else
-              f"unverified_numbers: {', '.join(bad_numbers)}" if bad_numbers else "no_valid_source")
+              f"unverified_numbers: {', '.join(bad_numbers)}" if bad_numbers else
+              f"term_not_on_site: {', '.join(bad_terms)}" if bad_terms else "no_valid_source")
     yield "final", _result("not_found", NOT_FOUND_TEXT, contact, reason=reason, **info)
 
 

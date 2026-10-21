@@ -19,3 +19,4 @@ data/emb_cache/
 # שאלות שלא נענו (מכ"ם פערים) - נוצר בזמן ריצה
 data/gaps.jsonl
 data/refresh.log
+data/feedback.jsonl

@@ -22,7 +22,7 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 from core.embeddings import Stop, load_key  # noqa: E402
-from core.gaps import load_gaps  # noqa: E402
+from core.gaps import clear_feedback, clear_gaps, load_feedback, load_gaps, remove_question  # noqa: E402
 from core.refresh import RefreshJob  # noqa: E402
 
 MAX_FAILS = 5            # ניסיונות שגויים בחלון אחד לפני נעילה
@@ -35,7 +35,7 @@ html, body, .stApp, .stMarkdown, .stButton button, input {font-family: 'Rubik', 
 .stApp {background: #F5F6FA; color: #111C3F;}
 .block-container {direction: rtl; text-align: right; max-width: 880px; padding-top: 2rem;}
 [data-testid="stToolbar"], [data-testid="stDecoration"], footer, section[data-testid="stSidebar"],
-[data-testid="stSidebarCollapsedControl"] {display: none !important;}
+[data-testid="stSidebarCollapsedControl"], header[data-testid="stHeader"] {display: none !important;}
 h1 {font-weight: 700; border-bottom: 3px solid #FF4E31; display: inline-block; padding-bottom: .2rem;}
 .card {background: #fff; border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,.08); padding: 1rem 1.2rem; margin-bottom: 1rem;}
 .big {font-size: 1.9rem; font-weight: 700; line-height: 1.1;}
@@ -136,37 +136,31 @@ c3.markdown(f'<div class="card"><div class="big">{html.escape(str(m.get("newest_
             f'<div class="muted">נאסף לאחרונה</div></div>', unsafe_allow_html=True)
 st.caption(f"האינדקס נבנה ב-{m.get('built_at', '-')} · מודל ההטמעה {m.get('model', '-')}")
 
-# ---------- בדיקת חיבור ----------
-st.subheader("בדיקת חיבור")
-st.write("אילו מפתחות השרת מצא (רק האם קיים - המפתח עצמו לא מוצג), וכמה זמן לוקח לכל שירות לענות.")
-keys = []
-for name, role in [("GEMINI_API_KEY", "חיפוש (וקטור לכל שאלה)"), ("ANTHROPIC_API_KEY", "מודל השפה הראשי (Claude)"),
-                   ("ADMIN_PASSWORD", "סיסמת עמוד המנהל")]:
-    try:
-        load_key(name)
-        keys.append(f"✅ {name} - {role}")
-    except Stop:
-        keys.append(f"❌ {name} - {role}: לא נמצא. בלי מפתח Claude הבוט עובר ל-Gemini, שאיטי יותר ולפעמים לא זמין.")
-st.markdown("<br>".join(keys), unsafe_allow_html=True)
-if st.button("מדידת מהירות"):
-    from core.providers import ClaudeProvider, GeminiProvider, DEFAULT_CHAIN, Unavailable
+# ---------- בדיקת תקינות ----------
+st.subheader("בדיקת תקינות")
+st.write("בודק שהחיפוש ומודלי השפה עונים, וכמה זמן זה לוקח. מתאים כשהבוט נראה איטי או לא עונה.")
+if st.button("הרצת בדיקה"):
+    from core.providers import DEFAULT_CHAIN, ClaudeProvider, GeminiProvider, Unavailable
     from core.retriever import Retriever
-    rows = []
+    checks = []
     t0 = time.time()
     try:
         Retriever().search("איך מגישים תביעה על נזילה?", k=8)
-        rows.append(f"חיפוש (Gemini embedding): {time.time() - t0:.1f} שניות")
-    except Exception as e:  # noqa: BLE001 - מציגים את הסיבה למנהל
-        rows.append(f"חיפוש: נכשל ({type(e).__name__})")
-    for prov in [ClaudeProvider(), GeminiProvider(DEFAULT_CHAIN[0][0], timeout=20)]:
+        checks.append(("חיפוש באינדקס", True, f"{time.time() - t0:.1f} שניות"))
+    except Exception:  # noqa: BLE001 - למנהל מספיק לדעת שזה לא עובד
+        checks.append(("חיפוש באינדקס", False, "לא עובד - כל השאלות יקבלו \"השירות לא זמין\""))
+    for label, prov in [("מודל השפה הראשי", ClaudeProvider()),
+                        ("מודל הגיבוי", GeminiProvider(DEFAULT_CHAIN[0][0], timeout=20))]:
         t0, first = time.time(), None
         try:
             for _ in prov.stream("ענה במשפט אחד.", "מה זה ביטוח דירה?"):
                 first = first or time.time() - t0
-            rows.append(f"{prov.name}: מילה ראשונה אחרי {first:.1f} שניות, סיום אחרי {time.time() - t0:.1f}")
-        except Unavailable as e:
-            rows.append(f"{prov.name}: לא זמין ({str(e)[:120]})")
-    st.code("\n".join(rows), language=None)
+            checks.append((label, True, f"מתחיל לענות אחרי {first:.1f} שניות"))
+        except Unavailable:
+            checks.append((label, False, "לא זמין כרגע"))
+    rows = "".join(f'<div class="gap"><span>{"✅" if ok else "⚠️"} {name}</span><b>{html.escape(note)}</b></div>'
+                   for name, ok, note in checks)
+    st.markdown(f'<div class="card">{rows}</div>', unsafe_allow_html=True)
 
 # ---------- רענון ----------
 st.subheader("רענון המידע מהאתר")
@@ -210,16 +204,50 @@ if changes_file.exists():
 st.subheader('מכ"ם פערים: מה לקוחות שואלים ולא מוצאים באתר')
 gaps = load_gaps()
 if not gaps:
-    st.write("עדיין אין שאלות שלא נענו. כל שאלה שהבוט עונה עליה \"לא מצאתי\" תופיע כאן - בלי פרטים מזהים.")
+    st.write("אין כרגע שאלות פתוחות. כל שאלה שהבוט עונה עליה \"לא מצאתי\" תופיע כאן - בלי פרטים מזהים.")
 else:
-    st.write(f"{len(gaps)} שאלות לא נענו. הנושאים שחוזרים הכי הרבה הם רמז למידע שכדאי להוסיף לאתר "
-             "(או לשאלות שהבוט מפספס).")
+    st.write(f"{len(gaps)} שאלות לא נענו. נושאים שחוזרים הם רמז למידע שכדאי להוסיף לאתר. "
+             "אחרי שמטפלים בשאלה (למשל מוסיפים מידע לאתר ומרעננים) - מסמנים אותה כ\"טופלה\".")
     words = Counter(w for g in gaps for w in set(re.findall(r"[א-ת]{3,}", g["search_query"])) if w not in STOP)
     st.markdown("**מילים שחוזרות:** " + " · ".join(f"{html.escape(w)} ({n})" for w, n in words.most_common(12)),
                 unsafe_allow_html=True)
     same = Counter(re.sub(r"[?!.,\s]+", " ", g["question"]).strip() for g in gaps)
-    rows = "".join(f'<div class="gap"><span>{html.escape(q)}</span><b>{n}×</b></div>' for q, n in same.most_common(15))
-    st.markdown(f'<div class="card">{rows}</div>', unsafe_allow_html=True)
-    st.download_button("הורדת כל השאלות שלא נענו (CSV)",
+    for i, (q, n) in enumerate(same.most_common(20)):
+        c1, c2 = st.columns([5, 1])
+        c1.markdown(f'<div class="gap"><span>{html.escape(q)}</span><b>{n}×</b></div>', unsafe_allow_html=True)
+        if c2.button("✓ טופלה", key=f"gap{i}"):
+            remove_question(q)
+            st.rerun()
+    st.download_button("הורדת כל השאלות (CSV)",
                        "at,question\n" + "\n".join(f'{g["at"]},"{_csv_safe(g["question"])}"' for g in gaps),
                        file_name="unanswered.csv", mime="text/csv")
+    with st.expander("ניקוי כל הרשימה"):
+        sure = st.checkbox("כן, למחוק את כל השאלות שלא נענו (אי אפשר לשחזר)", key="sure_gaps")
+        if st.button("מחיקת הרשימה", disabled=not sure):
+            clear_gaps()
+            st.rerun()
+
+# ---------- משוב לקוחות ----------
+st.subheader("משוב לקוחות: עזרתי?")
+fb = load_feedback()
+if not fb:
+    st.write("עדיין אין משוב. אחרי כל תשובה לקוחות יכולים ללחוץ 👍 או 👎.")
+else:
+    good = sum(r["helpful"] for r in fb)
+    c1, c2, c3 = st.columns(3)
+    c1.markdown(f'<div class="card"><div class="big">{round(100 * good / len(fb))}%</div>'
+                f'<div class="muted">מהתשובות עזרו</div></div>', unsafe_allow_html=True)
+    c2.markdown(f'<div class="card"><div class="big">{good}</div><div class="muted">👍</div></div>', unsafe_allow_html=True)
+    c3.markdown(f'<div class="card"><div class="big">{len(fb) - good}</div><div class="muted">👎</div></div>',
+                unsafe_allow_html=True)
+    bad = [r for r in fb if not r["helpful"]][-10:]
+    if bad:
+        st.markdown("**תשובות אחרונות שלא עזרו** - כדאי לבדוק אם חסר מידע באתר או שהבוט פספס:")
+        rows = "".join(f'<div class="gap"><span><b style="color:#111C3F">{html.escape(r["question"])}</b><br>'
+                       f'<span class="muted">{html.escape(r["answer"][:160])}</span></span></div>' for r in reversed(bad))
+        st.markdown(f'<div class="card">{rows}</div>', unsafe_allow_html=True)
+    with st.expander("ניקוי המשוב"):
+        sure = st.checkbox("כן, למחוק את כל המשוב (אי אפשר לשחזר)", key="sure_fb")
+        if st.button("מחיקת המשוב", disabled=not sure):
+            clear_feedback()
+            st.rerun()

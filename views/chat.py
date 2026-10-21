@@ -16,6 +16,7 @@ import sys
 import time
 from datetime import date, datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import streamlit as st
 
@@ -23,7 +24,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 from core import answer as answer_module  # noqa: E402
 from core.answer import CONTACT_URL, answer_stream  # noqa: E402
-from core.gaps import log_gap  # noqa: E402
+from core.gaps import log_feedback, log_gap  # noqa: E402
 from core.retriever import IndexNotReady, Retriever  # noqa: E402
 
 MAX_CHARS = 500           # שאלה ארוכה מזה נחתכת בתיבת הקלט
@@ -67,10 +68,24 @@ header[data-testid="stHeader"] {display: none;}
   font-weight: 500; padding: .5rem 1.1rem; text-align: right; box-shadow: none;}
 .stButton button:hover {border-color: var(--orange); color: var(--orange); background: var(--paper);}
 .stButton button:focus-visible {outline: 3px solid var(--orange); outline-offset: 2px;}
-.st-key-examples [data-testid="stElementContainer"], .st-key-examples .stButton {width: 100% !important;}
-.st-key-examples .stButton button {width: 100%; min-height: 4.4rem; border-radius: 10px; box-shadow: var(--shadow);
-  border-color: transparent; font-size: 1rem; justify-content: flex-start; white-space: normal; line-height: 1.4;}
-.st-key-examples .stButton button p {white-space: normal; overflow: visible; text-overflow: clip; text-align: right;}
+.label {margin: 1.2rem 0 .5rem; color: var(--gray); font-size: .9rem; font-weight: 500;}
+/* אריחי נושאים - כמו אייקוני המוצרים באתר */
+.st-key-topics .stButton button {min-height: 5.6rem; border-radius: 14px; border-color: transparent; box-shadow: var(--shadow);
+  justify-content: center; text-align: center; font-weight: 500; transition: transform .15s ease, box-shadow .15s ease;}
+.st-key-topics .stButton button p {text-align: center; font-size: 1rem; margin: 0; line-height: 1.3;
+  white-space: normal; overflow: visible; text-overflow: clip;}
+.st-key-topics .stButton button p:first-child {font-size: 1.7rem;}
+.st-key-topics .stButton button:hover {transform: translateY(-3px); box-shadow: 0 8px 22px rgba(17,28,63,.13);
+  border-color: var(--orange); color: var(--blue);}
+@media (max-width: 640px) {
+  .st-key-topics [data-testid="stHorizontalBlock"] {flex-direction: row !important; flex-wrap: nowrap !important; gap: .5rem;}
+  .st-key-topics [data-testid="stColumn"] {min-width: 0 !important; width: auto !important; flex: 1 1 0 !important;}
+  .st-key-topics .stButton button {min-height: 4.6rem; padding: .4rem .3rem;}
+  .st-key-topics .stButton button p {font-size: .85rem;}}
+.st-key-examples {flex-wrap: wrap; gap: .5rem;}
+.st-key-examples .stButton button {font-size: .93rem; padding: .4rem .95rem; background: var(--paper);}
+@media (prefers-reduced-motion: reduce) {.st-key-topics .stButton button {transition: none;}
+  .st-key-topics .stButton button:hover {transform: none;}}
 .st-key-examples .stButton button:hover {border-color: var(--orange);}
 
 /* הודעות */
@@ -85,6 +100,19 @@ header[data-testid="stHeader"] {display: none;}
 .cursor {color: var(--orange); animation: blink 1s steps(1) infinite;}
 @keyframes blink {50% {opacity: 0;}}
 @media (prefers-reduced-motion: reduce) {.cursor {animation: none;}}
+
+/* מי מדבר: נקודה כתומה קטנה ו"העוזר הדיגיטלי" מעל כל תשובה */
+.who {display: flex; align-items: center; gap: .4rem; color: var(--gray); font-size: .8rem; margin: 1rem 0 .35rem;}
+.who i {width: .55rem; height: .55rem; border-radius: 50%; background: var(--orange); display: inline-block;}
+/* תשובה חדשה נכנסת בעדינות (פעם אחת, רק התשובה שנכתבה עכשיו) */
+.fresh {animation: rise .35s ease-out both;}
+@keyframes rise {from {opacity: 0; transform: translateY(6px);}}
+@media (prefers-reduced-motion: reduce) {.fresh {animation: none;}}
+/* "עזרתי?" 👍 👎 */
+[class*="st-key-fbrow"] {align-items: center; gap: .35rem; margin: .25rem 0 0; opacity: .75;}
+[class*="st-key-fbrow"]:hover {opacity: 1;}
+.fbq {color: var(--gray); font-size: .82rem;}
+[class*="st-key-fbrow"] [data-testid="stMarkdownContainer"] p {margin: 0;}
 
 /* "הבוט כותב..." - שלוש נקודות כמו באפליקציות צ'אט */
 .typing {display: inline-flex; align-items: center; gap: .3rem; background: var(--paper); border-radius: 20px;
@@ -190,29 +218,28 @@ def evidence_html(evidence):
         slips.append(f'<div class="slip"><q><mark>{html.escape(e["quote"])}</mark></q>'
                      f'<span class="from">מתוך: <a href="{html.escape(e["url"])}" target="_blank" rel="noopener">'
                      f'{html.escape(e["title"])}</a></span></div>')
-    slips.append('<p class="how">כל ציטוט נבדק אוטומטית מילה במילה מול הטקסט באתר, וכל מספר בתשובה '
-                 '(סכום, אחוז, טלפון) מופיע באתר. תשובה שלא עוברת את הבדיקה לא מוצגת.</p>')
     return "".join(slips)
 
 
-def show(msg):
+def show(msg, fresh=False):
     status = msg.get("status")
     if msg["role"] == "user":
         st.markdown(f'<div class="msg-user">{html.escape(msg["text"])}</div>', unsafe_allow_html=True)
         return
+    st.markdown(f'<div class="who{" fresh" if fresh else ""}"><i></i>העוזר הדיגיטלי</div>', unsafe_allow_html=True)
     if status in ("not_found", "unavailable", "personal"):
         title = {"not_found": "אין מספיק מידע באתר", "unavailable": "השירות לא זמין כרגע",
                  "personal": "את זה בודקים בשירות הלקוחות"}[status]
-        st.markdown(f'<div class="note"><b>{title}</b>{html.escape(msg["text"])}<br>'
+        st.markdown(f'<div class="note{" fresh" if fresh else ""}"><b>{title}</b>{html.escape(msg["text"])}<br>'
                     f'<a href="{CONTACT_URL}" target="_blank" rel="noopener">לכל הדרכים ליצור קשר עם הפניקס</a></div>',
                     unsafe_allow_html=True)
         return
     if status == "clarify":
-        st.markdown(f'<div class="note ask"><b>שאלה קטנה לפני שאני עונה</b>{html.escape(msg["text"])}</div>',
+        st.markdown(f'<div class="note ask{" fresh" if fresh else ""}"><b>שאלה קטנה לפני שאני עונה</b>{html.escape(msg["text"])}</div>',
                     unsafe_allow_html=True)
         return
     trust = trust_html(msg) if status == "answer" and msg.get("sources") else ""
-    st.markdown(f'<div class="answer"><div class="answer-body">\n\n{_md(msg["text"])}\n\n</div>{trust}</div>',
+    st.markdown(f'<div class="answer{" fresh" if fresh else ""}"><div class="answer-body">\n\n{_md(msg["text"])}\n\n</div>{trust}</div>',
                 unsafe_allow_html=True)
     if status == "answer" and msg.get("evidence"):
         with st.expander(f"הראו לי איפה זה כתוב ({len(msg['evidence'])})"):
@@ -270,7 +297,7 @@ def respond(question, history, manifest, cache):
     msg = {"role": "assistant", "text": result["answer"], "status": result["status"],
            "sources": result.get("sources", []), "evidence": result.get("evidence", []),
            "trust": result.get("trust"), "followups": result.get("followups", [])}
-    show(msg)
+    show(msg, fresh=True)
     return msg
 
 
@@ -282,6 +309,35 @@ except IndexNotReady as e:
     st.stop()
 
 # ---------- השיחה ----------
+TOPICS = [("🏠", "דירה", "ספרו לי על ביטוח דירה"), ("🚗", "רכב", "ספרו לי על ביטוח רכב"),
+          ("✈️", "נסיעות לחו\"ל", "ספרו לי על ביטוח נסיעות לחו\"ל"), ("❤️", "בריאות", "ספרו לי על ביטוח בריאות"),
+          ("🐾", "חיות מחמד", "ספרו לי על ביטוח לחיות מחמד"), ("💰", "פנסיה וחיסכון", "ספרו לי על פנסיה וחיסכון")]
+
+
+def greeting():
+    """ברכה לפי השעה בישראל - נגיעה קטנה שהופכת את הפתיחה לאישית."""
+    try:
+        hour = datetime.now(ZoneInfo("Asia/Jerusalem")).hour
+    except Exception:
+        hour = datetime.now().hour
+    return "בוקר טוב" if 5 <= hour < 12 else "צהריים טובים" if hour < 17 else "ערב טוב" if hour < 22 else "שלום"
+
+
+def ask(q):
+    st.session_state.pending = q
+
+
+def on_feedback(i):
+    """👍 / 👎 על תשובה: נרשם (בלי פרטים מזהים) כדי שהמנהל יראה אילו תשובות לא עזרו."""
+    value = st.session_state.get(f"fb{i}")
+    msgs = st.session_state.messages
+    if value is None or i >= len(msgs):
+        return
+    question = msgs[i - 1]["text"] if i > 0 and msgs[i - 1]["role"] == "user" else ""
+    log_feedback(question, msgs[i]["text"], msgs[i].get("status"), value == 1)
+    st.toast("תודה! המשוב עוזר לנו להשתפר." if value == 1 else "תודה על המשוב - נבדוק איך לשפר את התשובה.")
+
+
 st.markdown(f'<div class="topbar"><div class="brand"><div class="dot">💬</div><div><b>העוזר הדיגיטלי של הפניקס</b>'
             f'<span>תשובות מתוך אתר fnx.co.il</span></div></div>'
             f'<a href="{CONTACT_URL}" target="_blank" rel="noopener">דברו עם נציג</a></div>', unsafe_allow_html=True)
@@ -292,43 +348,59 @@ if "messages" not in st.session_state:
 question = st.chat_input("כתבו שאלה...", max_chars=MAX_CHARS) or st.session_state.pop("pending", None)
 
 if not st.session_state.messages and not question:
-    st.markdown('<div class="welcome"><h1>שלום, איך אפשר לעזור?</h1>'
+    st.markdown(f'<div class="welcome"><h1>{greeting()}, איך אפשר לעזור?</h1>'
                 '<p>אפשר לשאול אותי על ביטוח, תביעות, פנסיה וחיסכון. אני עונה לפי המידע שבאתר הפניקס, '
                 'ולכל תשובה מצרף קישור לעמוד שממנו היא נלקחה.</p></div>', unsafe_allow_html=True)
-    with st.container(key="examples"):
-        cols = st.columns(2)
+    st.markdown('<div class="label">במה מדובר?</div>', unsafe_allow_html=True)
+    with st.container(key="topics"):
+        cols = st.columns(3)
+        for i, (icon, name, q) in enumerate(TOPICS):
+            cols[i % 3].button(f"{icon}\n\n{name}", key=f"tp{i}", on_click=ask, args=(q,), use_container_width=True)
+    st.markdown('<div class="label">שאלות שלקוחות שואלים</div>', unsafe_allow_html=True)
+    with st.container(key="examples", horizontal=True):
         for i, (icon, ex) in enumerate(EXAMPLES):
-            if cols[i % 2].button(f"{icon}  {ex}", key=f"ex{i}"):
-                st.session_state.pending = ex
-                st.rerun()
+            st.button(ex, key=f"ex{i}", on_click=ask, args=(ex,))
     crawled = manifest.get("newest_crawl") or ""
     try:
         age = f" (לפני {(date.today() - datetime.fromisoformat(crawled).date()).days} ימים)"
     except ValueError:
         age = ""
-    st.markdown(f'<div class="about">הבוט מסביר מה כתוב באתר. הוא לא נותן ייעוץ אישי ואין לו גישה לפוליסה שלכם - '
+    st.markdown(f'<div class="about">🛡️ הבוט מסביר מה כתוב באתר. הוא לא נותן ייעוץ אישי ואין לו גישה לפוליסה שלכם - '
                 f'את אלה בודקים בשירות הלקוחות. המידע נאסף מהאתר ב-{html.escape(crawled)}{age}. '
                 f'השיחה לא נשמרת אחרי סגירת החלון.</div>', unsafe_allow_html=True)
 
-for msg in st.session_state.messages:
+for i, msg in enumerate(st.session_state.messages):
     with st.chat_message(msg["role"]):
         show(msg)
+        if msg["role"] == "assistant" and msg.get("status") in ("answer", "not_found", "clarify"):
+            with st.container(key=f"fbrow{i}", horizontal=True):
+                st.markdown('<span class="fbq">עזרתי?</span>', unsafe_allow_html=True)
+                st.feedback("thumbs", key=f"fb{i}", on_change=on_feedback, args=(i,))
 
 last = st.session_state.messages[-1] if st.session_state.messages else None
-if last and last["role"] == "assistant" and last.get("followups"):
-    st.markdown('<div class="more">רוצים לדעת עוד?</div>', unsafe_allow_html=True)
-    with st.container(key="followups", horizontal=True):
-        for i, fq in enumerate(last["followups"]):
-            if st.button(fq, key=f"fu{len(st.session_state.messages)}_{i}"):
-                st.session_state.pending = fq
-                st.rerun()
+if last and last["role"] == "assistant" and not question:
+    asked = {m["text"] for m in st.session_state.messages if m["role"] == "user"}
+    if last.get("followups"):
+        title, chips = "רוצים לדעת עוד?", last["followups"]
+    elif last.get("status") != "clarify":  # אחרי "לא מצאתי" / שיחה - לא משאירים את הלקוח בלי כיוון
+        title = "אולי תרצו לשאול על:"
+        chips = [q for _, _, q in TOPICS if q not in asked][:3]
+    else:
+        chips = []
+    if chips:
+        st.markdown(f'<div class="more">{title}</div>', unsafe_allow_html=True)
+        with st.container(key="followups", horizontal=True):
+            for j, fq in enumerate(chips):
+                st.button(fq, key=f"fu{len(st.session_state.messages)}_{j}", on_click=ask, args=(fq,))
 
-if st.session_state.messages:
+if st.session_state.messages and not question:
     with st.container(key="actions", horizontal=True):
-        if st.button("שיחה חדשה"):
+        if st.button("↺ שיחה חדשה"):
+            for k in [k for k in st.session_state if str(k).startswith("fb")]:
+                del st.session_state[k]
             st.session_state.messages = []
             st.rerun()
-        st.download_button("הורדת השיחה", transcript(st.session_state.messages).encode("utf-8"),
+        st.download_button("⤓ הורדת השיחה", transcript(st.session_state.messages).encode("utf-8"),
                            file_name="fnx-bot-conversation.txt", mime="text/plain")
 
 if question:

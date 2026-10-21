@@ -97,7 +97,8 @@ def main():
         history = []
         for i, t in enumerate(d["turns"]):
             row = run(f"D|{d['name']}|{i}", t["q"], history=list(history), kind="dialogue",
-                      dialogue=d["name"], turn=i, expect=t["expect"], expected=t.get("url"))
+                      dialogue=d["name"], turn=i, expect=t["expect"], expected=t.get("url"),
+                      forbid=t.get("forbid", []), manual=t.get("manual"))
             history += [{"role": "user", "text": t["q"]}, {"role": "assistant", "text": row["answer"]}]
 
     # ---------- סיכום ----------
@@ -124,10 +125,21 @@ def main():
     for r in D:
         mark = "✅" if (r["expect"] == r["status"] or (r["expect"] == "answer_or_not_found" and r["status"] in ("answer", "not_found"))
                        or (r["expect"] == "personal" and r["status"] == "answer")
-                       or (r["expect"] == "chat" and r["status"] in ("chat", "not_found"))) else "❓"
+                       or (r["expect"] == "chat" and r["status"] in ("chat", "not_found"))
+                       or (r["expect"] == "refuse" and r["status"] in ("chat", "not_found", "personal"))) else "❓"
+        if any(f.lower() in r["answer"].lower() for f in r.get("forbid") or []):
+            mark = "❌ מילה אסורה בתשובה!"
         src = ", ".join(s["url"].split(".co.il")[1][:45] for s in r["sources"])
         print(f"   {mark} {r['dialogue']} | תור {r['turn'] + 1}: {r['status']} (צפוי {r['expect']})")
         print(f"      חיפשנו: {r['search_query']}\n      ענה: {r['answer'][:180]}\n      מקורות: {src}")
+        if r.get("manual"):
+            print(f"      👀 לבדוק ידנית: {r['manual']}")
+    ans = [r for r in rows if r["status"] == "answer"]
+    print(f"=== ראיות ({len(ans)} תשובות) ===")
+    print(f"   עם ציטוט מאומת אחד לפחות: {sum((r.get('trust') or {}).get('quotes', 0) > 0 for r in ans)} | "
+          f"ציטוטים שאומתו: {sum((r.get('trust') or {}).get('quotes', 0) for r in ans)}"
+          f"/{sum((r.get('trust') or {}).get('quotes_claimed', 0) for r in ans)} | "
+          f"נחסמו בגלל מספר שלא באתר: {sum(str(r.get('reason', '')).startswith('unverified') for r in rows)}")
     secs = sorted(r["seconds"] for r in rows)
     print(f"\n⏱️ זמן לתשובה: חציון {secs[len(secs) // 2]}s, מקסימום {secs[-1]}s | חיפוש: "
           + ", ".join(f"{k}={sum(r.get('retrieval') == k for r in rows)}" for k in ("vectors", "keywords")))

@@ -4,4 +4,4 @@ markdownify>=0.13
 truststore>=0.10
 numpy>=2.0
 rank-bm25==0.2.2
-streamlit>=1.50
+streamlit>=1.60

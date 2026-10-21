@@ -46,21 +46,28 @@ html, body, .stApp, .stMarkdown, .stButton button, .stDownloadButton button, .st
 .stApp {background: var(--surface); color: var(--blue);}
 .stApp, .stMarkdown, .stChatInput textarea, [data-testid="stExpander"] {direction: rtl; text-align: right;}
 header[data-testid="stHeader"] {display: none;}
-[data-testid="stElementContainer"]:has(.topbar) {position: sticky; top: .5rem; z-index: 50;}
 [data-testid="stToolbar"], [data-testid="stDecoration"], footer, section[data-testid="stSidebar"],
 [data-testid="stSidebarCollapsedControl"] {display: none !important;}
 .block-container {padding-top: 0; padding-bottom: 7rem; max-width: 780px;}
 
-/* פס עליון - כמו הכותרת באתר */
-.block-container {padding-top: 1.2rem;}
-.topbar {display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: var(--paper);
-  margin: 0 0 1.2rem; padding: .8rem 1.1rem; border-radius: 14px; box-shadow: var(--shadow); border-bottom: 3px solid var(--orange);}
+/* פס עליון קבוע - כמו הכותרת באתר: מותג מימין, פעולות משמאל */
+[data-testid="stLayoutWrapper"]:has(> .st-key-topbar) {position: sticky; top: .5rem; z-index: 60; margin-bottom: 1.2rem;}
+.st-key-topbar {background: var(--paper); border-radius: 14px; flex-wrap: nowrap;
+  box-shadow: var(--shadow); border-bottom: 3px solid var(--orange); padding: .6rem .9rem;}
+.st-key-topbar [data-testid="stElementContainer"]:first-child {flex: 1 1 auto; min-width: 0;}
 .brand {display: flex; align-items: center; gap: .65rem;}
 .brand .dot {width: 2.4rem; height: 2.4rem; border-radius: 50%; background: var(--orange); color: #fff;
-  display: grid; place-items: center; font-size: 1.15rem; flex: none;}
-.brand b {display: block; font-size: 1.12rem; font-weight: 700;}
-.brand span {display: block; color: var(--gray); font-size: .85rem;}
-.topbar a {color: var(--blue); font-size: .9rem; font-weight: 500; text-decoration: none; border-bottom: 2px solid var(--orange);}
+  display: grid; place-items: center; flex: none;}
+.brand b {display: block; font-size: 1.08rem; font-weight: 700; white-space: nowrap;}
+.brand span {display: block; color: var(--gray); font-size: .82rem;}
+.st-key-topbar .stButton button, .st-key-topbar .stDownloadButton button, .st-key-topbar .stLinkButton a {
+  border-radius: 22px; font-size: .9rem; font-weight: 500; padding: .35rem .9rem; min-height: 0; white-space: nowrap;}
+.st-key-topbar .stButton button[kind="primary"] {background: var(--orange); border-color: var(--orange); color: #fff;}
+.st-key-topbar .stButton button[kind="primary"]:hover {background: #E8432A; border-color: #E8432A; color: #fff;}
+.st-key-topbar .stDownloadButton button, .st-key-topbar .stLinkButton a {background: var(--paper);
+  border: 1px solid var(--line); color: var(--blue);}
+.st-key-topbar .stDownloadButton button:hover, .st-key-topbar .stLinkButton a:hover {border-color: var(--blue); color: var(--blue);}
+[data-testid="stIconMaterial"] {color: inherit;}
 
 /* מסך פתיחה */
 .welcome h1 {font-size: 2.1rem; line-height: 1.15; font-weight: 700; margin: 0 0 .4rem; color: var(--blue);}
@@ -75,7 +82,11 @@ header[data-testid="stHeader"] {display: none;}
   justify-content: center; text-align: center; font-weight: 500; transition: transform .15s ease, box-shadow .15s ease;}
 .st-key-topics .stButton button p {text-align: center; font-size: 1rem; margin: 0; line-height: 1.3;
   white-space: normal; overflow: visible; text-overflow: clip;}
-.st-key-topics .stButton button p:first-child {font-size: 1.7rem;}
+.st-key-topics .stButton button {flex-direction: column; gap: .35rem;}
+.st-key-topics .stButton button [data-testid="stIconMaterial"] {color: var(--orange); font-size: 2rem; margin: 0;}
+.st-key-examples .stButton button [data-testid="stIconMaterial"], .st-key-followups .stButton button [data-testid="stIconMaterial"]
+  {color: var(--orange); font-size: 1.05rem;}
+.material {font-family: 'Material Symbols Rounded'; font-size: 1.05rem; vertical-align: -3px; color: var(--orange);}
 .st-key-topics .stButton button:hover {transform: translateY(-3px); box-shadow: 0 8px 22px rgba(17,28,63,.13);
   border-color: var(--orange); color: var(--blue);}
 @media (max-width: 640px) {
@@ -155,9 +166,6 @@ header[data-testid="stHeader"] {display: none;}
 .more {margin: 1rem 0 .35rem; color: var(--gray); font-size: .9rem;}
 .st-key-followups .stButton button {background: var(--orange-soft); border-color: #FFD4CB; font-size: .95rem;}
 .st-key-followups .stButton button:hover {border-color: var(--orange);}
-.st-key-actions {margin-top: 1rem;}
-.st-key-actions .stButton button, .stDownloadButton button {font-size: .88rem; padding: .3rem .9rem; border-radius: 22px;
-  border: 1px solid var(--line); background: transparent; color: var(--gray); font-weight: 500;}
 .about {margin-top: 1.1rem; color: var(--gray); font-size: .84rem; line-height: 1.55;}
 
 /* תיבת הכתיבה */
@@ -165,9 +173,11 @@ header[data-testid="stHeader"] {display: none;}
 [data-testid="stChatInput"] {background: var(--paper); border: 1px solid var(--line); border-radius: 26px; box-shadow: var(--shadow);}
 [data-testid="stChatInput"]:focus-within {border-color: var(--blue);}
 [data-testid="stChatInputSubmitButton"] {background: var(--orange) !important; color: #fff !important; border-radius: 50% !important;}
-.topbar a {white-space: nowrap;}
-@media (max-width: 640px) {.welcome h1 {font-size: 1.8rem;} .brand span {display: none;} .topbar {padding: .55rem .8rem;}
-  .brand b {font-size: .98rem;} .brand .dot {width: 2rem; height: 2rem; font-size: 1rem;} .topbar a {font-size: .82rem;}}
+@media (max-width: 640px) {.welcome h1 {font-size: 1.8rem;} .brand span {display: none;} .st-key-topbar {padding: .5rem .6rem;}
+  .brand b {font-size: .9rem; white-space: normal; line-height: 1.2;} .brand .dot {width: 2rem; height: 2rem;}
+  .st-key-topbar {gap: .3rem;}
+  .st-key-topbar .stButton button p, .st-key-topbar .stDownloadButton button p, .st-key-topbar .stLinkButton a p {display: none;}
+  .st-key-topbar .stButton button, .st-key-topbar .stDownloadButton button, .st-key-topbar .stLinkButton a {padding: .4rem .55rem;}}
 </style>""", unsafe_allow_html=True)
 
 EXAMPLES = [("🏠", "יש לי נזילה בבית, איך מגישים תביעה?"),
@@ -359,9 +369,16 @@ except IndexNotReady as e:
     st.stop()
 
 # ---------- השיחה ----------
-TOPICS = [("🏠", "דירה", "ספרו לי על ביטוח דירה"), ("🚗", "רכב", "ספרו לי על ביטוח רכב"),
-          ("✈️", "נסיעות לחו\"ל", "ספרו לי על ביטוח נסיעות לחו\"ל"), ("❤️", "בריאות", "ספרו לי על ביטוח בריאות"),
-          ("🐾", "חיות מחמד", "ספרו לי על ביטוח לחיות מחמד"), ("💰", "פנסיה וחיסכון", "ספרו לי על פנסיה וחיסכון")]
+# אייקונים קוויים (Material Symbols) בכתום - כמו אייקוני המוצרים באתר הפניקס
+TOPICS = [(":material/home:", "דירה", "ספרו לי על ביטוח דירה"),
+          (":material/directions_car:", "רכב", "ספרו לי על ביטוח רכב"),
+          (":material/flight:", "נסיעות לחו\"ל", "ספרו לי על ביטוח נסיעות לחו\"ל"),
+          (":material/health_and_safety:", "בריאות", "ספרו לי על ביטוח בריאות"),
+          (":material/pets:", "חיות מחמד", "ספרו לי על ביטוח לחיות מחמד"),
+          (":material/savings:", "פנסיה וחיסכון", "ספרו לי על פנסיה וחיסכון")]
+CHAT_ICON = ('<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" '
+             'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 '
+             '20.5l1.4-4.9A8 8 0 1 1 21 12z"/><path d="M8.5 11h7M8.5 14h4"/></svg>')
 
 
 def greeting():
@@ -377,6 +394,13 @@ def ask(q):
     st.session_state.pending = q
 
 
+def new_chat():
+    for k in [k for k in st.session_state if str(k).startswith("fb")]:
+        del st.session_state[k]
+    st.session_state.messages = []
+    st.session_state.pop("pending", None)
+
+
 def on_feedback(i):
     """👍 / 👎 על תשובה: נרשם (בלי פרטים מזהים) כדי שהמנהל יראה אילו תשובות לא עזרו."""
     value = st.session_state.get(f"fb{i}")
@@ -388,11 +412,41 @@ def on_feedback(i):
     st.toast("תודה! המשוב עוזר לנו להשתפר." if value == 1 else "תודה על המשוב - נבדוק איך לשפר את התשובה.")
 
 
-st.markdown(f'<div class="topbar"><div class="brand"><div class="dot">💬</div><div><b>העוזר הדיגיטלי של הפניקס</b>'
-            f'<span>תשובות מתוך אתר fnx.co.il</span></div></div>'
-            f'<a href="{CONTACT_URL}" target="_blank" rel="noopener">דברו עם נציג</a></div>', unsafe_allow_html=True)
+def scroll_to_question(n, seconds):
+    """גולל כך שהשאלה האחרונה תהיה בראש המסך (מתחת לפס העליון), והתשובה נכתבת מתחתיה.
+    Streamlit גולל צ'אט לתחתית בכל פעם שהתוכן גדל - לכן מחזירים את המיקום כמה שניות, עד שהלקוח גולל בעצמו.
+    n משנה את התוכן כך שהסקריפט ירוץ מחדש לכל שאלה."""
+    components.html(f"""<script>/* q{n} */
+      const doc = window.parent.document;
+      const go = () => {{
+        const box = doc.querySelector('[data-testid="stAppScrollToBottomContainer"]');
+        const qs = doc.querySelectorAll('.msg-user');
+        const q = qs[qs.length - 1];
+        if (!box || !q) return;
+        const bar = doc.querySelector('.st-key-topbar');
+        const offset = (bar ? bar.getBoundingClientRect().height : 80) + 24;
+        box.scrollTop += q.getBoundingClientRect().top - box.getBoundingClientRect().top - offset;
+      }};
+      let stop = false;
+      ["wheel", "touchmove", "keydown"].forEach(e => doc.addEventListener(e, () => stop = true, {{once: true}}));
+      const t0 = Date.now();
+      const iv = setInterval(() => {{ if (stop || Date.now() - t0 > {seconds * 1000}) return clearInterval(iv); go(); }}, 150);
+    </script>""", height=0)
+
+
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+# ---------- פס עליון קבוע: מותג, שיחה חדשה, הורדה, נציג ----------
+with st.container(key="topbar", horizontal=True, vertical_alignment="center", gap="small"):
+    st.markdown(f'<div class="brand"><div class="dot">{CHAT_ICON}</div><div><b>העוזר הדיגיטלי של הפניקס</b>'
+                f'<span>תשובות מתוך אתר fnx.co.il</span></div></div>', unsafe_allow_html=True)
+    if st.session_state.messages:
+        st.button("שיחה חדשה", icon=":material/add_comment:", key="new_chat", on_click=new_chat, type="primary")
+        st.download_button("הורדה", transcript(st.session_state.messages).encode("utf-8"), icon=":material/download:",
+                           file_name=f"שיחה-עם-הפניקס-{datetime.now():%Y-%m-%d}.html", mime="text/html",
+                           key="download", help="הורדת השיחה כדף מעוצב - אפשר להדפיס או לשמור כ-PDF")
+    st.link_button("דברו עם נציג", CONTACT_URL, icon=":material/support_agent:")
 
 # תיבת הכתיבה תמיד מוצמדת לתחתית; קוראים אותה כבר כאן כדי לא להציג את מסך הפתיחה מעל שאלה שנשלחה
 question = st.chat_input("כתבו שאלה...", max_chars=MAX_CHARS) or st.session_state.pop("pending", None)
@@ -413,32 +467,31 @@ if not st.session_state.messages and not question:
     with st.container(key="topics"):
         cols = st.columns(3)
         for i, (icon, name, q) in enumerate(TOPICS):
-            cols[i % 3].button(f"{icon}\n\n{name}", key=f"tp{i}", on_click=ask, args=(q,), use_container_width=True)
+            cols[i % 3].button(name, icon=icon, key=f"tp{i}", on_click=ask, args=(q,), use_container_width=True)
     st.markdown('<div class="label">שאלות שלקוחות שואלים</div>', unsafe_allow_html=True)
     with st.container(key="examples", horizontal=True):
         for i, (icon, ex) in enumerate(EXAMPLES):
-            st.button(ex, key=f"ex{i}", on_click=ask, args=(ex,))
+            st.button(ex, key=f"ex{i}", on_click=ask, args=(ex,), icon=":material/chat_bubble:")
     crawled = manifest.get("newest_crawl") or ""
     try:
         age = f" (לפני {(date.today() - datetime.fromisoformat(crawled).date()).days} ימים)"
     except ValueError:
         age = ""
-    # Streamlit גולל צ'אט תמיד לתחתית; במסך הפתיחה רוצים לראות את הברכה - גוללים פעם אחת למעלה
+    # Streamlit גולל צ'אט תמיד לתחתית; במסך הפתיחה רוצים לראות את הברכה - גוללים למעלה
     components.html("""<script>
       const toTop = () => {
         const box = window.parent.document.querySelector('[data-testid="stAppScrollToBottomContainer"]');
         if (box) box.scrollTop = 0;
       };
-      // התוכן ממשיך להיטען (גופנים, כפתורים) ו-Streamlit גולל שוב לתחתית - מחזירים למעלה בשתי השניות הראשונות
-      // (עד שהלקוח גולל או מקליד בעצמו)
       let stop = false;
       ["wheel", "touchstart", "keydown"].forEach(e => window.parent.addEventListener(e, () => stop = true, {once: true}));
       const t0 = Date.now();
       const iv = setInterval(() => { if (stop || Date.now() - t0 > 6000) return clearInterval(iv); toTop(); }, 120);
     </script>""", height=0)
-    st.markdown(f'<div class="about">🛡️ הבוט מסביר מה כתוב באתר. הוא לא נותן ייעוץ אישי ואין לו גישה לפוליסה שלכם - '
-                f'את אלה בודקים בשירות הלקוחות. המידע נאסף מהאתר ב-{html.escape(crawled)}{age}. '
-                f'השיחה לא נשמרת אחרי סגירת החלון.</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="about"><span class="material">verified_user</span> הבוט מסביר מה כתוב באתר. '
+                f'הוא לא נותן ייעוץ אישי ואין לו גישה לפוליסה שלכם - את אלה בודקים בשירות הלקוחות. '
+                f'המידע נאסף מהאתר ב-{html.escape(crawled)}{age}. השיחה לא נשמרת אחרי סגירת החלון.</div>',
+                unsafe_allow_html=True)
 
 for i, msg in enumerate(st.session_state.messages):
     with st.chat_message(msg["role"]):
@@ -462,17 +515,12 @@ if last and last["role"] == "assistant" and not question:
         st.markdown(f'<div class="more">{title}</div>', unsafe_allow_html=True)
         with st.container(key="followups", horizontal=True):
             for j, fq in enumerate(chips):
-                st.button(fq, key=f"fu{len(st.session_state.messages)}_{j}", on_click=ask, args=(fq,))
+                st.button(fq, key=f"fu{len(st.session_state.messages)}_{j}", on_click=ask, args=(fq,),
+                          icon=":material/subdirectory_arrow_left:")
 
-if st.session_state.messages and not question:
-    with st.container(key="actions", horizontal=True):
-        if st.button("↺ שיחה חדשה"):
-            for k in [k for k in st.session_state if str(k).startswith("fb")]:
-                del st.session_state[k]
-            st.session_state.messages = []
-            st.rerun()
-        st.download_button("⤓ הורדת השיחה", transcript(st.session_state.messages).encode("utf-8"),
-                           file_name=f"שיחה-עם-הפניקס-{datetime.now():%Y-%m-%d}.html", mime="text/html")
+# אחרי תשובה: השאלה האחרונה בראש המסך (ולא נשארים על השאלה הקודמת)
+if st.session_state.pop("scroll_to", None) and not question:
+    scroll_to_question(len(st.session_state.messages), seconds=3)
 
 if question:
     question = question.strip()[:MAX_CHARS]
@@ -483,6 +531,8 @@ if question:
         st.session_state.messages.append({"role": "user", "text": question})
         with st.chat_message("user"):
             show(st.session_state.messages[-1])
+        scroll_to_question(len(st.session_state.messages), seconds=40)  # בזמן הכתיבה
         with st.chat_message("assistant"):
             st.session_state.messages.append(respond(question, history, manifest, cache))
+        st.session_state.scroll_to = True
         st.rerun()  # מצייר מחדש מההיסטוריה, כדי שגם כפתור ההורדה יכלול את התשובה האחרונה

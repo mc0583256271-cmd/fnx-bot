@@ -428,6 +428,15 @@ def answer_stream(question, history=None, provider=None, retrieval="vectors"):
             extra = ["אסור לשאול שאלת הבהרה. ענה ותאר בקצרה כל אחת מהאפשרויות שבקטעים (\"אם... / ואם...\")"]
             yield "status", "כותב תשובה"
             continue
+        # מספר שלא מופיע בקטעים בדיוק כך (למשל "1,000,000" כשבאתר כתוב "מיליון") - לפני שמוותרים על התשובה,
+        # מבקשים פעם אחת ניסוח שמעתיק את המספרים כפי שהם כתובים באתר
+        if pass_no == 1 and status in ("answer", None) and text and \
+                unverified_numbers(_hide_passages_word(text), hits, question):
+            info["numbers_retry"] = unverified_numbers(_hide_passages_word(text), hits, question)
+            extra = ["כתוב כל מספר, סכום, אחוז או גיל בדיוק כפי שהוא כתוב בקטעים (במילים או בספרות, כמו שם). "
+                     "אל תכתוב מספר שלא מופיע בקטעים ואל תחשב מספרים חדשים"]
+            yield "status", "מוודא את המספרים"
+            continue
         break
     numbers = [n for i, n in enumerate(numbers) if 1 <= n <= len(hits) and n not in numbers[:i]]
     if status == "clarify" and text:

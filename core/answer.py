@@ -24,7 +24,7 @@ import time
 
 from core.embeddings import Stop
 from core.evidence import EVIDENCE_HEAD, numbers_in, parse_evidence, unverified_numbers, verify_quotes
-from core.guardrails import personal_reply, small_talk_reply
+from core.guardrails import about_reply, personal_reply, small_talk_reply
 from core.providers import Unavailable, default_provider
 from core.retriever import Retriever
 
@@ -63,6 +63,7 @@ ANSWER_SYSTEM = """אתה נציג שירות דיגיטלי של חברת הב�
 6. איך לכתוב - כמו נציג שירות נעים שמדבר עם לקוח שלא מכיר את התחום, בעברית יומיומית, טבעית ותקינה:
    - מתחילים ישר בתשובה, במשפט שעונה על מה שנשאל. בלי פתיח ("שלום", "שאלה מצוינת", "על פי המידע באתר") ובלי סיכום בסוף.
    - מתרגמים את שפת האתר לשפה של בני אדם: לא מעתיקים ניסוח משפטי או רשמי (למשל "כפוף לשיקול דעתה של החברה ולהוראות הדין", "נמנות ביניהם", "לקזז"), אלא אומרים את אותו הדבר במילים פשוטות - בלי לשנות את המשמעות ובלי להוסיף מידע.
+   - לא מתארים את המידע באתר או את איכותו ("בחלק מהם המידע מפורט ובחלק רק כותרת", "באתר יש מעט מידע על..."). עונים על השאלה.
    - פונים ללקוח בלשון רבים ("אפשר", "תוכלו", "חסכתם") - לא בזכר ולא בנקבה.
    - עונים רק על מה שנשאל - לא על כל מה שכתוב בקטעים. פרטים שהלקוח לא ביקש (מסלולים נוספים, תקרות, תקופות המתנה, חריגים) לא נכנסים לתשובה; במקום זה הם הופכים לשאלות המשך (FOLLOWUPS) שהלקוח יכול לבחור.
    - הסדר: קודם הדבר החשוב, אחריו הפרטים. תנאי או הסתייגות חשובים שכתובים בקטעים - בסוף, במשפט אחד.
@@ -318,16 +319,49 @@ def _visible(raw):
     return _hide_passages_word(rest.strip())
 
 
+_CATALOG_Q = re.compile(r"על מה (כן )?(יש|אתם|אפשר)|אילו (ביטוחים|מוצרים)|איזה (ביטוחים|מוצרים|סוגי ביטוח)"
+                        r"|מה (אתם )?(מציעים|מוכרים)|אילו סוגי|מה יש לכם")
+_NOT_PRODUCTS = {"שירות ופעולות", "תביעות", ""}
+_PRODUCT_WORD = re.compile(r"דיר|רכב|נסיע|בריאות|חיות|כלב|חתול|משכנתא|השתלמות|גמל|פנסי|חיים|עסק|הלווא|כושר|חיסכון|תביע")
+
+
+def catalog_reply(question):
+    """"על מה יש לכם ביטוח?" - רשימת המדורים באתר מתוך האינדקס עצמו (לא מהמודל), עם עמוד לכל מדור.
+    חיפוש רגיל מחזיר רק 8 פסקאות, ולכן התשובה הייתה חלקית."""
+    if len(question) > 60 or not _CATALOG_Q.search(question) or _PRODUCT_WORD.search(question):
+        return None  # שאלה על מוצר מסוים ("על מה יש כיסוי בביטוח דירה?") - חיפוש רגיל
+    chunks = getattr(_get_retriever(), "chunks", None) or []
+    sections = {}
+    for c in chunks:
+        name = (c.get("breadcrumb") or "").split(">")[0].strip()
+        if name in _NOT_PRODUCTS:
+            continue
+        depth = c["url"].rstrip("/").count("/")
+        if name not in sections or depth < sections[name][1]:
+            sections[name] = (c["url"], depth, c.get("title") or name)
+    if len(sections) < 3:
+        return None
+    names = sorted(sections, key=lambda n: -sum(1 for c in chunks if (c.get("breadcrumb") or "").startswith(n)))
+    text = "באתר הפניקס יש מידע על:\n" + "\n".join(f"- {n}" for n in names) + "\n\nעל איזה מהם תרצו לשמוע?"
+    sources = [{"title": n, "url": sections[n][0]} for n in names[:6]]
+    return _result("answer", text, sources, followups=[f"ספרו לי על {n}" for n in names[:3]],
+                   question=question, search_query=None, model=None, retrieval="catalog", passages=[])
+
+
 def answer_stream(question, history=None, provider=None, retrieval="vectors"):
     """אירועים לממשק: ("status", הודעת התקדמות), ("text", הטקסט עד עכשיו), ("final", התוצאה המלאה)."""
     history = history or []
     contact = [{"title": CONTACT_TITLE, "url": CONTACT_URL}]
-    chat = small_talk_reply(question)  # "תודה", "שלום" - תשובה מיד, בלי חיפוש
+    chat = small_talk_reply(question) or about_reply(question)  # "תודה", "מה השם שלך" - תשובה מיד, בלי חיפוש
     if not chat and _is_length_feedback(question):
         chat = SHORT_ACK  # מכאן והלאה preferences() מבקש תשובות קצרות
     if chat:
         yield "final", _result("chat", chat, question=question, search_query=None, model=None,
                                retrieval=None, passages=[])
+        return
+    catalog = catalog_reply(question)  # "על מה יש לכם ביטוח?" - מהמדורים באתר
+    if catalog:
+        yield "final", catalog
         return
     personal = personal_reply(question)  # "מה מספר הפוליסה שלי" - אין לבוט גישה, מפנים לשירות
     if personal:

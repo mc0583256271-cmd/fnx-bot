@@ -275,7 +275,10 @@ def transcript(messages):
             parts.append(f'<div class="q">{html.escape(m["text"])}</div>')
             continue
         body = _md_to_html(m["text"])
-        links = "".join(f'<a href="{html.escape(s["url"])}">{html.escape(s["title"])}</a>' for s in m.get("sources") or [])
+        if m.get("status") in ("not_found", "personal", "unavailable"):
+            body += f'<div class="src"><a href="{CONTACT_URL}">לכל הדרכים ליצור קשר עם הפניקס</a></div>'
+        sources = m.get("sources") or [] if m.get("status") == "answer" else []
+        links = "".join(f'<a href="{html.escape(s["url"])}">{html.escape(s["title"])}</a>' for s in sources)
         quotes = "".join(f'<blockquote>„{html.escape(e["quote"])}”<small>{html.escape(e["title"])}</small></blockquote>'
                          for e in m.get("evidence") or [])
         extra = (f'<div class="src">מקור: {links}</div>' if links else "") + quotes
@@ -393,6 +396,14 @@ if "messages" not in st.session_state:
 
 # תיבת הכתיבה תמיד מוצמדת לתחתית; קוראים אותה כבר כאן כדי לא להציג את מסך הפתיחה מעל שאלה שנשלחה
 question = st.chat_input("כתבו שאלה...", max_chars=MAX_CHARS) or st.session_state.pop("pending", None)
+
+# אם הלקוח לחץ על כפתור בזמן שהתשובה נכתבה, Streamlit עוצר את הכתיבה והשאלה נשארת בלי תשובה.
+# במקרה כזה עונים עליה עכשיו (לפני שאלה חדשה, אם נשלחה) - אף שאלה לא נשארת תלויה באוויר.
+msgs = st.session_state.messages
+if msgs and msgs[-1]["role"] == "user":
+    if question:
+        st.session_state.pending = question  # השאלה החדשה תיענה מיד אחרי
+    question = msgs.pop()["text"]
 
 if not st.session_state.messages and not question:
     st.markdown(f'<div class="welcome"><h1>{greeting()}, איך אפשר לעזור?</h1>'

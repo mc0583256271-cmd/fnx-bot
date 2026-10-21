@@ -7,7 +7,9 @@
 
 הסיסמה: ADMIN_PASSWORD ב-.env או ב-Secrets של Streamlit Cloud. בלעדיה העמוד סגור.
 """
+import csv
 import hmac
+import io
 import html
 import json
 import re
@@ -104,9 +106,19 @@ def titles_by_url():
 
 
 def _csv_safe(text):
-    """בלי מרכאות כפולות, ובלי תו פתיחה שאקסל מפרש כנוסחה (=, +, -, @)."""
-    text = text.replace('"', "'")
+    """בלי תו פתיחה שאקסל מפרש כנוסחה (=, +, -, @). מרכאות ופסיקים - csv.writer מטפל בהם."""
     return "'" + text if text[:1] in "=+-@" else text
+
+
+def gaps_csv(gaps):
+    """CSV שאקסל פותח נכון בעברית: utf-8 עם BOM, כותרות בעברית, תאריך ושעה בעמודות נפרדות."""
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(["תאריך", "שעה", "השאלה", "מה חיפשנו באתר"])
+    for g in gaps:
+        day, _, hour = g.get("at", "").partition("T")
+        w.writerow([day, hour[:5], _csv_safe(g["question"]), _csv_safe(g.get("search_query", ""))])
+    return buf.getvalue().encode("utf-8-sig")
 
 
 STOP = set("של על את עם מה איך כמה אם יש לי זה זו אני אפשר האם או גם כל לא כן מי למה מתי איפה בין אצלכם שלי "
@@ -218,9 +230,7 @@ else:
         if c2.button("✓ טופלה", key=f"gap{i}"):
             remove_question(q)
             st.rerun()
-    st.download_button("הורדת כל השאלות (CSV)",
-                       "at,question\n" + "\n".join(f'{g["at"]},"{_csv_safe(g["question"])}"' for g in gaps),
-                       file_name="unanswered.csv", mime="text/csv")
+    st.download_button("הורדת כל השאלות (Excel / CSV)", gaps_csv(gaps), file_name="שאלות-שלא-נענו.csv", mime="text/csv")
     with st.expander("ניקוי כל הרשימה"):
         sure = st.checkbox("כן, למחוק את כל השאלות שלא נענו (אי אפשר לשחזר)", key="sure_gaps")
         if st.button("מחיקת הרשימה", disabled=not sure):

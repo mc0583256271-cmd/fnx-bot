@@ -247,17 +247,63 @@ def show(msg, fresh=False):
             st.markdown(evidence_html(msg["evidence"]), unsafe_allow_html=True)
 
 
+def _md_to_html(text):
+    """markdown פשוט (מודגש, רשימות, פסקאות) ל-HTML בטוח - לקובץ השיחה."""
+    out, items = [], []
+    for line in html.escape(text, quote=False).split("\n"):
+        line = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", line.strip())
+        item = re.match(r"^(?:[-•*]|\d+\.)\s+(.*)", line)
+        if item:
+            items.append(f"<li>{item.group(1)}</li>")
+            continue
+        if items:
+            out.append("<ul>" + "".join(items) + "</ul>")
+            items = []
+        if line:
+            out.append(f"<p>{line}</p>")
+    if items:
+        out.append("<ul>" + "".join(items) + "</ul>")
+    return "".join(out)
+
+
 def transcript(messages):
-    """השיחה כטקסט להורדה: שאלות, תשובות, מקורות וציטוטים."""
-    lines = [f"שיחה עם הבוט של אתר הפניקס - {datetime.now():%d/%m/%Y %H:%M}", ""]
+    """השיחה כדף מעוצב (HTML) להורדה: נפתח בכל דפדפן, נראה כמו הצ'אט, ואפשר להדפיס או לשמור כ-PDF."""
+    when = datetime.now(ZoneInfo("Asia/Jerusalem")).strftime("%d/%m/%Y %H:%M")
+    parts = []
     for m in messages:
-        lines.append(("לקוח: " if m["role"] == "user" else "בוט: ") + m["text"])
-        for src in m.get("sources") or []:
-            lines.append(f"   מקור: {src['title']} - {src['url']}")
-        for e in m.get("evidence") or []:
-            lines.append(f"   ציטוט מהאתר: \"{e['quote']}\"")
-        lines.append("")
-    return "\n".join(lines)
+        if m["role"] == "user":
+            parts.append(f'<div class="q">{html.escape(m["text"])}</div>')
+            continue
+        body = _md_to_html(m["text"])
+        links = "".join(f'<a href="{html.escape(s["url"])}">{html.escape(s["title"])}</a>' for s in m.get("sources") or [])
+        quotes = "".join(f'<blockquote>„{html.escape(e["quote"])}”<small>{html.escape(e["title"])}</small></blockquote>'
+                         for e in m.get("evidence") or [])
+        extra = (f'<div class="src">מקור: {links}</div>' if links else "") + quotes
+        parts.append(f'<div class="a"><span class="who">העוזר הדיגיטלי</span>{body}{extra}</div>')
+    return f"""<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>שיחה עם העוזר הדיגיטלי של הפניקס</title>
+<style>
+body {{font-family: Rubik, 'Segoe UI', Arial, sans-serif; background: #F5F6FA; color: #111C3F; margin: 0; padding: 24px;}}
+.wrap {{max-width: 760px; margin: 0 auto;}}
+header {{background: #fff; border-radius: 14px; padding: 16px 20px; border-bottom: 3px solid #FF4E31;
+  box-shadow: 0 2px 15px rgba(0,0,0,.08); margin-bottom: 24px;}}
+header b {{font-size: 1.2rem;}} header span {{display: block; color: #6B6E77; font-size: .9rem; margin-top: 2px;}}
+.q {{background: #111C3F; color: #fff; padding: 10px 16px; border-radius: 20px 20px 4px 20px; width: fit-content;
+  max-width: 85%; margin: 18px 0 8px auto; margin-left: 0;}}
+.a {{background: #fff; border-radius: 12px; padding: 14px 18px; box-shadow: 0 2px 15px rgba(0,0,0,.08); line-height: 1.7;}}
+.a p {{margin: 0 0 8px;}} .who {{display: block; color: #6B6E77; font-size: .8rem; margin-bottom: 4px;}}
+.src {{border-top: 1px solid #EEEFF2; margin-top: 8px; padding-top: 8px; font-size: .9rem; color: #6B6E77;}}
+.src a {{color: #111C3F; background: #F2FAFE; border: 1px solid #D6EEF9; border-radius: 20px; padding: 2px 10px;
+  margin-inline-start: 6px; text-decoration: none;}}
+blockquote {{margin: 8px 0 0; padding: 8px 12px; border-right: 3px solid #FF4E31; background: #FFF8F6; border-radius: 6px;
+  font-size: .95rem;}} blockquote small {{display: block; color: #6B6E77; margin-top: 2px;}}
+footer {{color: #6B6E77; font-size: .8rem; margin-top: 28px; text-align: center;}}
+@media print {{body {{background: #fff;}} .a, header {{box-shadow: none; border: 1px solid #E0DFDF;}}}}
+</style></head><body><div class="wrap">
+<header><b>שיחה עם העוזר הדיגיטלי של הפניקס</b><span>{when} · התשובות מבוססות על המידע באתר fnx.co.il</span></header>
+{"".join(parts)}
+<footer>הבוט מסביר מה כתוב באתר ואינו נותן ייעוץ אישי. לבירורים אישיים: שירות הלקוחות של הפניקס.</footer>
+</div></body></html>"""
 
 
 def rate_limited():
@@ -415,7 +461,7 @@ if st.session_state.messages and not question:
             st.session_state.messages = []
             st.rerun()
         st.download_button("⤓ הורדת השיחה", transcript(st.session_state.messages).encode("utf-8"),
-                           file_name="fnx-bot-conversation.txt", mime="text/plain")
+                           file_name=f"שיחה-עם-הפניקס-{datetime.now():%Y-%m-%d}.html", mime="text/html")
 
 if question:
     question = question.strip()[:MAX_CHARS]

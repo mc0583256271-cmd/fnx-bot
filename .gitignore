@@ -16,3 +16,6 @@ __pycache__/
 # מטמון הטמעות (נבנה מחדש מ-Gemini)
 data/emb_cache/
 # האינדקס הבנוי (data/index/) כן נשמר ב-GitHub: שרת הענן טוען אותו משם. תוכן ציבורי מהאתר בלבד.
+# שאלות שלא נענו (מכ"ם פערים) - נוצר בזמן ריצה
+data/gaps.jsonl
+data/refresh.log

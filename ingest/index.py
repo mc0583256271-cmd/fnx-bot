@@ -72,6 +72,28 @@ def write_atomic(path, write_fn):
     tmp.replace(path)
 
 
+def seed_from_index(cache):
+    """בשרת הענן אין מטמון הטמעות (data/emb_cache לא ב-GitHub), אבל יש את האינדקס הקיים.
+    פסקה שהטקסט שלה לא השתנה מקבלת את הווקטור שלה מהאינדקס - רק פסקאות חדשות או ששונו נשלחות לגוגל
+    (חשוב: במכסה החינמית יש כ-1,000 הטמעות ביום, ובאתר כ-2,400 פסקאות)."""
+    if not (META_FILE.exists() and VECTORS_FILE.exists()):
+        return 0
+    try:
+        old_vectors = np.load(VECTORS_FILE)
+        rows = [json.loads(line) for line in META_FILE.open(encoding="utf-8")]
+    except Exception:
+        return 0
+    if len(rows) != len(old_vectors):
+        return 0
+    added = 0
+    for row, vec in zip(rows, old_vectors):
+        h = text_hash(doc_format(row))
+        if h not in cache:
+            cache[h] = vec
+            added += 1
+    return added
+
+
 def build(force=False):
     chunks = [json.loads(line) for line in CHUNKS_FILE.open(encoding="utf-8")]
     if not chunks:
@@ -87,15 +109,20 @@ def build(force=False):
 
     texts = [doc_format(c) for c in chunks]
     cache = load_cache()
+    seeded = seed_from_index(cache)
+    if seeded:
+        print(f"♻️ {seeded} וקטורים נלקחו מהאינדקס הקיים (פסקאות שלא השתנו לא נשלחות שוב לגוגל)")
     print(f"📄 {len(chunks)} פסקאות מ-{len({c['url'] for c in chunks})} עמודים")
-    try:
-        new = embed_all(texts, cache, load_key(), "וקטורים לפסקאות")
+    try:  # מפתח לגוגל נדרש רק אם יש פסקאות חדשות או ששונו
+        missing = any(text_hash(t) not in cache for t in texts)
+        new = embed_all(texts, cache, load_key(), "וקטורים לפסקאות") if missing else 0
     except Stop as e:
         have = sum(text_hash(t) in cache for t in texts)
         sys.exit(f"🛑 {e}\n   יש וקטורים ל-{have} מתוך {len(texts)}. האינדקס הקודם נשאר כמו שהוא; "
                  "הריצי שוב מאוחר יותר והבנייה תמשיך מאיפה שעצרה.")
 
-    vectors = to_index_dim(np.stack([cache[text_hash(t)] for t in texts]))
+    # במטמון יש וקטורים מלאים (3072) ווקטורים מהאינדקס (768) - כולם מקוצרים ל-768 ומנורמלים
+    vectors = to_index_dim(np.stack([np.asarray(cache[text_hash(t)])[:INDEX_DIM] for t in texts]))
     if not np.isfinite(vectors).all() or vectors.shape != (len(chunks), INDEX_DIM):
         sys.exit("🛑 וקטורים לא תקינים - האינדקס לא נשמר")
 

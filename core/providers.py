@@ -129,9 +129,12 @@ class ClaudeProvider(LLMProvider):
     URL = "https://api.anthropic.com/v1/messages"
     _session = requests.Session()
 
-    def __init__(self, model="claude-haiku-5-5", timeout=30, max_tokens=4000):
+    def __init__(self, model="claude-haiku-5-5", timeout=30, max_tokens=4000, thinking="low"):
         # בלי temperature: Claude Haiku 5.5 מחזיר שגיאה אם שולחים אותו ("deprecated for this model")
-        self.model, self.timeout, self.max_tokens = model, timeout, max_tokens
+        # thinking: בברירת המחדל של ה-API המודל "חושב" בשקט כ-12 שניות לפני המילה הראשונה (נמדד), והחיבור
+        # נופל על המתנה. "low" = חשיבה אדפטיבית במאמץ נמוך: בשאלה רגילה בלי חשיבה (מילה ראשונה אחרי פחות משנייה),
+        # בשאלה מסובכת - חושב. False = בלי חשיבה בכלל (מהיר, אבל בבדיקה שאל יותר שאלות הבהרה מיותרות).
+        self.model, self.timeout, self.max_tokens, self.thinking = model, timeout, max_tokens, thinking
         self.name = model
         self._key = None
 
@@ -143,6 +146,10 @@ class ClaudeProvider(LLMProvider):
                 raise Unavailable(f"{self.model}: אין ANTHROPIC_API_KEY")
         body = {"model": self.model, "max_tokens": self.max_tokens,
                 "system": system, "messages": [{"role": "user", "content": user}]}
+        if not self.thinking:
+            body["thinking"] = {"type": "disabled"}
+        else:
+            body["thinking"], body["output_config"] = {"type": "adaptive"}, {"effort": self.thinking}
         headers = {"x-api-key": self._key, "anthropic-version": "2023-06-01", "content-type": "application/json"}
         try:
             r = self._session.post(self.URL, json=body, headers=headers, timeout=self.timeout)
@@ -175,9 +182,13 @@ class ClaudeProvider(LLMProvider):
                 raise Unavailable(f"{self.model}: אין ANTHROPIC_API_KEY")
         body = {"model": self.model, "max_tokens": self.max_tokens, "stream": True,
                 "system": system, "messages": [{"role": "user", "content": user}]}
+        if not self.thinking:
+            body["thinking"] = {"type": "disabled"}
+        else:
+            body["thinking"], body["output_config"] = {"type": "adaptive"}, {"effort": self.thinking}
         headers = {"x-api-key": self._key, "anthropic-version": "2023-06-01", "content-type": "application/json"}
         try:
-            r = self._session.post(self.URL, json=body, headers=headers, stream=True, timeout=(5, 15))
+            r = self._session.post(self.URL, json=body, headers=headers, stream=True, timeout=(5, 25))
         except requests.RequestException as e:
             raise Unavailable(f"{self.model}: {type(e).__name__}")
         if r.status_code != 200:

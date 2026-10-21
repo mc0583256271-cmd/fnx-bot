@@ -1,5 +1,5 @@
 """
-עמוד המנהל (כתובת: /admin). לא מקושר מהצ'אט, ונכנסים אליו עם סיסמה.
+עמוד המנהל (כתובת: /admin, הניתוב ב-app.py). לא מקושר מהצ'אט, ונכנסים אליו עם סיסמה.
 
 - מצב המידע: מתי נאסף, כמה עמודים ופסקאות.
 - רענון המידע מהאתר ברקע (core/refresh.py), ודוח "מה השתנה באתר" אחרי הסריקה.
@@ -29,21 +29,21 @@ MAX_FAILS = 5            # ניסיונות שגויים בחלון אחד לפ�
 LOCK_SECONDS = 300
 GLOBAL_MAX_FAILS = 30    # ניסיונות שגויים בכל השרת ב-10 דקות (מפני ניחוש מחלונות רבים)
 
-st.set_page_config(page_title="ניהול הבוט", page_icon="🔒", layout="centered", initial_sidebar_state="collapsed")
 st.markdown("""<style>
-@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap');
-html, body, .stApp, .stMarkdown, .stButton button, input {font-family: 'Assistant', 'Segoe UI', Arial, sans-serif;}
-.stApp {background: #F3F6F7; color: #12304A;}
-.block-container {direction: rtl; text-align: right; max-width: 860px; padding-top: 2rem;}
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap');
+html, body, .stApp, .stMarkdown, .stButton button, input {font-family: 'Rubik', 'Segoe UI', Arial, sans-serif;}
+.stApp {background: #F5F6FA; color: #111C3F;}
+.block-container {direction: rtl; text-align: right; max-width: 880px; padding-top: 2rem;}
 [data-testid="stToolbar"], [data-testid="stDecoration"], footer, section[data-testid="stSidebar"],
 [data-testid="stSidebarCollapsedControl"] {display: none !important;}
-h1 {font-weight: 800; letter-spacing: -.02em;}
-.card {background: #fff; border: 1px solid #DCE3E8; border-radius: 14px; padding: 1rem 1.2rem; margin-bottom: 1rem;}
-.big {font-size: 1.9rem; font-weight: 800; line-height: 1.1;}
-.muted {color: #5C6B78; font-size: .92rem;}
-.gap {display: flex; justify-content: space-between; gap: 1rem; padding: .45rem 0; border-bottom: 1px solid #EEF2F4;}
-.gap b {color: #0E7C7B; white-space: nowrap;}
-.stButton button {border-radius: 999px; font-weight: 700;}
+h1 {font-weight: 700; border-bottom: 3px solid #FF4E31; display: inline-block; padding-bottom: .2rem;}
+.card {background: #fff; border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,.08); padding: 1rem 1.2rem; margin-bottom: 1rem;}
+.big {font-size: 1.9rem; font-weight: 700; line-height: 1.1;}
+.muted {color: #6B6E77; font-size: .92rem;}
+.gap {display: flex; justify-content: space-between; gap: 1rem; padding: .45rem 0; border-bottom: 1px solid #EEEFF2;}
+.gap b {color: #FF4E31; white-space: nowrap;}
+.stButton button {border-radius: 22px; font-weight: 500;}
+.stButton button[kind="primary"] {background: #FF4E31; border-color: #FF4E31;}
 pre {direction: rtl; text-align: right;}
 </style>""", unsafe_allow_html=True)
 
@@ -135,6 +135,38 @@ c2.markdown(f'<div class="card"><div class="big">{m.get("chunks", "-")}</div><di
 c3.markdown(f'<div class="card"><div class="big">{html.escape(str(m.get("newest_crawl", "-")))}</div>'
             f'<div class="muted">נאסף לאחרונה</div></div>', unsafe_allow_html=True)
 st.caption(f"האינדקס נבנה ב-{m.get('built_at', '-')} · מודל ההטמעה {m.get('model', '-')}")
+
+# ---------- בדיקת חיבור ----------
+st.subheader("בדיקת חיבור")
+st.write("אילו מפתחות השרת מצא (רק האם קיים - המפתח עצמו לא מוצג), וכמה זמן לוקח לכל שירות לענות.")
+keys = []
+for name, role in [("GEMINI_API_KEY", "חיפוש (וקטור לכל שאלה)"), ("ANTHROPIC_API_KEY", "מודל השפה הראשי (Claude)"),
+                   ("ADMIN_PASSWORD", "סיסמת עמוד המנהל")]:
+    try:
+        load_key(name)
+        keys.append(f"✅ {name} - {role}")
+    except Stop:
+        keys.append(f"❌ {name} - {role}: לא נמצא. בלי מפתח Claude הבוט עובר ל-Gemini, שאיטי יותר ולפעמים לא זמין.")
+st.markdown("<br>".join(keys), unsafe_allow_html=True)
+if st.button("מדידת מהירות"):
+    from core.providers import ClaudeProvider, GeminiProvider, DEFAULT_CHAIN, Unavailable
+    from core.retriever import Retriever
+    rows = []
+    t0 = time.time()
+    try:
+        Retriever().search("איך מגישים תביעה על נזילה?", k=8)
+        rows.append(f"חיפוש (Gemini embedding): {time.time() - t0:.1f} שניות")
+    except Exception as e:  # noqa: BLE001 - מציגים את הסיבה למנהל
+        rows.append(f"חיפוש: נכשל ({type(e).__name__})")
+    for prov in [ClaudeProvider(), GeminiProvider(DEFAULT_CHAIN[0][0], timeout=20)]:
+        t0, first = time.time(), None
+        try:
+            for _ in prov.stream("ענה במשפט אחד.", "מה זה ביטוח דירה?"):
+                first = first or time.time() - t0
+            rows.append(f"{prov.name}: מילה ראשונה אחרי {first:.1f} שניות, סיום אחרי {time.time() - t0:.1f}")
+        except Unavailable as e:
+            rows.append(f"{prov.name}: לא זמין ({str(e)[:120]})")
+    st.code("\n".join(rows), language=None)
 
 # ---------- רענון ----------
 st.subheader("רענון המידע מהאתר")

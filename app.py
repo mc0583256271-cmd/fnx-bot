@@ -6,11 +6,15 @@
 הרצה (מתיקיית הפרויקט):
   streamlit run app.py
 """
+from pathlib import Path
+
 import streamlit as st
 
-st.set_page_config(page_title="הפניקס | עוזר דיגיטלי", page_icon="💬", layout="wide",
+ICON = str(Path(__file__).resolve().parent / "assets" / "favicon.png")  # הסמל בכרטיסייה: בועה כתומה על כחול הפניקס
+
+st.set_page_config(page_title="הפניקס | עוזר דיגיטלי", page_icon=ICON, layout="wide",
                    initial_sidebar_state="collapsed")
 page = st.navigation([st.Page("views/chat.py", title="הפניקס | עוזר דיגיטלי", default=True),
-                      st.Page("views/admin.py", title="ניהול הבוט", url_path="admin")],
+                      st.Page("views/admin.py", title="הפניקס | ניהול הבוט", url_path="admin")],
                      position="hidden")
 page.run()

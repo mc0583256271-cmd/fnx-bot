@@ -19,6 +19,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -53,7 +54,7 @@ header[data-testid="stHeader"] {display: none;}
 /* פס עליון - כמו הכותרת באתר */
 .block-container {padding-top: 1.2rem;}
 .topbar {display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: var(--paper);
-  margin: 0 0 1.8rem; padding: .8rem 1.1rem; border-radius: 14px; box-shadow: var(--shadow); border-bottom: 3px solid var(--orange);}
+  margin: 0 0 1.2rem; padding: .8rem 1.1rem; border-radius: 14px; box-shadow: var(--shadow); border-bottom: 3px solid var(--orange);}
 .brand {display: flex; align-items: center; gap: .65rem;}
 .brand .dot {width: 2.4rem; height: 2.4rem; border-radius: 50%; background: var(--orange); color: #fff;
   display: grid; place-items: center; font-size: 1.15rem; flex: none;}
@@ -62,15 +63,15 @@ header[data-testid="stHeader"] {display: none;}
 .topbar a {color: var(--blue); font-size: .9rem; font-weight: 500; text-decoration: none; border-bottom: 2px solid var(--orange);}
 
 /* מסך פתיחה */
-.welcome h1 {font-size: 2.3rem; line-height: 1.15; font-weight: 700; margin: .6rem 0 .5rem; color: var(--blue);}
-.welcome p {font-size: 1.08rem; color: var(--gray); max-width: 36rem; margin: 0 0 1.3rem; line-height: 1.6;}
+.welcome h1 {font-size: 2.1rem; line-height: 1.15; font-weight: 700; margin: 0 0 .4rem; color: var(--blue);}
+.welcome p {font-size: 1.02rem; color: var(--gray); max-width: 36rem; margin: 0 0 .4rem; line-height: 1.55;}
 .stButton button {border-radius: 22px; border: 1px solid var(--line); background: var(--paper); color: var(--blue);
   font-weight: 500; padding: .5rem 1.1rem; text-align: right; box-shadow: none;}
 .stButton button:hover {border-color: var(--orange); color: var(--orange); background: var(--paper);}
 .stButton button:focus-visible {outline: 3px solid var(--orange); outline-offset: 2px;}
-.label {margin: 1.2rem 0 .5rem; color: var(--gray); font-size: .9rem; font-weight: 500;}
+.label {margin: .8rem 0 .4rem; color: var(--gray); font-size: .9rem; font-weight: 500;}
 /* אריחי נושאים - כמו אייקוני המוצרים באתר */
-.st-key-topics .stButton button {min-height: 5.6rem; border-radius: 14px; border-color: transparent; box-shadow: var(--shadow);
+.st-key-topics .stButton button {min-height: 4.6rem; border-radius: 14px; border-color: transparent; box-shadow: var(--shadow);
   justify-content: center; text-align: center; font-weight: 500; transition: transform .15s ease, box-shadow .15s ease;}
 .st-key-topics .stButton button p {text-align: center; font-size: 1rem; margin: 0; line-height: 1.3;
   white-space: normal; overflow: visible; text-overflow: clip;}
@@ -157,7 +158,7 @@ header[data-testid="stHeader"] {display: none;}
 .st-key-actions {margin-top: 1rem;}
 .st-key-actions .stButton button, .stDownloadButton button {font-size: .88rem; padding: .3rem .9rem; border-radius: 22px;
   border: 1px solid var(--line); background: transparent; color: var(--gray); font-weight: 500;}
-.about {margin-top: 2.2rem; color: var(--gray); font-size: .88rem; line-height: 1.6;}
+.about {margin-top: 1.1rem; color: var(--gray); font-size: .84rem; line-height: 1.55;}
 
 /* תיבת הכתיבה */
 [data-testid="stBottom"], [data-testid="stBottom"] > div, [data-testid="stBottomBlockContainer"] {background: var(--surface);}
@@ -365,6 +366,19 @@ if not st.session_state.messages and not question:
         age = f" (לפני {(date.today() - datetime.fromisoformat(crawled).date()).days} ימים)"
     except ValueError:
         age = ""
+    # Streamlit גולל צ'אט תמיד לתחתית; במסך הפתיחה רוצים לראות את הברכה - גוללים פעם אחת למעלה
+    components.html("""<script>
+      const toTop = () => {
+        const box = window.parent.document.querySelector('[data-testid="stAppScrollToBottomContainer"]');
+        if (box) box.scrollTop = 0;
+      };
+      // התוכן ממשיך להיטען (גופנים, כפתורים) ו-Streamlit גולל שוב לתחתית - מחזירים למעלה בשתי השניות הראשונות
+      // (עד שהלקוח גולל או מקליד בעצמו)
+      let stop = false;
+      ["wheel", "touchstart", "keydown"].forEach(e => window.parent.addEventListener(e, () => stop = true, {once: true}));
+      const t0 = Date.now();
+      const iv = setInterval(() => { if (stop || Date.now() - t0 > 6000) return clearInterval(iv); toTop(); }, 120);
+    </script>""", height=0)
     st.markdown(f'<div class="about">🛡️ הבוט מסביר מה כתוב באתר. הוא לא נותן ייעוץ אישי ואין לו גישה לפוליסה שלכם - '
                 f'את אלה בודקים בשירות הלקוחות. המידע נאסף מהאתר ב-{html.escape(crawled)}{age}. '
                 f'השיחה לא נשמרת אחרי סגירת החלון.</div>', unsafe_allow_html=True)

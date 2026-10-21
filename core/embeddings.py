@@ -51,6 +51,15 @@ class Stop(Exception):
 
 
 # ---------- מפתח ----------
+def _streamlit_secret(name):
+    """בשרת הענן (Streamlit Cloud) המפתחות שמורים ב-Secrets ולא בקובץ .env."""
+    try:
+        import streamlit as st
+        return str(st.secrets.get(name, "")).strip()
+    except Exception:
+        return ""
+
+
 def load_key(name="GEMINI_API_KEY"):
     """קורא מפתח ממשתנה סביבה או מקובץ .env (השורה האחרונה שלא בהערה). לעולם לא מודפס."""
     key = os.environ.get(name, "")
@@ -58,6 +67,8 @@ def load_key(name="GEMINI_API_KEY"):
         for line in ENV_FILE.read_text(encoding="utf-8-sig").splitlines():
             if line.strip().startswith(name + "="):
                 key = line.split("=", 1)[1].strip().strip('"').strip("'")
+    if not key:
+        key = _streamlit_secret(name)
     if not key or key == "your-key-here":
         raise Stop(f"לא נמצא {name} בקובץ .env")
     return key

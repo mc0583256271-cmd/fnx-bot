@@ -1,0 +1,10 @@
+{
+ "built_at": "2026-10-20T10:50:14+00:00",
+ "model": "gemini-embedding-2",
+ "dim": 768,
+ "query_format": "search",
+ "chunks": 2405,
+ "pages": 712,
+ "newest_crawl": "2026-10-19",
+ "vectors_sha1": "a5519aeebcf78c3a7d6c624f7b9c1419a7018d85"
+}

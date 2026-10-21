@@ -109,6 +109,9 @@ header[data-testid="stHeader"] {background: transparent;}
 section[data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"] {display: none;}
 .about {margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .92rem; line-height: 1.6;}
 .st-key-actions {margin-top: 1rem;}
+.more {margin: .9rem 0 .3rem; color: var(--muted); font-size: .92rem; font-weight: 600;}
+.st-key-followups .stButton button {background: var(--teal-soft); border-color: #BFE0DD; color: var(--ink); font-size: .95rem;}
+.st-key-followups .stButton button:hover {border-color: var(--teal); color: var(--teal);}
 .st-key-actions .stButton button, .st-key-actions .stDownloadButton button {font-size: .9rem; padding: .3rem .9rem;}
 .stDownloadButton button {border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font-weight: 600;}
 @media (max-width: 640px) {.welcome h1 {font-size: 2rem;} .block-container {padding-top: 1.2rem;}}
@@ -241,7 +244,7 @@ def respond(question, history, manifest, cache):
             log_gap(question, result.get("search_query"), result.get("reason"))
     msg = {"role": "assistant", "text": result["answer"], "status": result["status"],
            "sources": result.get("sources", []), "evidence": result.get("evidence", []),
-           "trust": result.get("trust")}
+           "trust": result.get("trust"), "followups": result.get("followups", [])}
     show(msg)
     return msg
 
@@ -279,6 +282,15 @@ if not st.session_state.messages:
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         show(msg)
+
+last = st.session_state.messages[-1] if st.session_state.messages else None
+if last and last["role"] == "assistant" and last.get("followups"):
+    st.markdown('<div class="more">רוצים לדעת עוד?</div>', unsafe_allow_html=True)
+    with st.container(key="followups", horizontal=True):
+        for i, fq in enumerate(last["followups"]):
+            if st.button(fq, key=f"fu{len(st.session_state.messages)}_{i}"):
+                st.session_state.pending = fq
+                st.rerun()
 
 if st.session_state.messages:
     with st.container(key="actions", horizontal=True):

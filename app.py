@@ -8,7 +8,7 @@
 """
 import streamlit as st
 
-st.set_page_config(page_title="הפניקס | עוזר דיגיטלי", page_icon="💬", layout="centered",
+st.set_page_config(page_title="הפניקס | עוזר דיגיטלי", page_icon="💬", layout="wide",
                    initial_sidebar_state="collapsed")
 page = st.navigation([st.Page("views/chat.py", title="הפניקס | עוזר דיגיטלי", default=True),
                       st.Page("views/admin.py", title="ניהול הבוט", url_path="admin")],

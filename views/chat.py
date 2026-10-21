@@ -14,7 +14,7 @@ import json
 import re
 import sys
 import time
-from datetime import date, datetime
+from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -48,26 +48,76 @@ html, body, .stApp, .stMarkdown, .stButton button, .stDownloadButton button, .st
 header[data-testid="stHeader"] {display: none;}
 [data-testid="stToolbar"], [data-testid="stDecoration"], footer, section[data-testid="stSidebar"],
 [data-testid="stSidebarCollapsedControl"] {display: none !important;}
-.block-container {padding-top: 0; padding-bottom: 7rem; max-width: 780px;}
+/* כל רוחב המסך: סרגל צד קבוע בימין (300px), והשיחה ממלאת את השאר */
+:root {--side: 300px;}
+.block-container {padding: 2rem 2.5rem 7rem; padding-right: calc(var(--side) + 2.5rem); max-width: none;}
+[data-testid="stBottom"] {width: 100% !important; z-index: 50 !important;}
+[data-testid="stBottomBlockContainer"] {padding-right: calc(var(--side) + 2.5rem); padding-left: 2.5rem;
+  max-width: none !important; width: 100%;}
+[data-testid="stChatInput"] {max-width: none;}
+/* מקום שמור מתחת לשיחה: השאלה החדשה עולה לראש המסך מהרגע הראשון, ולא "קופצת" כשהתשובה נגמרת */
+.block-container:has(.msg-user) {padding-bottom: calc(100vh - 240px);}
 
-/* פס עליון קבוע - כמו הכותרת באתר: מותג מימין, פעולות משמאל */
-[data-testid="stLayoutWrapper"]:has(> .st-key-topbar) {position: sticky; top: .5rem; z-index: 60; margin-bottom: 1.2rem;}
-.st-key-topbar {background: var(--paper); border-radius: 14px; flex-wrap: nowrap;
-  box-shadow: var(--shadow); border-bottom: 3px solid var(--orange); padding: .6rem .9rem;}
-.st-key-topbar [data-testid="stElementContainer"]:first-child {flex: 1 1 auto; min-width: 0;}
-.brand {display: flex; align-items: center; gap: .65rem;}
-.brand .dot {width: 2.4rem; height: 2.4rem; border-radius: 50%; background: var(--orange); color: #fff;
+/* סרגל צד - כמו בצ'אטבוטים מקצועיים: מותג, פעולות, נושאים, מידע */
+.st-key-side {position: fixed; top: 0; right: 0; bottom: 0; width: var(--side); z-index: 1000; background: var(--paper);
+  border-left: 1px solid #ECEDF0; box-shadow: -4px 0 24px rgba(17,28,63,.05); padding: 1.4rem 1.1rem 1rem;
+  overflow-y: auto; gap: .6rem; direction: rtl; text-align: right;}
+.st-key-side::before {content: ""; position: absolute; top: 0; right: 0; left: 0; height: 4px; background: var(--orange);}
+.brand {display: flex; align-items: center; gap: .7rem; padding-bottom: .9rem; border-bottom: 1px solid #EEEFF2;}
+.brand .dot {width: 2.6rem; height: 2.6rem; border-radius: 12px; background: var(--orange); color: #fff;
   display: grid; place-items: center; flex: none;}
-.brand b {display: block; font-size: 1.08rem; font-weight: 700; white-space: nowrap;}
+.brand b {display: block; font-size: 1.12rem; font-weight: 700;}
 .brand span {display: block; color: var(--gray); font-size: .82rem;}
-.st-key-topbar .stButton button, .st-key-topbar .stDownloadButton button, .st-key-topbar .stLinkButton a {
-  border-radius: 22px; font-size: .9rem; font-weight: 500; padding: .35rem .9rem; min-height: 0; white-space: nowrap;}
-.st-key-topbar .stButton button[kind="primary"] {background: var(--orange); border-color: var(--orange); color: #fff;}
-.st-key-topbar .stButton button[kind="primary"]:hover {background: #E8432A; border-color: #E8432A; color: #fff;}
-.st-key-topbar .stDownloadButton button, .st-key-topbar .stLinkButton a {background: var(--paper);
-  border: 1px solid var(--line); color: var(--blue);}
-.st-key-topbar .stDownloadButton button:hover, .st-key-topbar .stLinkButton a:hover {border-color: var(--blue); color: var(--blue);}
+.st-key-side_actions {gap: .45rem; margin-top: .2rem;}
+.st-key-side .stButton button, .st-key-side .stLinkButton a {border-radius: 10px; font-weight: 500; justify-content: flex-start;
+  padding: .55rem .9rem; min-height: 0;}
+.st-key-side .stButton button[kind="primary"] {background: var(--orange); border-color: var(--orange); color: #fff;
+  justify-content: center; font-size: 1rem;}
+.st-key-side .stButton button[kind="primary"]:hover {background: #E8432A; border-color: #E8432A; color: #fff;}
+.st-key-side .stLinkButton a {background: var(--paper); border: 1px solid var(--line); color: var(--blue); justify-content: center;}
+.st-key-side .stLinkButton a:hover {border-color: var(--blue);}
+.side-label {color: var(--gray); font-size: .78rem; font-weight: 600; margin: 1rem .2rem .35rem; line-height: 1.3;}
+.st-key-side_more {gap: .1rem;}
+.st-key-side_more .stButton button {color: var(--blue); padding: .45rem .6rem; border-radius: 8px; font-size: .95rem;
+  border-color: transparent; background: transparent; box-shadow: none; justify-content: flex-start; gap: .55rem;}
+.st-key-side_more .stButton button:hover {background: var(--surface); color: var(--blue); border-color: transparent;}
+.st-key-side_more .stButton button p {text-align: right;}
+.st-key-side_more .stButton button, .st-key-side_more .stButton button > div {justify-content: flex-start !important;}
+.st-key-side_more [data-testid="stElementContainer"], .st-key-side_more .stButton {width: 100% !important;}
+.st-key-side_more .stButton button [data-testid="stIconMaterial"] {color: var(--orange);}
+.how {list-style: none; padding: 0; margin: 0; font-size: .86rem; color: var(--gray); line-height: 1.45;}
+.how li {display: flex; gap: .5rem; align-items: flex-start; margin: 0 0 .55rem;}
+.how .material {font-size: 1.1rem; flex: none;}
+.side-foot {margin-top: .8rem; padding-top: .8rem; border-top: 1px solid #EEEFF2; color: #9A9CA3; font-size: .76rem; line-height: 1.6;}
+.st-key-end_actions {margin-top: .8rem;}
+.st-key-end_actions .stDownloadButton button {border-radius: 22px; border: 1px solid var(--line); background: var(--paper);
+  color: var(--blue); font-weight: 500; font-size: .9rem; padding: .35rem 1rem;}
+.st-key-end_actions .stDownloadButton button:hover {border-color: var(--blue);}
 [data-testid="stIconMaterial"] {color: inherit;}
+
+/* טלפון וטאבלט: הסרגל הופך לפס עליון קומפקטי */
+@media (max-width: 900px) {
+  :root {--side: 0px;}
+  .block-container {padding: 0 1rem 7rem;}
+  .block-container:has(.msg-user) {padding-bottom: calc(100vh - 220px);}
+  [data-testid="stBottomBlockContainer"] {padding: 0 1rem 1rem;}
+  [data-testid="stLayoutWrapper"]:has(> .st-key-side) {position: sticky; top: .4rem; z-index: 80;}
+  .st-key-side {position: relative; top: 0; bottom: auto; width: auto; flex-direction: row; align-items: center;
+    flex-wrap: nowrap; padding: .55rem .7rem; margin: .4rem 0 .8rem; border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(17,28,63,.1); border-left: none; overflow: hidden;}
+  .st-key-side::before {top: auto; bottom: 0;}
+  .st-key-side_more, [data-testid="stLayoutWrapper"]:has(> .st-key-side_more) {display: none !important;}
+  [data-testid="stLayoutWrapper"]:has(> .st-key-side_actions) {flex: none; width: auto !important;}
+  .brand {border: none; padding: 0; flex: 1 1 auto; min-width: 0;}
+  .st-key-side > [data-testid="stElementContainer"]:first-child {flex: 1 1 auto; min-width: 0; width: auto !important;}
+  .brand b {overflow: hidden; text-overflow: ellipsis;}
+  .brand .dot {width: 2.1rem; height: 2.1rem;}
+  .brand b {font-size: .95rem; white-space: nowrap;} .brand span {display: none;}
+  .st-key-side_actions {flex-direction: row; margin: 0; width: auto !important; flex: none;}
+  .st-key-side_actions [data-testid="stElementContainer"] {width: auto !important;}
+  .st-key-side .stButton button p, .st-key-side .stLinkButton a p {display: none;}
+  .st-key-side .stButton button, .st-key-side .stLinkButton a {padding: .45rem .6rem;}
+}
 
 /* מסך פתיחה */
 .welcome h1 {font-size: 2.1rem; line-height: 1.15; font-weight: 700; margin: 0 0 .4rem; color: var(--blue);}
@@ -173,11 +223,8 @@ header[data-testid="stHeader"] {display: none;}
 [data-testid="stChatInput"] {background: var(--paper); border: 1px solid var(--line); border-radius: 26px; box-shadow: var(--shadow);}
 [data-testid="stChatInput"]:focus-within {border-color: var(--blue);}
 [data-testid="stChatInputSubmitButton"] {background: var(--orange) !important; color: #fff !important; border-radius: 50% !important;}
-@media (max-width: 640px) {.welcome h1 {font-size: 1.8rem;} .brand span {display: none;} .st-key-topbar {padding: .5rem .6rem;}
-  .brand b {font-size: .9rem; white-space: normal; line-height: 1.2;} .brand .dot {width: 2rem; height: 2rem;}
-  .st-key-topbar {gap: .3rem;}
-  .st-key-topbar .stButton button p, .st-key-topbar .stDownloadButton button p, .st-key-topbar .stLinkButton a p {display: none;}
-  .st-key-topbar .stButton button, .st-key-topbar .stDownloadButton button, .st-key-topbar .stLinkButton a {padding: .4rem .55rem;}}
+@media (max-width: 640px) {.welcome h1 {font-size: 1.8rem;}
+}
 </style>""", unsafe_allow_html=True)
 
 EXAMPLES = [("🏠", "יש לי נזילה בבית, איך מגישים תביעה?"),
@@ -232,29 +279,37 @@ def evidence_html(evidence):
     return "".join(slips)
 
 
-def show(msg, fresh=False):
+WHO = '<div class="who"><i></i>העוזר הדיגיטלי</div>'
+
+
+def show_body(msg):
+    """גוף ההודעה של הבוט (בלי התווית) - משמש גם לתשובה החדשה, שמוצגת באותו מקום שבו נכתבה."""
     status = msg.get("status")
-    if msg["role"] == "user":
-        st.markdown(f'<div class="msg-user">{html.escape(msg["text"])}</div>', unsafe_allow_html=True)
-        return
-    st.markdown(f'<div class="who{" fresh" if fresh else ""}"><i></i>העוזר הדיגיטלי</div>', unsafe_allow_html=True)
     if status in ("not_found", "unavailable", "personal"):
         title = {"not_found": "אין מספיק מידע באתר", "unavailable": "השירות לא זמין כרגע",
                  "personal": "את זה בודקים בשירות הלקוחות"}[status]
-        st.markdown(f'<div class="note{" fresh" if fresh else ""}"><b>{title}</b>{html.escape(msg["text"])}<br>'
+        st.markdown(f'<div class="note"><b>{title}</b>{html.escape(msg["text"])}<br>'
                     f'<a href="{CONTACT_URL}" target="_blank" rel="noopener">לכל הדרכים ליצור קשר עם הפניקס</a></div>',
                     unsafe_allow_html=True)
         return
     if status == "clarify":
-        st.markdown(f'<div class="note ask{" fresh" if fresh else ""}"><b>שאלה קטנה לפני שאני עונה</b>{html.escape(msg["text"])}</div>',
+        st.markdown(f'<div class="note ask"><b>שאלה קטנה לפני שאני עונה</b>{html.escape(msg["text"])}</div>',
                     unsafe_allow_html=True)
         return
     trust = trust_html(msg) if status == "answer" and msg.get("sources") else ""
-    st.markdown(f'<div class="answer{" fresh" if fresh else ""}"><div class="answer-body">\n\n{_md(msg["text"])}\n\n</div>{trust}</div>',
+    st.markdown(f'<div class="answer"><div class="answer-body">\n\n{_md(msg["text"])}\n\n</div>{trust}</div>',
                 unsafe_allow_html=True)
     if status == "answer" and msg.get("evidence"):
         with st.expander(f"הראו לי איפה זה כתוב ({len(msg['evidence'])})"):
             st.markdown(evidence_html(msg["evidence"]), unsafe_allow_html=True)
+
+
+def show(msg):
+    if msg["role"] == "user":
+        st.markdown(f'<div class="msg-user">{html.escape(msg["text"])}</div>', unsafe_allow_html=True)
+        return
+    st.markdown(WHO, unsafe_allow_html=True)
+    show_body(msg)
 
 
 def _md_to_html(text):
@@ -331,25 +386,24 @@ def rate_limited():
 
 
 def respond(question, history, manifest, cache):
-    """מציג את התשובה תוך כדי כתיבה, ומחזיר את ההודעה הסופית לשמירה בהיסטוריה."""
+    """כותב את התשובה תוך כדי הזרמה, ובסוף מציג את הגרסה הסופית באותו מקום בדיוק (box).
+    לא מוחקים ולא מציירים מחדש את הדף - זה מה שגרם ל"קפיצה" בסוף כל תשובה."""
     key = (manifest["built_at"], normalize(question))
+    st.markdown(WHO, unsafe_allow_html=True)
+    box = st.empty()
     if not history and key in cache:  # שאלה ראשונה שכבר נשאלה - מיד, בלי לפנות למודל
         result = cache[key]
     else:
-        progress, box = st.empty(), st.empty()
         result = None
         for kind, value in answer_stream(question, history=history):
             if kind == "status":
-                progress.markdown(f'<div class="typing"><span></span><span></span><span></span>{html.escape(value)}</div>',
-                                  unsafe_allow_html=True)
+                box.markdown(f'<div class="typing"><span></span><span></span><span></span>{html.escape(value)}</div>',
+                             unsafe_allow_html=True)
             elif kind == "text":
-                progress.empty()
                 box.markdown(f'<div class="answer"><div class="answer-body">\n\n{_md(value)} '
                              f'<span class="cursor">▌</span>\n\n</div></div>', unsafe_allow_html=True)
             else:
                 result = value
-        progress.empty()
-        box.empty()  # הטקסט הסופי מוצג מחדש (ואם הבדיקה נכשלה - מוחלף ב"לא מצאתי")
         if not history and result["status"] in ("answer", "not_found"):
             cache[key] = result
         if result["status"] == "not_found":
@@ -357,7 +411,8 @@ def respond(question, history, manifest, cache):
     msg = {"role": "assistant", "text": result["answer"], "status": result["status"],
            "sources": result.get("sources", []), "evidence": result.get("evidence", []),
            "trust": result.get("trust"), "followups": result.get("followups", [])}
-    show(msg, fresh=True)
+    with box.container():  # הגרסה הסופית (עם מקורות וציטוטים) מחליפה את הטקסט שנכתב - באותו מקום
+        show_body(msg)
     return msg
 
 
@@ -423,10 +478,15 @@ def scroll_to_question(n, seconds):
         const qs = doc.querySelectorAll('.msg-user');
         const q = qs[qs.length - 1];
         if (!box || !q) return;
-        const bar = doc.querySelector('.st-key-topbar');
-        const offset = (bar ? bar.getBoundingClientRect().height : 80) + 24;
-        box.scrollTop += q.getBoundingClientRect().top - box.getBoundingClientRect().top - offset;
+        const bar = window.parent.innerWidth <= 900 ? doc.querySelector('.st-key-side') : null;
+        const offset = (bar ? bar.getBoundingClientRect().height : 0) + 24;
+        const delta = q.getBoundingClientRect().top - box.getBoundingClientRect().top - offset;
+        if (Math.abs(delta) < 2) return;
+        // התנועה הראשונה חלקה (גלישה), התיקונים אחריה מיידיים וקטנים - בלי קפיצות
+        if (!window.__glided) {{ window.__glided = true; box.scrollBy({{top: delta, behavior: "smooth"}}); }}
+        else if (!window.__gliding) box.scrollTop += delta;
       }};
+      window.__glided = false; window.__gliding = true; setTimeout(() => window.__gliding = false, 450);
       let stop = false;
       ["wheel", "touchmove", "keydown"].forEach(e => doc.addEventListener(e, () => stop = true, {{once: true}}));
       const t0 = Date.now();
@@ -437,16 +497,32 @@ def scroll_to_question(n, seconds):
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# ---------- פס עליון קבוע: מותג, שיחה חדשה, הורדה, נציג ----------
-with st.container(key="topbar", horizontal=True, vertical_alignment="center", gap="small"):
-    st.markdown(f'<div class="brand"><div class="dot">{CHAT_ICON}</div><div><b>העוזר הדיגיטלי של הפניקס</b>'
-                f'<span>תשובות מתוך אתר fnx.co.il</span></div></div>', unsafe_allow_html=True)
-    if st.session_state.messages:
-        st.button("שיחה חדשה", icon=":material/add_comment:", key="new_chat", on_click=new_chat, type="primary")
-        st.download_button("הורדה", transcript(st.session_state.messages).encode("utf-8"), icon=":material/download:",
-                           file_name=f"שיחה-עם-הפניקס-{datetime.now():%Y-%m-%d}.html", mime="text/html",
-                           key="download", help="הורדת השיחה כדף מעוצב - אפשר להדפיס או לשמור כ-PDF")
-    st.link_button("דברו עם נציג", CONTACT_URL, icon=":material/support_agent:")
+# ---------- סרגל צד (בימין): מותג, שיחה חדשה, נציג, נושאים, איך זה עובד ----------
+crawled = manifest.get("newest_crawl") or ""
+try:
+    crawled_nice = datetime.fromisoformat(crawled).strftime("%d/%m/%Y")
+except ValueError:
+    crawled_nice = crawled
+with st.container(key="side"):
+    st.markdown(f'<div class="brand"><div class="dot">{CHAT_ICON}</div><div><b>העוזר הדיגיטלי</b>'
+                f'<span>הפניקס · תשובות מתוך האתר</span></div></div>', unsafe_allow_html=True)
+    with st.container(key="side_actions"):
+        st.button("שיחה חדשה", icon=":material/add_comment:", key="new_chat", on_click=new_chat, type="primary",
+                  use_container_width=True)
+        st.link_button("דברו עם נציג", CONTACT_URL, icon=":material/support_agent:", use_container_width=True)
+    with st.container(key="side_more"):
+        st.markdown('<div class="side-label">נושאים</div>', unsafe_allow_html=True)
+        for i, (icon, name, q) in enumerate(TOPICS):
+            st.button(name, icon=icon, key=f"side{i}", on_click=ask, args=(q,), type="tertiary", use_container_width=True)
+        st.markdown(f"""<div class="side-label">איך זה עובד</div>
+<ul class="how">
+<li><span class="material">language</span>עונה רק לפי המידע באתר הפניקס</li>
+<li><span class="material">link</span>לכל תשובה מצורף העמוד שממנו היא נלקחה</li>
+<li><span class="material">fact_check</span>המשפטים מהאתר נבדקים לפני שהתשובה מוצגת</li>
+<li><span class="material">lock</span>אין גישה לפרטים אישיים - אותם בודקים בשירות הלקוחות</li>
+</ul>
+<div class="side-foot">המידע נאסף מהאתר ב-{html.escape(crawled_nice)} · {manifest.get("pages", "")} עמודים<br>
+השיחה לא נשמרת אחרי סגירת החלון</div>""", unsafe_allow_html=True)
 
 # תיבת הכתיבה תמיד מוצמדת לתחתית; קוראים אותה כבר כאן כדי לא להציג את מסך הפתיחה מעל שאלה שנשלחה
 question = st.chat_input("כתבו שאלה...", max_chars=MAX_CHARS) or st.session_state.pop("pending", None)
@@ -458,6 +534,11 @@ if msgs and msgs[-1]["role"] == "user":
     if question:
         st.session_state.pending = question  # השאלה החדשה תיענה מיד אחרי
     question = msgs.pop()["text"]
+if question:
+    question = question.strip()[:MAX_CHARS]
+    if question and rate_limited():
+        st.toast("נשאלו הרבה שאלות בזמן קצר. אפשר לנסות שוב בעוד דקה.")
+        question = None
 
 if not st.session_state.messages and not question:
     st.markdown(f'<div class="welcome"><h1>{greeting()}, איך אפשר לעזור?</h1>'
@@ -472,11 +553,6 @@ if not st.session_state.messages and not question:
     with st.container(key="examples", horizontal=True):
         for i, (icon, ex) in enumerate(EXAMPLES):
             st.button(ex, key=f"ex{i}", on_click=ask, args=(ex,), icon=":material/chat_bubble:")
-    crawled = manifest.get("newest_crawl") or ""
-    try:
-        age = f" (לפני {(date.today() - datetime.fromisoformat(crawled).date()).days} ימים)"
-    except ValueError:
-        age = ""
     # Streamlit גולל צ'אט תמיד לתחתית; במסך הפתיחה רוצים לראות את הברכה - גוללים למעלה
     components.html("""<script>
       const toTop = () => {
@@ -486,23 +562,43 @@ if not st.session_state.messages and not question:
       let stop = false;
       ["wheel", "touchstart", "keydown"].forEach(e => window.parent.addEventListener(e, () => stop = true, {once: true}));
       const t0 = Date.now();
-      const iv = setInterval(() => { if (stop || Date.now() - t0 > 6000) return clearInterval(iv); toTop(); }, 120);
+      const iv = setInterval(() => {
+        // נעצר מיד כשנשלחת שאלה (אחרת הוא "מושך" את המסך למעלה בזמן שהתשובה נכתבת)
+        if (stop || Date.now() - t0 > 6000 || window.parent.document.querySelector('.msg-user')) return clearInterval(iv);
+        toTop();
+      }, 120);
     </script>""", height=0)
-    st.markdown(f'<div class="about"><span class="material">verified_user</span> הבוט מסביר מה כתוב באתר. '
-                f'הוא לא נותן ייעוץ אישי ואין לו גישה לפוליסה שלכם - את אלה בודקים בשירות הלקוחות. '
-                f'המידע נאסף מהאתר ב-{html.escape(crawled)}{age}. השיחה לא נשמרת אחרי סגירת החלון.</div>',
-                unsafe_allow_html=True)
+
+
+def feedback_row(i):
+    with st.container(key=f"fbrow{i}", horizontal=True):
+        st.markdown('<span class="fbq">עזרתי?</span>', unsafe_allow_html=True)
+        st.feedback("thumbs", key=f"fb{i}", on_change=on_feedback, args=(i,))
+
 
 for i, msg in enumerate(st.session_state.messages):
     with st.chat_message(msg["role"]):
         show(msg)
         if msg["role"] == "assistant" and msg.get("status") in ("answer", "not_found", "clarify"):
-            with st.container(key=f"fbrow{i}", horizontal=True):
-                st.markdown('<span class="fbq">עזרתי?</span>', unsafe_allow_html=True)
-                st.feedback("thumbs", key=f"fb{i}", on_change=on_feedback, args=(i,))
+            feedback_row(i)
+
+# שאלה חדשה: נכתבת ונענית באותו ריצה - בלי לצייר את הדף מחדש בסוף (זה מה שגרם לקפיצה)
+if question:
+    history = [{"role": m["role"], "text": m["text"]} for m in st.session_state.messages]
+    st.session_state.messages.append({"role": "user", "text": question})
+    with st.chat_message("user"):
+        show(st.session_state.messages[-1])
+    scroll_to_question(len(st.session_state.messages), seconds=45)  # השאלה בראש המסך, התשובה נכתבת מתחתיה
+    with st.chat_message("assistant"):
+        reply = respond(question, history, manifest, cache)
+        st.session_state.messages.append(reply)
+        if reply.get("status") in ("answer", "not_found", "clarify"):
+            feedback_row(len(st.session_state.messages) - 1)
+    if st.session_state.get("pending"):  # נשלחה עוד שאלה בזמן הכתיבה - עונים עליה עכשיו
+        st.rerun()
 
 last = st.session_state.messages[-1] if st.session_state.messages else None
-if last and last["role"] == "assistant" and not question:
+if last and last["role"] == "assistant":
     asked = {m["text"] for m in st.session_state.messages if m["role"] == "user"}
     if last.get("followups"):
         title, chips = "רוצים לדעת עוד?", last["followups"]
@@ -513,26 +609,12 @@ if last and last["role"] == "assistant" and not question:
         chips = []
     if chips:
         st.markdown(f'<div class="more">{title}</div>', unsafe_allow_html=True)
-        with st.container(key="followups", horizontal=True):
+        with st.container(key=f"followups{len(st.session_state.messages)}", horizontal=True):
             for j, fq in enumerate(chips):
                 st.button(fq, key=f"fu{len(st.session_state.messages)}_{j}", on_click=ask, args=(fq,),
                           icon=":material/subdirectory_arrow_left:")
-
-# אחרי תשובה: השאלה האחרונה בראש המסך (ולא נשארים על השאלה הקודמת)
-if st.session_state.pop("scroll_to", None) and not question:
-    scroll_to_question(len(st.session_state.messages), seconds=3)
-
-if question:
-    question = question.strip()[:MAX_CHARS]
-    if rate_limited():
-        st.toast("נשאלו הרבה שאלות בזמן קצר. אפשר לנסות שוב בעוד דקה.")
-    elif question:
-        history = [{"role": m["role"], "text": m["text"]} for m in st.session_state.messages]
-        st.session_state.messages.append({"role": "user", "text": question})
-        with st.chat_message("user"):
-            show(st.session_state.messages[-1])
-        scroll_to_question(len(st.session_state.messages), seconds=40)  # בזמן הכתיבה
-        with st.chat_message("assistant"):
-            st.session_state.messages.append(respond(question, history, manifest, cache))
-        st.session_state.scroll_to = True
-        st.rerun()  # מצייר מחדש מההיסטוריה, כדי שגם כפתור ההורדה יכלול את התשובה האחרונה
+    with st.container(key="end_actions", horizontal=True):
+        st.download_button("הורדת השיחה", transcript(st.session_state.messages).encode("utf-8"),
+                           icon=":material/download:", key=f"dl{len(st.session_state.messages)}",
+                           file_name=f"שיחה-עם-הפניקס-{datetime.now():%Y-%m-%d}.html", mime="text/html",
+                           help="דף מעוצב שנפתח בדפדפן - אפשר להדפיס או לשמור כ-PDF")

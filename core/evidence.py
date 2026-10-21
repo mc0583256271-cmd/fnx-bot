@@ -31,7 +31,7 @@ def parse_evidence(block):
         m = _EVIDENCE_ROW.match(line)
         if m:
             quote = m.group(2).strip().strip(_QUOTES).strip()
-            if len(quote) >= 8:
+            if len(quote) >= 8 and len(quote.split()) >= 4:  # "ביטוח רכב" הוא כותרת, לא הוכחה
                 rows.append((int(m.group(1)), quote))
     return rows
 

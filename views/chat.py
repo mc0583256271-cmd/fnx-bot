@@ -409,9 +409,10 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 # ---------- סרגל צד (בימין): מותג, שיחה חדשה, נציג, נושאים, איך זה עובד ----------
-crawled = manifest.get("newest_crawl") or ""
+# התאריך של הרענון האחרון (בניית האינדקס), בשעון ישראל - לא תאריך הסריקה של העמוד החדש ביותר
+crawled = manifest.get("built_at") or manifest.get("newest_crawl") or ""
 try:
-    crawled_nice = datetime.fromisoformat(crawled).strftime("%d/%m/%Y")
+    crawled_nice = datetime.fromisoformat(crawled).astimezone(ZoneInfo("Asia/Jerusalem")).strftime("%d/%m/%Y")
 except ValueError:
     crawled_nice = crawled
 with st.container(key="side"):
@@ -431,7 +432,7 @@ with st.container(key="side"):
 <li><span class="material">fact_check</span><span>המשפטים מהאתר נבדקים לפני שהתשובה מוצגת</span></li>
 <li><span class="material">lock</span><span>אין גישה לפרטים אישיים - אותם בודקים בשירות הלקוחות</span></li>
 </ul>
-<div class="side-foot">המידע נאסף מהאתר ב-{html.escape(crawled_nice)} · {manifest.get("pages", "")} עמודים<br>
+<div class="side-foot">הבוט מעודכן לפי האתר מ-{html.escape(crawled_nice)} · {manifest.get("pages", "")} עמודים<br>
 השיחה לא נשמרת אחרי סגירת החלון</div>""", unsafe_allow_html=True)
 
 # תיבת הכתיבה תמיד מוצמדת לתחתית; קוראים אותה כבר כאן כדי לא להציג את מסך הפתיחה מעל שאלה שנשלחה

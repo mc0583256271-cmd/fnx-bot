@@ -98,8 +98,8 @@ pre {direction: rtl; text-align: right;}
 
 @st.cache_resource
 def shared():
-    """משותף לכל השרת: משימת הרענון (אחת בכל רגע) ומונה ניסיונות כניסה שגויים."""
-    return {"job": RefreshJob(), "fails": []}
+    """משותף לכל השרת: משימת הרענון (אחת בכל רגע), מונה ניסיונות כניסה שגויים, ומתי השרת עלה."""
+    return {"job": RefreshJob(), "fails": [], "up_since": time.time()}
 
 
 def admin_password():
@@ -170,6 +170,45 @@ def gaps_csv(gaps):
     return buf.getvalue().encode("utf-8-sig")
 
 
+def server_started():
+    """מתי תהליך השרת עלה (בלינוקס - מ-/proc; אחרת - הפעם הראשונה שעמוד המנהל נפתח)."""
+    try:
+        import os
+        ticks = int(Path("/proc/self/stat").read_text().rsplit(")", 1)[1].split()[19])
+        btime = next(int(line.split()[1]) for line in Path("/proc/stat").read_text().splitlines()
+                     if line.startswith("btime"))
+        return btime + ticks / os.sysconf("SC_CLK_TCK")
+    except Exception:
+        return shared()["up_since"]
+
+
+def feedback_csv(fb):
+    """משוב הלקוחות כ-CSV שאקסל פותח נכון בעברית."""
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(["תאריך", "שעה", "עזר?", "השאלה", "התשובה"])
+    for r in fb:
+        day, _, hour = r.get("at", "").partition("T")
+        w.writerow([day, hour[:5], "👍" if r.get("helpful") else "👎", _csv_safe(r.get("question", "")),
+                    _csv_safe(r.get("answer", ""))])
+    return buf.getvalue().encode("utf-8-sig")
+
+
+def backup_buttons(where):
+    """שמירת נתוני המנהל במחשב: השאלות שלא נענו והמשוב (שני קובצי Excel)."""
+    gaps, fb = load_gaps(), load_feedback()
+    c1, c2 = st.columns(2)
+    c1.download_button(f"שמירת השאלות שלא נענו ({len(gaps)})", gaps_csv(gaps), file_name="שאלות-שלא-נענו.csv",
+                       mime="text/csv", icon=":material/download:", key=f"bk_gaps_{where}", disabled=not gaps,
+                       use_container_width=True)
+    c2.download_button(f"שמירת משוב הלקוחות ({len(fb)})", feedback_csv(fb), file_name="משוב-לקוחות.csv",
+                       mime="text/csv", icon=":material/download:", key=f"bk_fb_{where}", disabled=not fb,
+                       use_container_width=True)
+
+
+STORAGE_NOTE = ("השאלות שלא נענו והמשוב נשמרים בשרת רק עד שהוא מופעל מחדש. בשרת הענן החינמי זה קורה אחרי עדכון "
+                "קוד, אחרי Reboot, ולפעמים גם בזמן רענון ארוך - ואז הרשימות מתאפסות. כדאי לשמור עותק במחשב.")
+
 STOP = set("של על את עם מה איך כמה אם יש לי זה זו אני אפשר האם או גם כל לא כן מי למה מתי איפה בין אצלכם שלי "
            "ביטוח הפניקס".split())
 
@@ -235,8 +274,8 @@ with section("data"):
                 unsafe_allow_html=True)
     c2.markdown(f'<div class="card"><div class="big">{m.get("chunks", "-")}</div><div class="muted">פסקאות באינדקס</div></div>',
                 unsafe_allow_html=True)
-    c3.markdown(f'<div class="card"><div class="big">{html.escape(nice_time(m.get("newest_crawl", "-")))}</div>'
-                f'<div class="muted">נאסף לאחרונה</div></div>', unsafe_allow_html=True)
+    c3.markdown(f'<div class="card"><div class="big">{html.escape(nice_time(m.get("built_at", "-"))[:10])}</div>'
+                f'<div class="muted">עודכן לאחרונה מהאתר</div></div>', unsafe_allow_html=True)
     st.caption(f"האינדקס נבנה ב-{nice_time(m.get('built_at', '-'))} · מודל ההטמעה {m.get('model', '-')}")
 
 
@@ -273,6 +312,8 @@ with section("refresh"):
              "להטמעה. אם הסריקה נכשלת או שיוצא הרבה פחות מידע מקודם - המידע הקודם נשאר והבוט ממשיך לעבוד כרגיל.")
     job = shared()["job"]
     if job.running():
+        st.warning(STORAGE_NOTE, icon=":material/save:")
+        backup_buttons("running")
         st.info(f"רענון רץ עכשיו (התחיל לפני {int(time.time() - job.started)} שניות). אפשר להמשיך לעבוד, הצ'אט לא מושפע.")
         st.code(job.log_tail() or "מתחיל...", language=None)
         if st.button("עדכון מצב"):
@@ -285,6 +326,8 @@ with section("refresh"):
             else:
                 st.error(f"הרענון נכשל ב-{when} - המידע הקודם נשאר. פרטים:")
             st.code(job.log_tail(), language=None)
+        st.warning("**לפני רענון - שמרו את נתוני המנהל.** " + STORAGE_NOTE, icon=":material/save:")
+        backup_buttons("refresh")
         if st.button("רענון המידע מהאתר", type="primary"):
             if job.start():
                 st.rerun()
@@ -308,6 +351,8 @@ with section("refresh"):
 
 # ---------- מכ"ם פערים ----------
 with section("gaps"):
+    st.caption(f"{STORAGE_NOTE} השרת פועל ברציפות מאז "
+               f"{datetime.fromtimestamp(server_started(), ZoneInfo('Asia/Jerusalem')):%d/%m/%Y %H:%M}.")
     gaps = load_gaps()
     if not gaps:
         st.write("אין כרגע שאלות פתוחות. כל שאלה שהבוט עונה עליה \"לא מצאתי\" תופיע כאן - בלי פרטים מזהים.")
@@ -324,7 +369,8 @@ with section("gaps"):
             if c2.button("✓ טופלה", key=f"gap{i}"):
                 remove_question(q)
                 st.rerun()
-        st.download_button("הורדת כל השאלות (Excel / CSV)", gaps_csv(gaps), file_name="שאלות-שלא-נענו.csv", mime="text/csv")
+        st.download_button("הורדת כל השאלות (Excel / CSV)", gaps_csv(gaps), file_name="שאלות-שלא-נענו.csv", mime="text/csv",
+                           icon=":material/download:")
         with st.expander("ניקוי כל הרשימה"):
             sure = st.checkbox("כן, למחוק את כל השאלות שלא נענו (אי אפשר לשחזר)", key="sure_gaps")
             if st.button("מחיקת הרשימה", disabled=not sure):
@@ -351,6 +397,8 @@ with section("feedback"):
             rows = "".join(f'<div class="gap"><span><b style="color:#111C3F">{html.escape(r["question"])}</b><br>'
                            f'<span class="muted">{html.escape(r["answer"][:160])}</span></span></div>' for r in reversed(bad))
             st.markdown(f'<div class="card">{rows}</div>', unsafe_allow_html=True)
+        st.download_button("הורדת כל המשוב (Excel / CSV)", feedback_csv(fb), file_name="משוב-לקוחות.csv",
+                           mime="text/csv", icon=":material/download:")
         with st.expander("ניקוי המשוב"):
             sure = st.checkbox("כן, למחוק את כל המשוב (אי אפשר לשחזר)", key="sure_fb")
             if st.button("מחיקת המשוב", disabled=not sure):

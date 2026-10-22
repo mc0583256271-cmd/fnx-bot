@@ -60,6 +60,13 @@ apply_theme("""
 [class*="st-key-sec_"] .stButton button[kind="primary"]:hover, .stFormSubmitButton button:hover {background: #FF6448;
   border-color: #FF6448; color: #fff;}
 pre {direction: rtl; text-align: right;}
+.lead {color: var(--gray); margin: .3rem 0 .8rem; font-size: 1rem;}
+.lead b {color: var(--blue);}
+.kpi {background: var(--paper); border: 1px solid #ECEDF1; position: relative; padding-top: 1.1rem;}
+.kpi .material {position: absolute; top: 1rem; left: 1rem; font-size: 1.5rem; color: var(--orange); vertical-align: 0;}
+.kpi.warn .big {color: var(--orange);}
+[class*="st-key-sec_"] [data-testid="stExpander"] details {border-color: #ECEDF1; border-radius: 10px;}
+[class*="st-key-sec_"] [data-testid="stExpander"] summary {color: var(--blue); font-weight: 500;}
 /* סיכום חכם של הפערים */
 .ai-sum {display: flex; gap: .7rem; align-items: flex-start; background: linear-gradient(135deg, #16234D, var(--blue));
   color: #fff; border-radius: 14px; padding: 1rem 1.2rem; margin: .8rem 0 1rem; line-height: 1.6;}
@@ -266,7 +273,7 @@ STOP = set("של על את עם מה איך כמה אם יש לי זה זו אנ
            "ביטוח הפניקס".split())
 
 # ---------------------------------------------------------------- עמוד
-SECTIONS = {"data": ("database", "המידע שהבוט עונה ממנו", "המידע"),
+SECTIONS = {"data": ("dashboard", "תמונת מצב", "תמונת מצב"),
             "health": ("monitor_heart", "בדיקת תקינות", "בדיקת תקינות"),
             "refresh": ("sync", "רענון המידע מהאתר", "רענון המידע"),
             "gaps": ("radar", 'מכ"ם פערים: מה לקוחות שואלים ולא מוצאים באתר', 'מכ"ם פערים'),
@@ -317,25 +324,35 @@ if admin_password() is None:
 if not logged_in:
     login()
 
-st.markdown('<div class="page-h"><h1>ניהול הבוט</h1><span>מצב המידע, תקינות, ומה לקוחות מחפשים ולא מוצאים</span></div>',
+st.markdown('<div class="page-h"><h1>ניהול הבוט</h1><span>מה לקוחות מחפשים, מה חסר באתר, ומה מצב המידע</span></div>',
             unsafe_allow_html=True)
 
 # ---------- מצב המידע ----------
 with section("data"):
-    c1, c2, c3 = st.columns(3)
-    c1.markdown(f'<div class="card"><div class="big">{m.get("pages", "-")}</div><div class="muted">עמודים מהאתר</div></div>',
-                unsafe_allow_html=True)
-    c2.markdown(f'<div class="card"><div class="big">{m.get("chunks", "-")}</div><div class="muted">פסקאות באינדקס</div></div>',
-                unsafe_allow_html=True)
-    c3.markdown(f'<div class="card"><div class="big">{html.escape(nice_time(m.get("built_at", "-"))[:10])}</div>'
-                f'<div class="muted">עודכן לאחרונה מהאתר</div></div>', unsafe_allow_html=True)
-    st.caption(f"האינדקס נבנה ב-{nice_time(m.get('built_at', '-'))} · מודל ההטמעה {m.get('model', '-')}")
+    gaps_now, fb_now = load_gaps(), load_feedback()
+    helpful = f"{round(100 * sum(r['helpful'] for r in fb_now) / len(fb_now))}%" if fb_now else "-"
+    kpis = [("event_available", nice_time(m.get("built_at", "-"))[:10], "הבוט מעודכן לפי האתר מ-", ""),
+            ("description", f"{m.get('pages', '-')}", "עמודים מהאתר", ""),
+            ("help", f"{len(gaps_now)}", "שאלות שלא נענו", "warn" if gaps_now else ""),
+            ("thumb_up", helpful, f"מהתשובות עזרו ({len(fb_now)} משובים)" if fb_now else "עדיין אין משוב", "")]
+    cols = st.columns(4)
+    for col, (icon, big, label, cls) in zip(cols, kpis):
+        col.markdown(f'<div class="card kpi {cls}"><span class="material">{icon}</span><div class="big">{html.escape(big)}</div>'
+                     f'<div class="muted">{html.escape(label)}</div></div>', unsafe_allow_html=True)
+    with st.expander("פרטים נוספים"):
+        st.markdown(f"- **פסקאות באינדקס:** {m.get('chunks', '-')}\n"
+                    f"- **האינדקס נבנה:** {nice_time(m.get('built_at', '-'))}\n"
+                    f"- **מודל ההטמעה:** {m.get('model', '-')}\n"
+                    f"- **השרת פועל ברציפות מאז:** "
+                    f"{datetime.fromtimestamp(server_started(), ZoneInfo('Asia/Jerusalem')):%d/%m/%Y %H:%M}\n\n"
+                    f"{STORAGE_NOTE}")
 
 
 # ---------- בדיקת תקינות ----------
 with section("health"):
-    st.write("בודק שהחיפוש ומודלי השפה עונים, וכמה זמן זה לוקח. מתאים כשהבוט נראה איטי או לא עונה.")
-    if st.button("הרצת בדיקה"):
+    st.markdown('<p class="lead">הבוט נראה איטי או לא עונה? בדיקה של החיפוש ומודלי השפה, עם זמני תגובה.</p>',
+                unsafe_allow_html=True)
+    if st.button("הרצת בדיקה", icon=":material/play_arrow:"):
         from core.providers import DEFAULT_CHAIN, ClaudeProvider, GeminiProvider, Unavailable
         from core.retriever import Retriever
         checks = []
@@ -361,11 +378,15 @@ with section("health"):
 
 # ---------- רענון ----------
 with section("refresh"):
-    st.write("סורק את אתר הפניקס, מוריד רק עמודים שהשתנו, ובונה את האינדקס מחדש. פסקאות שלא השתנו לא נשלחות שוב "
-             "להטמעה. אם הסריקה נכשלת או שיוצא הרבה פחות מידע מקודם - המידע הקודם נשאר והבוט ממשיך לעבוד כרגיל.")
+    st.markdown('<p class="lead">האתר השתנה? הבוט סורק אותו מחדש ומתעדכן. בזמן הרענון (כ-40 דקות) הצ\'אט ממשיך לענות.</p>',
+                unsafe_allow_html=True)
+    with st.expander("פרטים נוספים"):
+        st.markdown("הסורק מוריד רק עמודים שהשתנו (לכל עמוד נשמרת \"טביעת אצבע\" של התוכן), ובונה את האינדקס מחדש. "
+                    "פסקאות שלא השתנו לא נשלחות שוב להטמעה. אם הסריקה נכשלת או שיוצא הרבה פחות מידע מקודם - "
+                    "המידע הקודם נשאר והבוט ממשיך לעבוד כרגיל.\n\n" + STORAGE_NOTE)
     job = shared()["job"]
     if job.running():
-        st.warning(STORAGE_NOTE, icon=":material/save:")
+        st.warning("כדאי לשמור את השאלות והמשוב במחשב - הם עלולים להימחק אם השרת יופעל מחדש.", icon=":material/save:")
         backup_buttons("running")
         st.info(f"רענון רץ עכשיו (התחיל לפני {int(time.time() - job.started)} שניות). אפשר להמשיך לעבוד, הצ'אט לא מושפע.")
         st.code(job.log_tail() or "מתחיל...", language=None)
@@ -379,9 +400,10 @@ with section("refresh"):
             else:
                 st.error(f"הרענון נכשל ב-{when} - המידע הקודם נשאר. פרטים:")
             st.code(job.log_tail(), language=None)
-        st.warning("**לפני רענון - שמרו את נתוני המנהל.** " + STORAGE_NOTE, icon=":material/save:")
+        st.warning("**לפני רענון** - שמרו את השאלות והמשוב במחשב: הם עלולים להימחק אם השרת יופעל מחדש.",
+                   icon=":material/save:")
         backup_buttons("refresh")
-        if st.button("רענון המידע מהאתר", type="primary"):
+        if st.button("רענון המידע מהאתר", type="primary", icon=":material/sync:"):
             if job.start():
                 st.rerun()
             st.warning("כבר רץ רענון.")
@@ -391,29 +413,25 @@ with section("refresh"):
         try:
             ch = json.loads(changes_file.read_text(encoding="utf-8"))
             names = titles_by_url()
-            st.markdown(f"**מה השתנה באתר בסריקה האחרונה** "
-                        f"({datetime.fromtimestamp(changes_file.stat().st_mtime):%d/%m/%Y %H:%M})")
-            for key, label in [("new", "עמודים חדשים"), ("updated", "עמודים שהתוכן שלהם השתנה"), ("removed", "עמודים שהוסרו")]:
-                urls = ch.get(key, [])
-                with st.expander(f"{label}: {len(urls)}"):
-                    for u in urls[:100]:
-                        st.markdown(f"- [{names.get(u, u)}]({u})")
+            parts = [("new", "חדשים"), ("updated", "השתנו"), ("removed", "הוסרו")]
+            with st.expander(f"מה השתנה באתר בסריקה האחרונה ({datetime.fromtimestamp(changes_file.stat().st_mtime):%d/%m/%Y}): "
+                             + " · ".join(f"{len(ch.get(k, []))} {label}" for k, label in parts)):
+                for key, label in parts:
+                    urls = ch.get(key, [])
+                    if urls:
+                        st.markdown(f"**עמודים ש{label}:**\n" + "".join(f"- [{names.get(u, u)}]({u})\n" for u in urls[:100]))
         except Exception:
             pass
 
 
 # ---------- מכ"ם פערים ----------
 with section("gaps"):
-    st.caption(f"{STORAGE_NOTE} השרת פועל ברציפות מאז "
-               f"{datetime.fromtimestamp(server_started(), ZoneInfo('Asia/Jerusalem')):%d/%m/%Y %H:%M}.")
     gaps = load_gaps()
     if not gaps:
         st.write("אין כרגע שאלות פתוחות. כל שאלה שהבוט עונה עליה \"לא מצאתי\" תופיע כאן - בלי פרטים מזהים.")
     else:
-        st.write(("שאלה אחת לא נענתה. " if len(gaps) == 1 else f"{len(gaps)} שאלות לא נענו. ") + "נושאים שחוזרים הם רמז למידע שכדאי להוסיף לאתר. "
-                 "אחרי שמטפלים בשאלה (למשל מוסיפים מידע לאתר ומרעננים) - מסמנים אותה כ\"טופלה\".")
-        words = Counter(w for g in gaps for w in set(re.findall(r"[א-ת]{3,}", g["search_query"])) if w not in STOP)
-        st.markdown("**מילים שחוזרות:** " + " · ".join(f"{html.escape(w)} ({n})" for w, n in words.most_common(12)),
+        n_q = "שאלה אחת לא נענתה" if len(gaps) == 1 else f"{len(gaps)} שאלות לא נענו"
+        st.markdown(f'<p class="lead"><b>{n_q}.</b> הסיכום החכם מקבץ אותן לנושאים ואומר מה כדאי להוסיף לאתר.</p>',
                     unsafe_allow_html=True)
         # ---- סיכום חכם: מודל השפה מקבץ לנושאים ומסנן מה שלא קשור לפניקס
         sig = (len(gaps), gaps[-1].get("at"))
@@ -429,14 +447,18 @@ with section("gaps"):
             if saved[0] != sig:
                 st.caption("נוספו שאלות מאז הסיכום - לחצו שוב לסיכום מעודכן.")
             show_insights(saved[1])
-        st.markdown("**כל השאלות שלא נענו:**")
         same = Counter(re.sub(r"[?!.,\s]+", " ", g["question"]).strip() for g in gaps)
-        for i, (q, n) in enumerate(same.most_common(20)):
-            c1, c2 = st.columns([5, 1])
-            c1.markdown(f'<div class="gap"><span>{html.escape(q)}</span><b>{n}×</b></div>', unsafe_allow_html=True)
-            if c2.button("✓ טופלה", key=f"gap{i}"):
-                remove_question(q)
-                st.rerun()
+        with st.expander(f"כל השאלות שלא נענו ({len(same)})", expanded=not (saved and saved[1]) and len(same) <= 6):
+            st.caption("אחרי שמוסיפים לאתר את המידע ומרעננים - מסמנים את השאלה כ\"טופלה\".")
+            for i, (q, n) in enumerate(same.most_common(20)):
+                c1, c2 = st.columns([5, 1])
+                c1.markdown(f'<div class="gap"><span>{html.escape(q)}</span><b>{n}×</b></div>', unsafe_allow_html=True)
+                if c2.button("✓ טופלה", key=f"gap{i}"):
+                    remove_question(q)
+                    st.rerun()
+            words = Counter(w for g in gaps for w in set(re.findall(r"[א-ת]{3,}", g["search_query"])) if w not in STOP)
+            st.markdown("**מילים שחוזרות:** " + " · ".join(f"{html.escape(w)} ({n})" for w, n in words.most_common(12)),
+                        unsafe_allow_html=True)
         st.download_button("הורדת כל השאלות (Excel / CSV)", gaps_csv(gaps), file_name="שאלות-שלא-נענו.csv", mime="text/csv",
                            icon=":material/download:")
         with st.expander("ניקוי כל הרשימה"):
@@ -461,10 +483,10 @@ with section("feedback"):
                     unsafe_allow_html=True)
         bad = [r for r in fb if not r["helpful"]][-10:]
         if bad:
-            st.markdown("**תשובות אחרונות שלא עזרו** - כדאי לבדוק אם חסר מידע באתר או שהבוט פספס:")
-            rows = "".join(f'<div class="gap"><span><b style="color:#111C3F">{html.escape(r["question"])}</b><br>'
-                           f'<span class="muted">{html.escape(r["answer"][:160])}</span></span></div>' for r in reversed(bad))
-            st.markdown(f'<div class="card">{rows}</div>', unsafe_allow_html=True)
+            with st.expander(f"תשובות אחרונות שלא עזרו ({len(bad)}) - כדאי לבדוק אם חסר מידע או שהבוט פספס"):
+                rows = "".join(f'<div class="gap"><span><b style="color:#111C3F">{html.escape(r["question"])}</b><br>'
+                               f'<span class="muted">{html.escape(r["answer"][:160])}</span></span></div>' for r in reversed(bad))
+                st.markdown(rows, unsafe_allow_html=True)
         st.download_button("הורדת כל המשוב (Excel / CSV)", feedback_csv(fb), file_name="משוב-לקוחות.csv",
                            mime="text/csv", icon=":material/download:")
         with st.expander("ניקוי המשוב"):

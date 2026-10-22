@@ -26,6 +26,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 from core.embeddings import Stop, load_key  # noqa: E402
 from core.gaps import clear_feedback, clear_gaps, load_feedback, load_gaps, remove_question  # noqa: E402
+from core.gap_insights import summarize  # noqa: E402
 from core.refresh import RefreshJob  # noqa: E402
 from core.theme import apply_theme, brand  # noqa: E402
 
@@ -59,6 +60,22 @@ apply_theme("""
 [class*="st-key-sec_"] .stButton button[kind="primary"]:hover, .stFormSubmitButton button:hover {background: #FF6448;
   border-color: #FF6448; color: #fff;}
 pre {direction: rtl; text-align: right;}
+/* סיכום חכם של הפערים */
+.ai-sum {display: flex; gap: .7rem; align-items: flex-start; background: linear-gradient(135deg, #16234D, var(--blue));
+  color: #fff; border-radius: 14px; padding: 1rem 1.2rem; margin: .8rem 0 1rem; line-height: 1.6;}
+.ai-sum .material {color: var(--orange); font-size: 1.4rem; vertical-align: 0;}
+.topic {border: 1px solid #ECEDF1; border-right: 4px solid var(--orange); border-radius: 12px; padding: .9rem 1.1rem;
+  margin-bottom: .8rem; background: #fff;}
+.topic-h {display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;}
+.topic-h b {font-size: 1.08rem; color: var(--blue);}
+.prio {font-size: .78rem; font-weight: 600; padding: .15rem .6rem; border-radius: 20px;}
+.prio.p1 {background: #FFE6E1; color: #C4321B;} .prio.p2 {background: #FFF4D6; color: #8A6100;}
+.prio.p3 {background: #EEF0F4; color: var(--gray);}
+.topic .cnt {margin-inline-start: auto; color: var(--orange); font-weight: 700; font-size: .9rem;}
+.topic .add {display: flex; gap: .5rem; margin: .55rem 0 .3rem; line-height: 1.55;}
+.topic .add .material {font-size: 1.15rem; vertical-align: 0; flex: none; margin-top: .15rem;}
+.topic .ex {color: var(--gray); font-size: .88rem;}
+.topic .ex ul {margin: .2rem 0 0; padding-inline-start: 1.2rem;}
 /* כפתורים משניים וקישור לצ'אט בסרגל - שקופים עם מסגרת, כמו "דברו עם נציג" */
 .st-key-side .stButton button[kind="secondary"], .st-key-side [data-testid="stPageLink"] a {background: rgba(255,255,255,.06);
   border: 1px solid rgba(255,255,255,.28); color: #fff; border-radius: 10px; justify-content: center; width: 100%;}
@@ -204,6 +221,42 @@ def backup_buttons(where):
     c2.download_button(f"שמירת משוב הלקוחות ({len(fb)})", feedback_csv(fb), file_name="משוב-לקוחות.csv",
                        mime="text/csv", icon=":material/download:", key=f"bk_fb_{where}", disabled=not fb,
                        use_container_width=True)
+
+
+def insights_provider():
+    """לסיכום החכם: Claude ראשון, Gemini כגיבוי, עם יותר זמן מתשובה רגילה (הרבה שאלות בבת אחת)."""
+    from core.providers import CLAUDE_MODEL, DEFAULT_CHAIN, ClaudeProvider, FallbackProvider, GeminiProvider
+    chain = [GeminiProvider(m, timeout=45) for m, _ in DEFAULT_CHAIN[:2]]
+    try:
+        load_key("ANTHROPIC_API_KEY")
+        chain.insert(0, ClaudeProvider(CLAUDE_MODEL, timeout=75))
+    except Stop:
+        pass
+    return FallbackProvider(chain, rounds=1, budget=170)
+
+
+def show_insights(res):
+    """הסיכום החכם: תמונה כללית, כרטיס לכל נושא (מה להוסיף לאתר + שאלות לדוגמה), ומה לא קשור לפניקס."""
+    if res["summary"]:
+        st.markdown(f'<div class="ai-sum"><span class="material">auto_awesome</span><span>{html.escape(res["summary"])}</span></div>',
+                    unsafe_allow_html=True)
+    if not res["topics"]:
+        st.info("לא נמצאו נושאים שקשורים לתחומים של הפניקס - כל השאלות שלא נענו לא קשורות לאתר.")
+    for tp in res["topics"]:
+        ex = "".join(f"<li>{html.escape(q)}</li>" for q in tp["examples"])
+        more = f" (ועוד {tp['distinct'] - len(tp['examples'])})" if tp["distinct"] > len(tp["examples"]) else ""
+        st.markdown(f"""<div class="topic"><div class="topic-h"><b>{html.escape(tp["title"])}</b>
+<span class="prio p{ {"גבוהה": 1, "בינונית": 2, "נמוכה": 3}[tp["priority"]] }">עדיפות {tp["priority"]}</span>
+<span class="cnt">{"שאלה אחת" if tp["count"] == 1 else str(tp["count"]) + " שאלות"}</span></div>
+<div class="add"><span class="material">add_circle</span><span><b>מה להוסיף לאתר:</b> {html.escape(tp["what_to_add"])}</span></div>
+<div class="ex">לקוחות שאלו{more}:<ul>{ex}</ul></div></div>""", unsafe_allow_html=True)
+    off, rest = res["off_topic"], res["unsorted"]
+    if off["count"]:
+        with st.expander(f"לא קשור לפניקס - אין מה להוסיף לאתר ({off['count']})"):
+            st.markdown("".join(f"- {html.escape(q)}\n" for q in off["examples"]) +
+                        (f"- ועוד {off['distinct'] - len(off['examples'])}" if off["distinct"] > len(off["examples"]) else ""))
+    if rest["count"]:
+        st.caption(f"{rest['count']} שאלות לא שויכו לאף נושא - אפשר לראות אותן ברשימה למטה.")
 
 
 STORAGE_NOTE = ("השאלות שלא נענו והמשוב נשמרים בשרת רק עד שהוא מופעל מחדש. בשרת הענן החינמי זה קורה אחרי עדכון "
@@ -362,6 +415,21 @@ with section("gaps"):
         words = Counter(w for g in gaps for w in set(re.findall(r"[א-ת]{3,}", g["search_query"])) if w not in STOP)
         st.markdown("**מילים שחוזרות:** " + " · ".join(f"{html.escape(w)} ({n})" for w, n in words.most_common(12)),
                     unsafe_allow_html=True)
+        # ---- סיכום חכם: מודל השפה מקבץ לנושאים ומסנן מה שלא קשור לפניקס
+        sig = (len(gaps), gaps[-1].get("at"))
+        if st.button("סיכום חכם: מה הכי חסר באתר?", icon=":material/auto_awesome:", type="primary", key="ai_gaps",
+                     help="השאלות נשלחות למודל השפה (בלי פרטים מזהים), והוא מקבץ אותן לנושאים ומציע מה להוסיף לאתר"):
+            with st.spinner("המודל קורא את השאלות ומקבץ אותן לנושאים... (עד דקה)"):
+                try:
+                    st.session_state.gap_ai = (sig, summarize(gaps, insights_provider()))
+                except Exception:  # noqa: BLE001 - למנהל מספיק לדעת שזה לא הצליח
+                    st.error("הסיכום לא הצליח כרגע (מודל השפה לא זמין או החזיר תשובה לא תקינה). אפשר לנסות שוב.")
+        saved = st.session_state.get("gap_ai")
+        if saved and saved[1]:
+            if saved[0] != sig:
+                st.caption("נוספו שאלות מאז הסיכום - לחצו שוב לסיכום מעודכן.")
+            show_insights(saved[1])
+        st.markdown("**כל השאלות שלא נענו:**")
         same = Counter(re.sub(r"[?!.,\s]+", " ", g["question"]).strip() for g in gaps)
         for i, (q, n) in enumerate(same.most_common(20)):
             c1, c2 = st.columns([5, 1])
